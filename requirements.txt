@@ -1,2 +1,4 @@
 tensorflow==2.12.*
 setuptools>=67.8.0
+matplotlib>=3.7.1
+numpy>=1.24.3
