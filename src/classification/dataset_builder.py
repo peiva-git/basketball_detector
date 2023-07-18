@@ -9,10 +9,10 @@ import numpy as np
 class DatasetBuilder:
     def __init__(self, data_directory: str, validation_percentage: float = 0.2):
         data_path = pathlib.Path(data_directory)
-        self.image_count = len(list(data_path.glob('/*/*/*/*.png')))
+        self.image_count = len(list(data_path.glob('*/*/*/*.png')))
         list_dataset = tf.data.Dataset.list_files(str(data_path / '*/*/*/*'), shuffle=False)
         list_dataset = list_dataset.shuffle(self.image_count, reshuffle_each_iteration=False)
-        self.class_names = np.array(sorted([item.name for item in data_path.glob('/*/*/*')]))
+        self.class_names = np.unique(sorted([item.name for item in data_path.glob('*/*/*')]))
         print('Found the following classes: ', self.class_names)
 
         validation_size = int(self.image_count * validation_percentage)

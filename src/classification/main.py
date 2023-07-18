@@ -1,4 +1,4 @@
-from classification.DatasetBuilder import DatasetBuilder
+from dataset_builder import DatasetBuilder
 
 builder = DatasetBuilder('/mnt/DATA/tesi/dataset/dataset_classification/pallacanestro_trieste')
 builder.configure_datasets_for_performance()

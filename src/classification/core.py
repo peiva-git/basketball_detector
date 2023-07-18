@@ -1,14 +1,14 @@
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
-from classification.DatasetBuilder import DatasetBuilder
-from classification.models.SimpleClassifier import SimpleClassifier
+from dataset_builder import DatasetBuilder
+from models.simple_classifier import SimpleClassifier
 
 EPOCHS = 10
 
 builder = DatasetBuilder('/mnt/DATA/tesi/dataset/dataset_classification/pallacanestro_trieste')
 builder.configure_datasets_for_performance()
-train_dataset, validation_dataset = builder.build()
+train_dataset, validation_dataset = builder.train_dataset, builder.validation_dataset
 
 model = SimpleClassifier()
 
