@@ -5,9 +5,6 @@ from typing import Any
 import tensorflow as tf
 import numpy as np
 
-IMAGE_WIDTH = 50
-IMAGE_HEIGHT = 50
-
 
 class DatasetBuilder:
     def __init__(self, data_directory: str, validation_percentage: float = 0.2):
@@ -39,9 +36,9 @@ class DatasetBuilder:
         return tf.argmax(one_hot)
 
     @staticmethod
-    def decode_image(image_data):
+    def decode_image(image_data, image_width: int = 50, image_height: int = 50):
         image = tf.io.decode_png(image_data, channels=3)
-        return tf.image.resize(image, [IMAGE_WIDTH, IMAGE_HEIGHT])
+        return tf.image.resize(image, [image_width, image_height])
 
     def _get_image_label_pair_from_path(self, file_path) -> (Any, int):
         label = self._get_label(file_path)

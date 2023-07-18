@@ -1,47 +1,16 @@
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
-BATCH_SIZE = 32
-NUMBER_OF_CLASSES = 2
+from classification.DatasetBuilder import DatasetBuilder
+from classification.models.SimpleClassifier import SimpleClassifier
+
 EPOCHS = 10
-DATA_DIRECTORY = '/mnt/DATA/tesi/dataset/dataset_classification/pallacanestro_trieste/stagione_2019-20_legabasket' \
-                 '/pallacanestro_trieste-ori_ora_pistoia/'
-IMAGE_HEIGHT = 50
-IMAGE_WIDTH = 50
 
-trainDataset = tf.keras.utils.image_dataset_from_directory(
-    DATA_DIRECTORY,
-    validation_split=0.2,
-    subset='training',
-    seed=123,
-    image_size=(IMAGE_HEIGHT, IMAGE_WIDTH),
-    batch_size=BATCH_SIZE
-)
+builder = DatasetBuilder('/mnt/DATA/tesi/dataset/dataset_classification/pallacanestro_trieste')
+builder.configure_datasets_for_performance()
+train_dataset, validation_dataset = builder.build()
 
-validationDataset = tf.keras.utils.image_dataset_from_directory(
-    DATA_DIRECTORY,
-    validation_split=0.2,
-    subset='validation',
-    seed=123,
-    image_size=(IMAGE_HEIGHT, IMAGE_WIDTH),
-    batch_size=BATCH_SIZE
-)
-
-trainDataset = trainDataset.cache().prefetch(buffer_size=tf.data.AUTOTUNE)
-validationDataset = validationDataset.cache().prefetch(buffer_size=tf.data.AUTOTUNE)
-
-model = tf.keras.Sequential([
-    tf.keras.layers.Rescaling(1./255, input_shape=(IMAGE_HEIGHT, IMAGE_WIDTH, 3)),
-    tf.keras.layers.Conv2D(16, 3, padding='same', activation='relu'),
-    tf.keras.layers.MaxPooling2D(),
-    tf.keras.layers.Conv2D(32, 3, padding='same', activation='relu'),
-    tf.keras.layers.MaxPooling2D(),
-    tf.keras.layers.Conv2D(64, 3, padding='same', activation='relu'),
-    tf.keras.layers.MaxPooling2D(),
-    tf.keras.layers.Flatten(),
-    tf.keras.layers.Dense(128, activation='relu'),
-    tf.keras.layers.Dense(NUMBER_OF_CLASSES)
-])
+model = SimpleClassifier()
 
 model.compile(
     optimizer='adam',
@@ -52,8 +21,8 @@ model.compile(
 model.summary()
 
 history = model.fit(
-    trainDataset,
-    validation_data=validationDataset,
+    train_dataset,
+    validation_data=validation_dataset,
     epochs=EPOCHS
 )
 
