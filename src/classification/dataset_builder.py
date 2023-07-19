@@ -40,7 +40,7 @@ class DatasetBuilder:
         image = tf.io.decode_png(image_data, channels=3)
         return tf.image.resize(image, [image_width, image_height])
 
-    def _get_image_label_pair_from_path(self, file_path) -> (Any, int):
+    def _get_image_label_pair_from_path(self, file_path: str) -> (Any, int):
         label = self._get_label(file_path)
         image_data = tf.io.read_file(file_path)
         image = self.decode_image(image_data)

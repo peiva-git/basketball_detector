@@ -21,4 +21,7 @@ class DatasetBuilderTestCase(unittest.TestCase):
                          'validation dataset was not split correctly')
 
     def test_dataset_labels(self):
-        self.assertIn(self.builder.train_dataset.take(1).get_single_element()[1].numpy(), [0, 1])
+        self.assertIn(self.builder.train_dataset.take(1).get_single_element()[1].numpy(), [0, 1],
+                      'invalid class label in train dataset')
+        self.assertIn(self.builder.validation_dataset.take(1).get_single_element()[1].numpy(), [0, 1],
+                      'invalid class label in validation dataset')
