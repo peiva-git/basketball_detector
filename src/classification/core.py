@@ -11,7 +11,8 @@ def get_model_callbacks(model_name: str) -> [tf.keras.callbacks.Callback]:
             save_weights_only=True,
             monitor='val_accuracy',
             mode='max',
-            save_best_only=True),
+            save_best_only=True
+        ),
         tf.keras.callbacks.BackupAndRestore(backup_dir=os.path.join(model_dir_path, 'backup')),
         tf.keras.callbacks.EarlyStopping(
             monitor='loss',
@@ -22,5 +23,9 @@ def get_model_callbacks(model_name: str) -> [tf.keras.callbacks.Callback]:
             log_dir=os.path.join(model_dir_path, 'tensorboard-logs'),
             histogram_freq=1
         ),
-        tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss', patience=3, min_lr=0.001)
+        tf.keras.callbacks.ReduceLROnPlateau(
+            monitor='val_loss',
+            patience=3,
+            min_lr=0.001
+        )
     ]
