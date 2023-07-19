@@ -1,49 +1,26 @@
+import os.path
+
 import tensorflow as tf
-import matplotlib.pyplot as plt
 
-from dataset_builder import DatasetBuilder
-from models.simple_classifier import SimpleClassifier
 
-EPOCHS = 10
-
-builder = DatasetBuilder('/mnt/DATA/tesi/dataset/dataset_classification/pallacanestro_trieste')
-builder.configure_datasets_for_performance()
-train_dataset, validation_dataset = builder.train_dataset, builder.validation_dataset
-
-model = SimpleClassifier()
-
-model.compile(
-    optimizer='adam',
-    loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-    metrics=['accuracy']
-)
-
-model.summary()
-
-history = model.fit(
-    train_dataset,
-    validation_data=validation_dataset,
-    epochs=EPOCHS
-)
-
-acc = history.history['accuracy']
-val_acc = history.history['val_accuracy']
-
-loss = history.history['loss']
-val_loss = history.history['val_loss']
-
-epochs_range = range(EPOCHS)
-
-plt.figure(figsize=(8, 8))
-plt.subplot(1, 2, 1)
-plt.plot(epochs_range, acc, label='Training Accuracy')
-plt.plot(epochs_range, val_acc, label='Validation Accuracy')
-plt.legend(loc='lower right')
-plt.title('Training and Validation Accuracy')
-
-plt.subplot(1, 2, 2)
-plt.plot(epochs_range, loss, label='Training Loss')
-plt.plot(epochs_range, val_loss, label='Validation Loss')
-plt.legend(loc='upper right')
-plt.title('Training and Validation Loss')
-plt.show()
+def get_model_callbacks(model_name: str) -> [tf.keras.callbacks.Callback]:
+    model_dir_path = os.path.join('/out/training-callback-results', model_name)
+    return [
+        tf.keras.callbacks.ModelCheckpoint(
+            filepath=os.path.join(model_dir_path, 'checkpoint'),
+            save_weights_only=True,
+            monitor='val_accuracy',
+            mode='max',
+            save_best_only=True),
+        tf.keras.callbacks.BackupAndRestore(backup_dir=os.path.join(model_dir_path, 'backup')),
+        tf.keras.callbacks.EarlyStopping(
+            monitor='loss',
+            patience=5,
+            start_from_epoch=2
+        ),
+        tf.keras.callbacks.TensorBoard(
+            log_dir=os.path.join(model_dir_path, 'tensorboard-logs'),
+            histogram_freq=1
+        ),
+        tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss', patience=3, min_lr=0.001)
+    ]
