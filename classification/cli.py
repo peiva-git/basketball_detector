@@ -43,7 +43,6 @@ def train_command():
         loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
         metrics=['accuracy']
     )
-    model.summary()
     model.fit(
         train_dataset,
         validation_data=validation_dataset,

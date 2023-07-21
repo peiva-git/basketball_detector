@@ -34,7 +34,8 @@ def get_model_callbacks(
             monitor='val_loss',
             patience=reduce_lr_patience,
             min_lr=0.001
-        )
+        ),
+        tf.keras.callbacks.ProgbarLogger()
     ]
 
 
