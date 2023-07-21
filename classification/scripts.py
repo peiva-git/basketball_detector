@@ -27,6 +27,7 @@ def train_classifier_on_reduced_dataset(model: tf.keras.models.Model, model_name
         callbacks=get_model_callbacks(model_name, 3, 2)
     )
     model.save(filepath=os.path.join('out', 'models', model_name), save_format='tf')
+    model.save(filepath=os.path.join('out', 'models', model_name), save_format='h5')
 
 
 if __name__ == '__main__':

@@ -4,7 +4,7 @@ import os.path
 import tensorflow as tf
 
 from .dataset_builder import DatasetBuilder
-from .models import SimpleClassifier, ResNetClassifier, get_model_callbacks
+from classification.models.callbacks import SimpleClassifier, ResNetClassifier, get_model_callbacks
 
 
 def train_command(debug_enabled: bool = False):
@@ -54,3 +54,4 @@ def train_command(debug_enabled: bool = False):
         callbacks=get_model_callbacks(args.model, int(0.3 * args.epochs), int(0.2 * args.epochs))
     )
     model.save(filepath=os.path.join('out', 'models', args.model), save_format='tf')
+    model.save(filepath=os.path.join('out', 'models', args.model), save_format='h5')
