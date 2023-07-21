@@ -7,7 +7,7 @@ import numpy as np
 
 
 class DatasetBuilder:
-    def __init__(self, data_directory: str, validation_percentage: float = 0.2):
+    def __init__(self, data_directory: str, validation_percentage: float = 0.2, reduce_percentage: float = 0.0):
         data_path = pathlib.Path(data_directory)
         self.image_count = len(list(data_path.glob('*/*/*/*.png')))
         list_dataset = tf.data.Dataset.list_files(str(data_path / '*/*/*/*'), shuffle=False)
@@ -20,6 +20,14 @@ class DatasetBuilder:
         self.validation_dataset = list_dataset.take(validation_size)
         print(tf.data.experimental.cardinality(self.train_dataset).numpy(), ' images in training dataset')
         print(tf.data.experimental.cardinality(self.validation_dataset).numpy(), ' images in validation dataset')
+
+        if reduce_percentage != 0.0:
+            print('Reducing both datasets by ', reduce_percentage * 100, '%...')
+            self.train_dataset = self.train_dataset.skip(int(len(self.train_dataset) * reduce_percentage))
+            self.validation_dataset = \
+            self.validation_dataset.skip(int(len(self.validation_dataset) * reduce_percentage))
+            print(tf.data.experimental.cardinality(self.train_dataset).numpy(), ' images in training dataset')
+            print(tf.data.experimental.cardinality(self.validation_dataset).numpy(), ' images in validation dataset')
 
         self.train_dataset = self.train_dataset.map(
             self._get_image_label_pair_from_path,
