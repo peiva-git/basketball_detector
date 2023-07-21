@@ -11,14 +11,14 @@ def train_command():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '--model',
-        help='The model',
+        help='The model to train',
         choices=['simple-classifier', 'resnet'],
         type=str,
         required=True
     )
     parser.add_argument(
         '--dataset-dir',
-        help='dataset root directory',
+        help='Dataset root directory',
         type=str,
         required=True
     )
