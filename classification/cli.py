@@ -7,7 +7,7 @@ from .dataset_builder import DatasetBuilder
 from .models import SimpleClassifier, ResNetClassifier, get_model_callbacks
 
 
-def train_command():
+def train_command(debug_enabled: bool = False):
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '--model',
@@ -33,6 +33,10 @@ def train_command():
     builder = DatasetBuilder(args['dataset-dir'])
     builder.configure_datasets_for_performance()
     train_dataset, validation_dataset = builder.build()
+
+    if debug_enabled:
+        train_dataset = train_dataset.take(int(len(train_dataset) * 0.05))
+        validation_dataset = validation_dataset.take(int(len(validation_dataset) * 0.05))
 
     if args.model == 'simple-classifier':
         model = SimpleClassifier()
