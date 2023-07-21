@@ -15,7 +15,7 @@ setup(
     author_email='ivan.pelizon@gmail.com',
     url='',
     license=license,
-    packages=find_packages(exclude=('tests', 'docs'))
+    packages=find_packages(exclude=('tests', 'docs', 'out', 'assets'))
 )
 
 install_requires = [

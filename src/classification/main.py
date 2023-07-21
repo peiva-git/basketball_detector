@@ -1,5 +1,5 @@
 from dataset_builder import DatasetBuilder
-from models.simple_classifier import SimpleClassifier
+from classification.models import SimpleClassifier
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
