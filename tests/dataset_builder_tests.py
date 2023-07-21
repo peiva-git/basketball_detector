@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 
-from classification import DatasetBuilder
+from classification.dataset_builder import DatasetBuilder
 
 
 class DatasetBuilderTestCase(unittest.TestCase):

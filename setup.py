@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 with open('README.rst') as f:
     readme = f.read()
 
-with open('LICENSE') as f:
+with open('LICENSE.md') as f:
     license = f.read()
 
 setup(
@@ -15,12 +15,19 @@ setup(
     author_email='ivan.pelizon@gmail.com',
     url='',
     license=license,
-    packages=find_packages(exclude=('tests', 'docs', 'out', 'assets'))
+    packages=find_packages(exclude=('tests', 'docs', 'out', 'assets')),
+    entry_points={
+        'console_scripts': [
+            'train-model = classification.cli:train_command'
+        ]
+    },
 )
 
 install_requires = [
     'python_version>=3.8',
     'keras-cv==2.12.*',
     'tensorflow==2.12.*',
-    'numpy>=1.24.3'
+    'numpy>=1.24.3',
+    'keras-cv==0.6.*',
+    'keras-core'
 ]
