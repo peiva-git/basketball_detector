@@ -4,9 +4,7 @@ import os.path
 import tensorflow as tf
 
 from .dataset_builder import DatasetBuilder
-from .models.callbacks import get_model_callbacks
-from .models.simple_classifier import SimpleClassifier
-from .models.resnet_classifier import ResNetClassifier
+from .models.models import Classifier
 
 
 def train_command(debug_enabled: bool = False):
@@ -41,19 +39,23 @@ def train_command(debug_enabled: bool = False):
         validation_dataset = validation_dataset.take(int(len(validation_dataset) * 0.05))
 
     if args.model == 'simple-classifier':
-        model = SimpleClassifier()
+        model = Classifier(model_name=args.model).model
     else:
-        model = ResNetClassifier()
+        model = Classifier(model_name='resnet-classifier').model
+
     model.compile(
-        optimizer='adamw',
+        optimizer='adam',
         loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-        metrics=['accuracy']
+        metrics=[tf.metrics.CategoricalAccuracy()]
     )
     model.fit(
         train_dataset,
         validation_data=validation_dataset,
         epochs=args.epochs,
-        callbacks=get_model_callbacks(args.model, int(0.3 * args.epochs), int(0.2 * args.epochs))
+        callbacks=model.get_model_callbacks(
+            early_stop_patience=int(0.3 * args.epochs),
+            reduce_lr_patience=int(0.2 * args.epochs)
+        )
     )
-    model.save(filepath=os.path.join('out', 'models', args.model), save_format='tf')
-    model.save(filepath=os.path.join('out', 'models', args.model), save_format='h5')
+    model.save(filepath=os.path.join('out', 'models', 'TF', args.model), save_format='tf')
+    model.save(filepath=os.path.join('out', 'models', 'HDF5', args.model), save_format='h5')

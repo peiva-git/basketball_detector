@@ -1,10 +1,10 @@
 import os
 import tensorflow as tf
 
-from classification import SimpleClassifier, DatasetBuilder, get_model_callbacks
+from classification import Classifier, DatasetBuilder
 
 
-def train_classifier_on_reduced_dataset(model: tf.keras.models.Model, model_name: str):
+def train_classifier_on_reduced_dataset(model: tf.keras.models.Model):
     print('Reading files from disk...')
     builder = DatasetBuilder('/mnt/DATA/tesi/dataset/dataset_classification/pallacanestro_trieste/')
     builder.configure_datasets_for_performance()
@@ -27,11 +27,11 @@ def train_classifier_on_reduced_dataset(model: tf.keras.models.Model, model_name
         train_dataset,
         validation_data=validation_dataset,
         epochs=10,
-        callbacks=get_model_callbacks(model_name, early_stop_patience=3, reduce_lr_patience=2)
+        callbacks=model.get_model_callbacks(model.model_name, early_stop_patience=3, reduce_lr_patience=2)
     )
-    model.save(filepath=os.path.join('out', 'models', 'TF', model_name + '.h5'), save_format='tf')
-    model.save(filepath=os.path.join('out', 'models', 'HDF5', model_name), save_format='h5')
+    model.save(filepath=os.path.join('out', 'models', 'TF', model.model_name + '.h5'), save_format='tf')
+    model.save(filepath=os.path.join('out', 'models', 'HDF5', model.model_name), save_format='h5')
 
 
 if __name__ == '__main__':
-    train_classifier_on_reduced_dataset(SimpleClassifier(), 'simple-classifier')
+    train_classifier_on_reduced_dataset(Classifier(model_name='simple-classifier').model)
