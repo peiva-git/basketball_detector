@@ -24,7 +24,7 @@ class Classifier:
             ])
         else:
             self.__model = keras_cv.models.ImageClassifier(
-                backbone=keras_cv.models.ResNet152V2Backbone(),
+                backbone=keras_cv.models.ResNet152V2Backbone(input_shape=[image_width, image_height, 3]),
                 num_classes=number_of_classes
             )
         self.__model_name = model_name
