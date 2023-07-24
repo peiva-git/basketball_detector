@@ -25,7 +25,7 @@ class DatasetBuilder:
             print('Reducing both datasets by ', reduce_percentage * 100, '%...')
             self.train_dataset = self.train_dataset.skip(int(len(self.train_dataset) * reduce_percentage))
             self.validation_dataset = \
-            self.validation_dataset.skip(int(len(self.validation_dataset) * reduce_percentage))
+                self.validation_dataset.skip(int(len(self.validation_dataset) * reduce_percentage))
             print(tf.data.experimental.cardinality(self.train_dataset).numpy(), ' images in training dataset')
             print(tf.data.experimental.cardinality(self.validation_dataset).numpy(), ' images in validation dataset')
 
