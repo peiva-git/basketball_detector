@@ -9,8 +9,8 @@ class DatasetBuilderTestCase(unittest.TestCase):
     __builder = DatasetBuilder('../assets/test-sample-data', validation_percentage=0.5)
 
     def test_image_count(self):
-        self.assertEqual(self.__builder.number_of_images, self.__NUMBER_OF_SAMPLE_IMAGES, 'incorrect number of images '
-                                                                                      'detected')
+        self.assertEqual(self.__builder.number_of_images, self.__NUMBER_OF_SAMPLE_IMAGES,
+                         'incorrect number of images detected')
 
     def test_class_names(self):
         self.assertTrue(np.all(self.__builder.class_names == ['ball', 'no_ball']), 'invalid object classes detected')
