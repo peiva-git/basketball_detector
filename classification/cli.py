@@ -4,7 +4,9 @@ import os.path
 import tensorflow as tf
 
 from .dataset_builder import DatasetBuilder
-from classification.models.callbacks import SimpleClassifier, ResNetClassifier, get_model_callbacks
+from .models.callbacks import get_model_callbacks
+from .models.simple_classifier import SimpleClassifier
+from .models.resnet_classifier import ResNetClassifier
 
 
 def train_command(debug_enabled: bool = False):
