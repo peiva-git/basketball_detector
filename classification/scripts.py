@@ -19,6 +19,8 @@ def train_classifier_on_reduced_dataset(model: tf.keras.models.Model, model_name
     print('Reducing training and validation datasets to 5% of the original size...')
     train_dataset = train_dataset.take(int(len(train_dataset) * 0.05))
     validation_dataset = validation_dataset.take(int(len(validation_dataset) * 0.05))
+    print(tf.data.experimental.cardinality(train_dataset).numpy(), 'images in training dataset')
+    print(tf.data.experimental.cardinality(validation_dataset).numpy(), 'images in validation dataset')
 
     model.fit(
         train_dataset,
