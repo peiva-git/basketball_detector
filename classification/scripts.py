@@ -24,7 +24,7 @@ def train_classifier_on_reduced_dataset(model: tf.keras.models.Model, model_name
         train_dataset,
         validation_data=validation_dataset,
         epochs=10,
-        callbacks=get_model_callbacks(model_name, 3, 2)
+        callbacks=get_model_callbacks(model_name, early_stop_patience=3, reduce_lr_patience=2)
     )
     model.save(filepath=os.path.join('out', 'models', model_name), save_format='tf')
     model.save(filepath=os.path.join('out', 'models', model_name), save_format='h5')
