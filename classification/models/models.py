@@ -67,3 +67,8 @@ class Classifier:
             ),
             tf.keras.callbacks.ProgbarLogger()
         ]
+
+
+class Segmentation:
+    def __init__(self, number_of_classes: int = 2, image_width: int = 1920, image_height: int = 1080):
+        pass

@@ -1,12 +1,13 @@
 import unittest
 import numpy as np
 
-from classification.dataset_builder import DatasetBuilder
+from classification.dataset_builders import ClassificationDatasetBuilder
 
 
 class DatasetBuilderTestCase(unittest.TestCase):
     __NUMBER_OF_SAMPLE_IMAGES = 18
-    __builder = DatasetBuilder('../assets/test-sample-data', validation_percentage=0.5)
+    __builder = ClassificationDatasetBuilder('../assets/test-sample-data-classification-classification',
+                                             validation_percentage=0.5)
 
     def test_image_count(self):
         self.assertEqual(self.__builder.number_of_images, self.__NUMBER_OF_SAMPLE_IMAGES,

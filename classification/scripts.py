@@ -1,14 +1,15 @@
 import os
 import tensorflow as tf
 
-from classification import Classifier, DatasetBuilder
+from classification import Classifier, ClassificationDatasetBuilder
 
 
 def train_classifier_on_reduced_dataset(model: tf.keras.models.Model):
     print('Reading files from disk...')
-    builder = DatasetBuilder('/mnt/DATA/tesi/dataset/dataset_classification/pallacanestro_trieste/')
+    builder = ClassificationDatasetBuilder('/mnt/DATA/tesi/dataset/dataset_classification/pallacanestro_trieste/',
+                                           reduce_percentage=0.95)
     builder.configure_datasets_for_performance()
-    train_dataset, validation_dataset = builder.build()
+    train_dataset, validation_dataset = builder.train_dataset, builder.validation_dataset
 
     model.compile(
         optimizer='adam',
@@ -16,12 +17,12 @@ def train_classifier_on_reduced_dataset(model: tf.keras.models.Model):
         metrics=['accuracy']
     )
 
-    print('Reducing training and validation datasets to 5% of the original size...')
-    train_dataset = train_dataset.take(int(tf.data.experimental.cardinality(train_dataset).numpy() * 0.05))
-    validation_dataset = validation_dataset\
-        .take(int(tf.data.experimental.cardinality(validation_dataset).numpy() * 0.05))
-    print(tf.data.experimental.cardinality(train_dataset).numpy(), 'images in training dataset')
-    print(tf.data.experimental.cardinality(validation_dataset).numpy(), 'images in validation dataset')
+#    print('Reducing training and validation datasets to 5% of the original size...')
+#   train_dataset = train_dataset.take(int(tf.data.experimental.cardinality(train_dataset).numpy() * 0.05))
+#    validation_dataset = validation_dataset\
+#        .take(int(tf.data.experimental.cardinality(validation_dataset).numpy() * 0.05))
+#    print(tf.data.experimental.cardinality(train_dataset).numpy(), 'images in training dataset')
+#    print(tf.data.experimental.cardinality(validation_dataset).numpy(), 'images in validation dataset')
 
     model.fit(
         train_dataset,

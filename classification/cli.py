@@ -3,7 +3,7 @@ import os.path
 
 import tensorflow as tf
 
-from .dataset_builder import DatasetBuilder
+from .dataset_builders import ClassificationDatasetBuilder
 from .models.models import Classifier
 
 
@@ -30,9 +30,9 @@ def train_command(debug_enabled: bool = False):
     )
     args = parser.parse_args()
 
-    builder = DatasetBuilder(args['dataset-dir'])
+    builder = ClassificationDatasetBuilder(args['dataset-dir'])
     builder.configure_datasets_for_performance()
-    train_dataset, validation_dataset = builder.build()
+    train_dataset, validation_dataset = builder.train_dataset, builder.validation_dataset
 
     if debug_enabled:
         train_dataset = train_dataset.take(int(len(train_dataset) * 0.05))

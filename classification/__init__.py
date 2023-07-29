@@ -1,3 +1,3 @@
-from .dataset_builder import DatasetBuilder
+from .dataset_builders import ClassificationDatasetBuilder
 from .models.models import Classifier
 from .cli import train_command
