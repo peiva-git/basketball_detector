@@ -25,7 +25,7 @@ class Classifier:
             ])
         else:
             self.__model = keras_cv.models.ImageClassifier(
-                backbone=keras_cv.models.ResNet152V2Backbone(input_shape=[image_width, image_height, 3]),
+                backbone=keras_cv.models.ResNet152V2Backbone(input_shape=(image_width, image_height, 3)),
                 num_classes=number_of_classes
             )
         self.__model_name = model_name
@@ -71,7 +71,7 @@ class Classifier:
 
 
 class Segmentation:
-    def __init__(self, number_of_classes: int = 2, image_size: (int, int) = (1920, 1080)):
+    def __init__(self, number_of_classes: int = 2, image_size: (int, int) = (1080, 1920)):
         inputs = tf.keras.Input(shape=image_size + (3,))
 
         # [First half of the network: downsampling inputs] ###
@@ -123,7 +123,13 @@ class Segmentation:
         # Add a per-pixel classification layer
         outputs = layers.Conv2D(number_of_classes, 3, activation="softmax", padding="same")(x)
         self.__model = tf.keras.Model(inputs, outputs)
+        self.__model_name = 'segmenter'
+        self.__model.summary()
 
     @property
     def model(self):
         return self.__model
+
+    @property
+    def model_name(self):
+        return self.__model_name

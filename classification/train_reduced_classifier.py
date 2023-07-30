@@ -30,8 +30,8 @@ def train_classifier_on_reduced_dataset(model: tf.keras.models.Model):
         epochs=10,
         callbacks=model.get_model_callbacks(model.model_name, early_stop_patience=3, reduce_lr_patience=2)
     )
-    model.save(filepath=os.path.join('out', 'models', 'TF', model.model_name + '.h5'), save_format='tf')
-    model.save(filepath=os.path.join('out', 'models', 'HDF5', model.model_name), save_format='h5')
+    model.save(filepath=os.path.join('out', 'models', 'TF', model.model_name), save_format='tf')
+    model.save(filepath=os.path.join('out', 'models', 'HDF5', model.model_name + '.h5'), save_format='h5')
 
 
 if __name__ == '__main__':
