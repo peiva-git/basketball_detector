@@ -85,46 +85,63 @@ class ClassificationDatasetBuilder:
         self.__validation_dataset = self.__configure_for_performance(self.__validation_dataset, buffer_size, batch_size)
 
 
-class SegmentationDatasetBuilder(tf.keras.utils.Sequence):
+class SegmentationDatasetBuilder:
     def __init__(self,
                  data_directory: str,
                  masks_directory: str,
-                 validation_percentage: float = 0.2,
-                 batch_size: int = 1000,
-                 image_size: (int, int) = (1920, 1080)):
-        self.__batch_size = batch_size
-        self.__image_size = image_size
-        number_of_validation_samples = int(len(self.__input_image_paths) * validation_percentage)
+                 validation_percentage: float = 0.2):
         input_image_paths = [
             os.path.join(data_directory, filename)
             for filename in os.listdir(data_directory)
             if filename.endswith('.png')
         ]
-
         mask_image_paths = [
             os.path.join(masks_directory, filename)
             for filename in os.listdir(masks_directory)
-            if filename.endswith('.png' and not filename.startswith('.'))
+            if filename.endswith('.png')
         ]
-        random.Random(2023).shuffle(input_image_paths)
-        random.Random(2023).shuffle(mask_image_paths)
-        self.__train_input_image_paths = sorted(input_image_paths[:-number_of_validation_samples])
-        self.__train_mask_images_paths = sorted(mask_image_paths)
+        number_of_validation_samples = int(len(input_image_paths) * validation_percentage)
+
+        input_image_paths.sort()
+        input_mask_path_pairs = []
+        for mask_path in mask_image_paths:
+            frame_number = int(mask_path.split('_')[-1].split('.')[-2])
+            input_mask_path_pairs.append((input_image_paths[frame_number - 1], mask_path))
+
+        random.Random(2023).shuffle(input_mask_path_pairs)
+        self.__train_input_mask_path_pairs = input_mask_path_pairs[:-number_of_validation_samples]
+        self.__validation_input_mask_path_pairs = input_mask_path_pairs[-number_of_validation_samples:]
+
+    @property
+    def train_input_mask_path_pairs(self) -> [(str, str)]:
+        return self.__train_input_mask_path_pairs
+
+    @property
+    def validation_input_mask_path_pairs(self) -> [(str, str)]:
+        return self.__validation_input_mask_path_pairs
+
+
+class Basketballs(tf.keras.utils.Sequence):
+    def __init__(self,
+                 input_mask_path_pairs: [(str, str)],
+                 batch_size: int = 1000,
+                 image_size: (int, int) = (1920, 1080)):
+        self.__batch_size = batch_size
+        self.__image_size = image_size
+        self.__input_mask_path_pairs = input_mask_path_pairs
 
     def __getitem__(self, index) -> ([], []):
         i = index * self.__batch_size
-        batch_input_image_paths = self.__input_image_paths[i: i + self.__batch_size]
-        batch_mask_image_paths = self.__mask_image_paths[i: i + self.__batch_size]
-        input_array = np.zeros((self.__batch_size,) + self.__image_size + (3,), dtype='float32')
-        for j, path in enumerate(batch_input_image_paths):
-            image = tf.keras.utils.load_img(path, target_size=self.__image_size)
-            input_array[j] = image
-        masks_array = np.zeros((self.__batch_size,) + self.__image_size + (1,), dtype='uint8')
-        for j, path in enumerate(batch_mask_image_paths):
-            image = tf.keras.utils.load_img(path, target_size=self.__image_size, color_mode='grayscale')
-            masks_array[j] = np.expand_dims(image, 2)
-            masks_array[j] -= 1
-        return input_array, masks_array
+        batch_input_mask_path_pairs = self.__input_mask_path_pairs[i: i + self.__batch_size]
+        x = np.zeros((self.__batch_size,) + self.__image_size + (3,), dtype='float32')
+        y = np.zeros((self.__batch_size,) + self.__image_size + (1,), dtype='uint8')
+        for j, input_path, mask_path in enumerate(batch_input_mask_path_pairs):
+            frame_image = tf.keras.utils.load_img(input_path, target_size=self.__image_size)
+            x[j] = frame_image
+            mask_image = tf.keras.utils.load_img(mask_path, target_size=self.__image_size, color_mode='grayscale')
+            y[j] = np.expand_dims(mask_image, 2)
+            y[j] -= 1
+        return x, y
 
     def __len__(self):
-        return len(self.__mask_image_paths) // self.__batch_size
+        return len(self.__input_mask_path_pairs) // self.__batch_size
