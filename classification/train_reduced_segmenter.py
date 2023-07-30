@@ -1,6 +1,6 @@
 import os
 
-import keras.callbacks
+import keras.callbacks, keras.losses
 
 from classification.dataset_builders import SegmentationDatasetBuilder, Basketballs
 from classification.models.models import Segmentation
@@ -18,7 +18,7 @@ train_generator = Basketballs(train_paths, image_size=(160, 160), batch_size=1)
 validation_generator = Basketballs(validation_paths, image_size=(160, 160), batch_size=1)
 
 model = Segmentation(image_size=(160, 160)).model
-model.compile(optimizer="rmsprop", loss="sparse_categorical_crossentropy")
+model.compile(optimizer="adam", loss=keras.losses.SparseCategoricalCrossentropy())
 
 callbacks = [
     keras.callbacks.ModelCheckpoint("basketball_segmentation.h5", save_best_only=True)

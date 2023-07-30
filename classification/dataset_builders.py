@@ -137,9 +137,10 @@ class Basketballs(tf.keras.utils.Sequence):
         y = np.zeros((self.__batch_size,) + self.__image_size + (1,), dtype='uint8')
         for j, (input_path, mask_path) in enumerate(batch_input_mask_path_pairs):
             frame_image = tf.keras.utils.load_img(input_path, target_size=self.__image_size)
-            x[j] = frame_image
+            rescale = tf.keras.layers.Rescaling(1. / 255)
+            x[j] = rescale(frame_image)
             mask_image = tf.keras.utils.load_img(mask_path, target_size=self.__image_size, color_mode='grayscale')
-            y[j] = np.expand_dims(mask_image, 2)
+            y[j] = np.expand_dims(rescale(mask_image), 2)
             y[j] -= 1
         return x, y
 
