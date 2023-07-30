@@ -1,6 +1,7 @@
 import os
 import tensorflow as tf
 import keras_cv
+from keras import layers
 
 
 class Classifier:
@@ -70,5 +71,59 @@ class Classifier:
 
 
 class Segmentation:
-    def __init__(self, number_of_classes: int = 2, image_width: int = 1920, image_height: int = 1080):
-        pass
+    def __init__(self, number_of_classes: int = 2, image_size: (int, int) = (1920, 1080)):
+        inputs = tf.keras.Input(shape=image_size + (3,))
+
+        # [First half of the network: downsampling inputs] ###
+
+        # Entry block
+        x = tf.keras.layers.Conv2D(32, 3, strides=2, padding="same")(inputs)
+        x = tf.keras.layers.BatchNormalization()(x)
+
+        previous_block_activation = x  # Set aside residual
+
+        # Blocks 1, 2, 3 are identical apart from the feature depth.
+        for filters in [64, 128, 256]:
+            x = tf.keras.layers.Activation("relu")(x)
+            x = tf.keras.layers.SeparableConv2D(filters, 3, padding="same")(x)
+            x = tf.keras.layers.BatchNormalization()(x)
+
+            x = tf.keras.layers.Activation("relu")(x)
+            x = tf.keras.layers.SeparableConv2D(filters, 3, padding="same")(x)
+            x = layers.BatchNormalization()(x)
+
+            x = layers.MaxPooling2D(3, strides=2, padding="same")(x)
+
+            # Project residual
+            residual = layers.Conv2D(filters, 1, strides=2, padding="same")(
+                previous_block_activation
+            )
+            x = layers.add([x, residual])  # Add back residual
+            previous_block_activation = x  # Set aside next residual
+
+        # [Second half of the network: upsampling inputs] ###
+
+        for filters in [256, 128, 64, 32]:
+            x = layers.Activation("relu")(x)
+            x = layers.Conv2DTranspose(filters, 3, padding="same")(x)
+            x = layers.BatchNormalization()(x)
+
+            x = layers.Activation("relu")(x)
+            x = layers.Conv2DTranspose(filters, 3, padding="same")(x)
+            x = layers.BatchNormalization()(x)
+
+            x = layers.UpSampling2D(2)(x)
+
+            # Project residual
+            residual = layers.UpSampling2D(2)(previous_block_activation)
+            residual = layers.Conv2D(filters, 1, padding="same")(residual)
+            x = layers.add([x, residual])  # Add back residual
+            previous_block_activation = x  # Set aside next residual
+
+        # Add a per-pixel classification layer
+        outputs = layers.Conv2D(number_of_classes, 3, activation="softmax", padding="same")(x)
+        self.__model = tf.keras.Model(inputs, outputs)
+
+    @property
+    def model(self):
+        return self.__model
