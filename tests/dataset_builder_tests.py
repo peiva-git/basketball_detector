@@ -4,7 +4,7 @@ import numpy as np
 from classification.dataset_builders import ClassificationDatasetBuilder
 
 
-class DatasetBuilderTestCase(unittest.TestCase):
+class ClassificationDatasetBuilderTestCase(unittest.TestCase):
     __NUMBER_OF_SAMPLE_IMAGES = 18
     __builder = ClassificationDatasetBuilder('../assets/test-sample-data-classification-classification',
                                              validation_percentage=0.5)
