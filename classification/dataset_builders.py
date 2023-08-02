@@ -151,6 +151,6 @@ class SegmentationDatasetBuilder:
         return tf.data.experimental.cardinality(self.__train_dataset).numpy() + \
                tf.data.experimental.cardinality(self.__validation_dataset).numpy()
 
-    def configure_dataset_for_performance(self, buffer_size: int = tf.data.AUTOTUNE, batch_size: int = 10):
+    def configure_datasets_for_performance(self, buffer_size: int = tf.data.AUTOTUNE, batch_size: int = 10):
         self.__train_dataset = configure_for_performance(self.__train_dataset, buffer_size, batch_size)
         self.__validation_dataset = configure_for_performance(self.__validation_dataset, buffer_size, batch_size)
