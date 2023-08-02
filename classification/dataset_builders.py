@@ -11,6 +11,14 @@ def decode_image(image_data, image_width: int = 50, image_height: int = 50, chan
     return tf.image.resize(image, [image_height, image_width])
 
 
+def configure_for_performance(dataset: tf.data.Dataset, buffer_size: int, batch_size: int) -> tf.data.Dataset:
+    dataset = dataset.cache()
+    dataset = dataset.shuffle(buffer_size)
+    dataset = dataset.batch(batch_size)
+    dataset = dataset.prefetch(buffer_size=tf.data.AUTOTUNE)
+    return dataset
+
+
 class ClassificationDatasetBuilder:
     def __init__(self, data_directory: str, validation_percentage: float = 0.2, reduce_percentage: float = 0.0):
         data_path = pathlib.Path(data_directory)
@@ -71,17 +79,9 @@ class ClassificationDatasetBuilder:
         image = decode_image(image_data)
         return image, label
 
-    @staticmethod
-    def __configure_for_performance(dataset: tf.data.Dataset, buffer_size: int, batch_size: int) -> tf.data.Dataset:
-        dataset = dataset.cache()
-        dataset = dataset.shuffle(buffer_size)
-        dataset = dataset.batch(batch_size)
-        dataset = dataset.prefetch(buffer_size=tf.data.AUTOTUNE)
-        return dataset
-
     def configure_datasets_for_performance(self, buffer_size: int = 1000, batch_size: int = 32):
-        self.__train_dataset = self.__configure_for_performance(self.__train_dataset, buffer_size, batch_size)
-        self.__validation_dataset = self.__configure_for_performance(self.__validation_dataset, buffer_size, batch_size)
+        self.__train_dataset = configure_for_performance(self.__train_dataset, buffer_size, batch_size)
+        self.__validation_dataset = configure_for_performance(self.__validation_dataset, buffer_size, batch_size)
 
 
 class SegmentationDatasetBuilder:
@@ -150,3 +150,7 @@ class SegmentationDatasetBuilder:
     def number_of_samples(self) -> int:
         return tf.data.experimental.cardinality(self.__train_dataset).numpy() + \
                tf.data.experimental.cardinality(self.__validation_dataset).numpy()
+
+    def configure_dataset_for_performance(self, buffer_size: int = 1000, batch_size: int = 10):
+        self.__train_dataset = configure_for_performance(self.__train_dataset, buffer_size, batch_size)
+        self.__validation_dataset = configure_for_performance(self.__validation_dataset, buffer_size, batch_size)
