@@ -14,7 +14,7 @@ train_batches = builder.train_dataset
 validation_batches = builder.validation_dataset
 
 model = Segmentation(image_size=(512, 1024)).model
-model.compile(optimizer="adam", loss=keras.losses.SparseCategoricalCrossentropy(), metrics=['accuracy'])
+model.compile(optimizer='sgd', loss=keras.losses.SparseCategoricalCrossentropy(), metrics=['accuracy'])
 
 callbacks = [
     keras.callbacks.ModelCheckpoint("basketball_segmentation.h5", save_best_only=True)
