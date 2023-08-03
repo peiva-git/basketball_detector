@@ -129,6 +129,7 @@ class SegmentationDatasetBuilder:
     def __get_frame_from_path(filepath: tf.Tensor):
         image_data = tf.io.read_file(filepath)
         image = decode_image(image_data, image_width=1024, image_height=512)
+        image = tf.cast(image, tf.float32) / 255.0
         return image
 
     @staticmethod
