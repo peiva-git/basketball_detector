@@ -106,8 +106,8 @@ class SegmentationDatasetBuilder:
         if len(input_image_paths) != len(mask_image_paths):
             raise ValueError('The number of frames is different than the number of ground truth masks, aborting')
 
-        input_image_paths.sort()
-        mask_image_paths.sort(key=lambda file_path: file_path.split('_')[-1].split('.')[-2])
+        input_image_paths.sort(key=lambda file_path: int(file_path.split('_')[-1].split('.')[-2]))
+        mask_image_paths.sort(key=lambda file_path: int(file_path.split('_')[-1].split('.')[-2]))
         samples_dataset = tf.data.Dataset.from_tensor_slices(tf.constant(input_image_paths))
         masks_dataset = tf.data.Dataset.from_tensor_slices(tf.constant(mask_image_paths))
 
