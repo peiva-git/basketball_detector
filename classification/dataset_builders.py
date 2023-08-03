@@ -120,7 +120,6 @@ class SegmentationDatasetBuilder:
             num_parallel_calls=tf.data.AUTOTUNE
         )
         dataset = tf.data.Dataset.zip((samples_dataset, masks_dataset))
-        dataset.shuffle(len(mask_image_paths), reshuffle_each_iteration=False)
         self.__train_dataset = dataset.skip(number_of_validation_samples)
         self.__validation_dataset = dataset.take(number_of_validation_samples)
         print(tf.data.experimental.cardinality(self.__train_dataset).numpy(), 'frames in training dataset')
@@ -151,6 +150,6 @@ class SegmentationDatasetBuilder:
         return tf.data.experimental.cardinality(self.__train_dataset).numpy() + \
                tf.data.experimental.cardinality(self.__validation_dataset).numpy()
 
-    def configure_datasets_for_performance(self, buffer_size: int = tf.data.AUTOTUNE, batch_size: int = 10):
-        self.__train_dataset = configure_for_performance(self.__train_dataset, buffer_size, batch_size)
-        self.__validation_dataset = configure_for_performance(self.__validation_dataset, buffer_size, batch_size)
+    def configure_datasets_for_performance(self, shuffle_buffer_size: int = 1000, input_batch_size: int = 10):
+        self.__train_dataset = configure_for_performance(self.__train_dataset, shuffle_buffer_size, input_batch_size)
+        self.__validation_dataset = self.__validation_dataset.batch(input_batch_size)

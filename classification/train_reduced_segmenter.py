@@ -9,7 +9,7 @@ builder = SegmentationDatasetBuilder(
     data_directory='/mnt/SharedData2/tesi/dataset/testing-dataset/frames/',
     masks_directory='/mnt/SharedData2/tesi/dataset/testing-dataset/masks/'
 )
-builder.configure_datasets_for_performance(buffer_size=1000, batch_size=10)
+builder.configure_datasets_for_performance(shuffle_buffer_size=1000, input_batch_size=10)
 train_batches = builder.train_dataset
 validation_batches = builder.validation_dataset
 
