@@ -4,7 +4,7 @@ import os.path
 import tensorflow as tf
 
 from .dataset_builders import ClassificationDatasetBuilder
-from .models.models import Classifier
+from .models.models import SimpleClassifier
 
 
 def train_command(debug_enabled: bool = False):
@@ -39,9 +39,9 @@ def train_command(debug_enabled: bool = False):
         validation_dataset = validation_dataset.take(int(len(validation_dataset) * 0.05))
 
     if args.model == 'simple-classifier':
-        model = Classifier(model_name=args.model).model
+        model = SimpleClassifier(model_name=args.model).model
     else:
-        model = Classifier(model_name='resnet-classifier').model
+        model = SimpleClassifier(model_name='resnet-classifier').model
 
     model.compile(
         optimizer='adam',
