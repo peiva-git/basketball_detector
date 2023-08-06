@@ -1,3 +1,4 @@
+import glob
 import pathlib
 import os.path
 from typing import Any
@@ -20,28 +21,18 @@ def configure_for_performance(dataset: tf.data.Dataset, buffer_size: int, batch_
 
 
 class ClassificationDatasetBuilder:
-    def __init__(self, data_directory: str, validation_percentage: float = 0.2, reduce_percentage: float = 0.0):
+    def __init__(self, data_directory: str, validation_percentage: float = 0.2):
         data_path = pathlib.Path(data_directory)
-        self.__image_count = len(list(data_path.glob('*/*/*/*.png')))
-        list_dataset = tf.data.Dataset.list_files(str(data_path / '*/*/*/*'), shuffle=False)
-        list_dataset = list_dataset.shuffle(self.__image_count, reshuffle_each_iteration=False)
+        all_images_dataset = tf.data.Dataset.list_files(str(data_path / '*/*/*/*'), seed=2023)
+        self.__image_count = tf.data.experimental.cardinality(all_images_dataset).numpy()
         self.__class_names = np.unique(sorted([item.name for item in data_path.glob('*/*/*')]))
         print('Found the following classes: ', self.__class_names)
 
         validation_size = int(self.__image_count * validation_percentage)
-        self.__train_dataset = list_dataset.skip(validation_size)
-        self.__validation_dataset = list_dataset.take(validation_size)
+        self.__train_dataset = all_images_dataset.skip(validation_size)
+        self.__validation_dataset = all_images_dataset.take(validation_size)
         print(tf.data.experimental.cardinality(self.__train_dataset).numpy(), 'images in training dataset')
         print(tf.data.experimental.cardinality(self.__validation_dataset).numpy(), 'images in validation dataset')
-
-        if reduce_percentage != 0.0:
-            print('Reducing both datasets by ', reduce_percentage * 100, '%...')
-            self.__train_dataset = self.__train_dataset \
-                .skip(int(tf.data.experimental.cardinality(self.__train_dataset).numpy() * reduce_percentage))
-            self.__validation_dataset = self.__validation_dataset \
-                .skip(int(tf.data.experimental.cardinality(self.__validation_dataset).numpy() * reduce_percentage))
-            print(tf.data.experimental.cardinality(self.__train_dataset).numpy(), 'images in training dataset')
-            print(tf.data.experimental.cardinality(self.__validation_dataset).numpy(), 'images in validation dataset')
 
         self.__train_dataset = self.__train_dataset.map(
             self.__get_image_label_pair_from_path,
@@ -79,9 +70,9 @@ class ClassificationDatasetBuilder:
         image = decode_image(image_data)
         return image, label
 
-    def configure_datasets_for_performance(self, buffer_size: int = tf.data.AUTOTUNE, batch_size: int = 32):
-        self.__train_dataset = configure_for_performance(self.__train_dataset, buffer_size, batch_size)
-        self.__validation_dataset = configure_for_performance(self.__validation_dataset, buffer_size, batch_size)
+    def configure_datasets_for_performance(self, shuffle_buffer_size: int = 10000, input_batch_size: int = 32):
+        self.__train_dataset = configure_for_performance(self.__train_dataset, shuffle_buffer_size, input_batch_size)
+        self.__validation_dataset = self.__validation_dataset.batch(input_batch_size)
 
 
 class SegmentationDatasetBuilder:
