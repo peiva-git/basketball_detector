@@ -78,27 +78,25 @@ class ClassificationDatasetBuilder:
 class SegmentationDatasetBuilder:
     def __init__(self,
                  data_directory: str,
-                 masks_directory: str,
                  validation_percentage: float = 0.2):
         input_image_paths = [
-            os.path.join(data_directory, filename)
-            for filename in os.listdir(data_directory)
-            if filename.endswith('.png')
+            input_image_path
+            for input_image_path in glob.iglob(data_directory + '*/*/frames/*.png')
         ]
         mask_image_paths = [
-            os.path.join(masks_directory, filename)
-            for filename in os.listdir(masks_directory)
-            if filename.endswith('.png')
+            mask_image_path
+            for mask_image_path in glob.iglob(data_directory + '*/*/masks/*.png')
         ]
-        number_of_validation_samples = int(len(input_image_paths) * validation_percentage)
+        self.__image_count = len(input_image_paths)
+        validation_size = int(self.__image_count * validation_percentage)
         print(len(input_image_paths), 'frames, with', len(mask_image_paths), 'corresponding ground truth masks')
-        print(number_of_validation_samples, 'samples will be set aside as validation data')
+        print(validation_size, 'samples will be set aside as validation data')
 
         if len(input_image_paths) != len(mask_image_paths):
             raise ValueError('The number of frames is different than the number of ground truth masks, aborting')
 
-        input_image_paths.sort(key=lambda file_path: int(file_path.split('_')[-1].split('.')[-2]))
-        mask_image_paths.sort(key=lambda file_path: int(file_path.split('_')[-1].split('.')[-2]))
+        input_image_paths.sort(key=lambda file_path: os.path.split(file_path)[-3:])
+        mask_image_paths.sort(key=lambda file_path: os.path.split(file_path)[-3:])
         samples_dataset = tf.data.Dataset.from_tensor_slices(tf.constant(input_image_paths))
         masks_dataset = tf.data.Dataset.from_tensor_slices(tf.constant(mask_image_paths))
 
@@ -111,8 +109,8 @@ class SegmentationDatasetBuilder:
             num_parallel_calls=tf.data.AUTOTUNE
         )
         dataset = tf.data.Dataset.zip((samples_dataset, masks_dataset))
-        self.__train_dataset = dataset.skip(number_of_validation_samples)
-        self.__validation_dataset = dataset.take(number_of_validation_samples)
+        self.__train_dataset = dataset.skip(validation_size)
+        self.__validation_dataset = dataset.take(validation_size)
         print(tf.data.experimental.cardinality(self.__train_dataset).numpy(), 'frames in training dataset')
         print(tf.data.experimental.cardinality(self.__validation_dataset).numpy(), 'frames in validation dataset')
 
