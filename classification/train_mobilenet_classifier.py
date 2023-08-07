@@ -13,7 +13,7 @@ if __name__ == '__main__':
     model = MobileNet()
     model.model.compile(
         optimizer='adam',
-        loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+        loss=tf.keras.losses.SparseCategoricalCrossentropy(),
         metrics=tf.keras.metrics.Accuracy()
     )
 
