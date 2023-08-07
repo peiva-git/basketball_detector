@@ -6,7 +6,7 @@ from classification.models.models import MobileNet, get_model_callbacks
 import tensorflow as tf
 
 if __name__ == '__main__':
-    builder = classification.ClassificationDatasetBuilder('~/classification_dataset/pallacanestro_trieste')
+    builder = classification.ClassificationDatasetBuilder('/home/ubuntu/classification_dataset/pallacanestro_trieste')
     builder.configure_datasets_for_performance(shuffle_buffer_size=500000)
     train_dataset, val_dataset = builder.train_dataset, builder.validation_dataset
 
