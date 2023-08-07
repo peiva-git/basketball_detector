@@ -6,7 +6,7 @@ from classification.dataset_builders import ClassificationDatasetBuilder, Segmen
 
 class ClassificationDatasetBuilderTestCase(unittest.TestCase):
     __NUMBER_OF_SAMPLE_IMAGES = 18
-    __builder = ClassificationDatasetBuilder('../assets/test-sample-data-classification-classification',
+    __builder = ClassificationDatasetBuilder('../assets/test-sample-data-classification',
                                              validation_percentage=0.5)
 
     def test_image_count(self):
@@ -31,15 +31,15 @@ class ClassificationDatasetBuilderTestCase(unittest.TestCase):
 
 class SegmentationDatasetBuilderTestCase(unittest.TestCase):
     __NUMBER_OF_SAMPLES = 36
-    __BUILDER = SegmentationDatasetBuilder('assets/test-sample-data-segmentation/', validation_percentage=0.5)
+    __BUILDER = SegmentationDatasetBuilder('../assets/test-sample-data-segmentation/', validation_percentage=0.5)
 
     def test_samples_count(self):
         self.assertEqual(self.__BUILDER.number_of_samples, self.__NUMBER_OF_SAMPLES,
                          'incorrect number of samples detected')
 
     def test_validation_percentage(self):
-        self.assertEqual(self.__BUILDER.train_dataset.cardinality(), self.__NUMBER_OF_SAMPLES / 2,
+        self.assertEqual(self.__BUILDER.train_dataset.cardinality().numpy(), self.__NUMBER_OF_SAMPLES / 2,
                          'train dataset was not split correctly')
-        self.assertEqual(self.__BUILDER.validation_dataset.cardinality(), self.__NUMBER_OF_SAMPLES / 2,
+        self.assertEqual(self.__BUILDER.validation_dataset.cardinality().numpy(), self.__NUMBER_OF_SAMPLES / 2,
                          'validation dataset was not split correctly')
 
