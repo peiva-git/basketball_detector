@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 
-from classification.dataset_builders import ClassificationDatasetBuilder
+from classification.dataset_builders import ClassificationDatasetBuilder, SegmentationDatasetBuilder
 
 
 class ClassificationDatasetBuilderTestCase(unittest.TestCase):
@@ -27,3 +27,19 @@ class ClassificationDatasetBuilderTestCase(unittest.TestCase):
                       'invalid class label in train dataset')
         self.assertIn(self.__builder.validation_dataset.take(1).get_single_element()[1].numpy(), [0, 1],
                       'invalid class label in validation dataset')
+
+
+class SegmentationDatasetBuilderTestCase(unittest.TestCase):
+    __NUMBER_OF_SAMPLES = 36
+    __BUILDER = SegmentationDatasetBuilder('assets/test-sample-data-segmentation/', validation_percentage=0.5)
+
+    def test_samples_count(self):
+        self.assertEqual(self.__BUILDER.number_of_samples, self.__NUMBER_OF_SAMPLES,
+                         'incorrect number of samples detected')
+
+    def test_validation_percentage(self):
+        self.assertEqual(self.__BUILDER.train_dataset.cardinality(), self.__NUMBER_OF_SAMPLES / 2,
+                         'train dataset was not split correctly')
+        self.assertEqual(self.__BUILDER.validation_dataset.cardinality(), self.__NUMBER_OF_SAMPLES / 2,
+                         'validation dataset was not split correctly')
+

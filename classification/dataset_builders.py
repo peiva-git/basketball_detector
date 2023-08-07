@@ -95,20 +95,42 @@ class SegmentationDatasetBuilder:
         if len(input_image_paths) != len(mask_image_paths):
             raise ValueError('The number of frames is different than the number of ground truth masks, aborting')
 
-        input_image_paths.sort(key=lambda file_path: os.path.split(file_path)[-3:])
-        mask_image_paths.sort(key=lambda file_path: os.path.split(file_path)[-3:])
-        samples_dataset = tf.data.Dataset.from_tensor_slices(tf.constant(input_image_paths))
-        masks_dataset = tf.data.Dataset.from_tensor_slices(tf.constant(mask_image_paths))
+        samples_datasets = []
+        masks_datasets = []
+        for match_path in glob.glob(data_directory + '*/*/'):
+            match_input_image_paths = [
+                match_input_image_path
+                for match_input_image_path in glob.iglob(match_path + 'frames/*.png')
+            ]
+            match_mask_image_paths = [
+                match_mask_image_path
+                for match_mask_image_path in glob.iglob(match_path + 'masks/*.png')
+            ]
+            match_input_image_paths.sort(key=lambda file_path: int(file_path.split('_')[-1].split('.')[-2]))
+            match_mask_image_paths.sort(key=lambda file_path: int(file_path.split('_')[-1].split('.')[-2]))
 
-        samples_dataset = samples_dataset.map(
+            samples_dataset = tf.data.Dataset.from_tensor_slices(tf.constant(match_mask_image_paths))
+            masks_dataset = tf.data.Dataset.from_tensor_slices(tf.constant(match_mask_image_paths))
+            samples_datasets.append(samples_dataset)
+            masks_datasets.append(masks_dataset)
+
+        samples = samples_datasets[0]
+        for dataset in samples_datasets[1:]:
+            samples = samples.concatenate(dataset)
+
+        masks = masks_datasets[0]
+        for dataset in masks_datasets[1:]:
+            masks = masks.concatenate(dataset)
+
+        samples = samples.map(
             self.__get_frame_from_path,
             num_parallel_calls=tf.data.AUTOTUNE
         )
-        masks_dataset = masks_dataset.map(
+        masks = masks.map(
             self.__get_mask_from_path,
             num_parallel_calls=tf.data.AUTOTUNE
         )
-        dataset = tf.data.Dataset.zip((samples_dataset, masks_dataset))
+        dataset = tf.data.Dataset.zip((samples, masks))
         self.__train_dataset = dataset.skip(validation_size)
         self.__validation_dataset = dataset.take(validation_size)
         print(tf.data.experimental.cardinality(self.__train_dataset).numpy(), 'frames in training dataset')
