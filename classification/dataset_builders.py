@@ -35,11 +35,11 @@ class ClassificationDatasetBuilder:
         print(tf.data.experimental.cardinality(self.__validation_dataset).numpy(), 'images in validation dataset')
 
         self.__train_dataset = self.__train_dataset.map(
-            self.get_image_label_pair_from_path,
+            self.__get_image_label_pair_from_path,
             num_parallel_calls=tf.data.AUTOTUNE
         )
         self.__validation_dataset = self.__validation_dataset.map(
-            self.get_image_label_pair_from_path,
+            self.__get_image_label_pair_from_path,
             num_parallel_calls=tf.data.AUTOTUNE
         )
 
@@ -64,7 +64,7 @@ class ClassificationDatasetBuilder:
         one_hot = parts[-2] == self.__class_names
         return tf.argmax(one_hot)
 
-    def get_image_label_pair_from_path(self, file_path: tf.Tensor) -> (Any, int):
+    def __get_image_label_pair_from_path(self, file_path: tf.Tensor) -> (Any, int):
         label = self.__get_label(file_path)
         image_data = tf.io.read_file(file_path)
         image = decode_image(image_data)
@@ -123,11 +123,11 @@ class SegmentationDatasetBuilder:
             masks = masks.concatenate(dataset)
 
         samples = samples.map(
-            self.get_frame_from_path,
+            self.__get_frame_from_path,
             num_parallel_calls=tf.data.AUTOTUNE
         )
         masks = masks.map(
-            self.get_mask_from_path,
+            self.__get_mask_from_path,
             num_parallel_calls=tf.data.AUTOTUNE
         )
         dataset = tf.data.Dataset.zip((samples, masks))
@@ -137,14 +137,14 @@ class SegmentationDatasetBuilder:
         print(tf.data.experimental.cardinality(self.__validation_dataset).numpy(), 'frames in validation dataset')
 
     @staticmethod
-    def get_frame_from_path(filepath: tf.Tensor):
+    def __get_frame_from_path(filepath: tf.Tensor):
         image_data = tf.io.read_file(filepath)
         image = decode_image(image_data, image_width=1024, image_height=512)
         image = tf.cast(image, tf.float32) / 255.0
         return image
 
     @staticmethod
-    def get_mask_from_path(filepath: tf.Tensor):
+    def __get_mask_from_path(filepath: tf.Tensor):
         image_data = tf.io.read_file(filepath)
         image = decode_image(image_data, image_width=1024, image_height=512, channels=1)
         return image
