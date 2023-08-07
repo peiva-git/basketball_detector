@@ -5,10 +5,10 @@ from keras_segmentation.models.pspnet import pspnet_50
 
 
 def get_model_callbacks(
-        self,
+        model_name: str,
         early_stop_patience: int,
         reduce_lr_patience: int) -> [tf.keras.callbacks.Callback]:
-    model_dir_path = os.path.join('out', 'training-callback-results', self.__model_name)
+    model_dir_path = os.path.join('out', 'training-callback-results', model_name)
     return [
         tf.keras.callbacks.ModelCheckpoint(
             filepath=os.path.join(model_dir_path, 'checkpoint'),
