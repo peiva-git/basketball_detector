@@ -1,6 +1,5 @@
 import os
 import tensorflow as tf
-import keras_cv
 from keras_segmentation.models.pspnet import pspnet_50
 
 
@@ -70,9 +69,10 @@ class ResNet152V2:
                  number_of_classes: int = 2,
                  image_width: int = 50,
                  image_height: int = 50):
-        self.__model = keras_cv.models.ImageClassifier(
-            backbone=keras_cv.models.ResNet152V2Backbone(input_shape=(image_height, image_width, 3)),
-            num_classes=number_of_classes
+        self.__model = tf.keras.applications.ResNet152V2(
+            input_shape=(image_height, image_width, 3),
+            weights=None,
+            classes=number_of_classes
         )
         self.__model_name = 'resnet152v2'
 
@@ -124,7 +124,6 @@ class Segmentation:
     def __init__(self, output_channels: int = 2, image_size: (int, int) = (1080, 1920)):
         self.__model = pspnet_50(n_classes=output_channels, input_height=image_size[0], input_width=image_size[1])
         self.__model_name = 'pspnet'
-        self.__model.summary()
 
     @property
     def model(self):
