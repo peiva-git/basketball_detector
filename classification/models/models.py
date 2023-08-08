@@ -29,6 +29,7 @@ def get_model_callbacks(
         ),
         tf.keras.callbacks.ReduceLROnPlateau(
             monitor='val_loss',
+            factor=0.5,
             patience=reduce_lr_patience,
             min_lr=0.001
         ),
