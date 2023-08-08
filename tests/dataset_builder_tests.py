@@ -5,27 +5,26 @@ from classification.dataset_builders import ClassificationDatasetBuilder, Segmen
 
 
 class ClassificationDatasetBuilderTestCase(unittest.TestCase):
-    __NUMBER_OF_SAMPLE_IMAGES = 18
-    __builder = ClassificationDatasetBuilder('../assets/test-sample-data-classification',
-                                             validation_percentage=0.5)
+    __NUMBER_OF_SAMPLES = 18
+    __BUILDER = ClassificationDatasetBuilder('../assets/test-sample-data-classification', validation_percentage=0.5)
 
     def test_image_count(self):
-        self.assertEqual(self.__builder.number_of_images, self.__NUMBER_OF_SAMPLE_IMAGES,
+        self.assertEqual(self.__BUILDER.number_of_images, self.__NUMBER_OF_SAMPLES,
                          'incorrect number of images detected')
 
     def test_class_names(self):
-        self.assertTrue(np.all(self.__builder.class_names == ['ball', 'no_ball']), 'invalid object classes detected')
+        self.assertTrue(np.all(self.__BUILDER.class_names == ['ball', 'no_ball']), 'invalid object classes detected')
 
     def test_validation_percentage(self):
-        self.assertEqual(len(self.__builder.train_dataset), self.__NUMBER_OF_SAMPLE_IMAGES / 2,
+        self.assertEqual(len(self.__BUILDER.train_dataset), self.__NUMBER_OF_SAMPLES / 2,
                          'train dataset was not split correctly')
-        self.assertEqual(len(self.__builder.validation_dataset), self.__NUMBER_OF_SAMPLE_IMAGES / 2,
+        self.assertEqual(len(self.__BUILDER.validation_dataset), self.__NUMBER_OF_SAMPLES / 2,
                          'validation dataset was not split correctly')
 
     def test_dataset_labels(self):
-        self.assertIn(self.__builder.train_dataset.take(1).get_single_element()[1].numpy(), [0, 1],
+        self.assertIn(self.__BUILDER.train_dataset.take(1).get_single_element()[1].numpy(), [0, 1],
                       'invalid class label in train dataset')
-        self.assertIn(self.__builder.validation_dataset.take(1).get_single_element()[1].numpy(), [0, 1],
+        self.assertIn(self.__BUILDER.validation_dataset.take(1).get_single_element()[1].numpy(), [0, 1],
                       'invalid class label in validation dataset')
 
 
