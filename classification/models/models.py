@@ -20,7 +20,7 @@ def get_model_callbacks(
         tf.keras.callbacks.BackupAndRestore(backup_dir=os.path.join(model_dir_path, 'backup')),
         tf.keras.callbacks.EarlyStopping(
             monitor='loss',
-            min_delta=0.01,
+            min_delta=0.001,
             patience=early_stop_patience,
             start_from_epoch=10
         ),
