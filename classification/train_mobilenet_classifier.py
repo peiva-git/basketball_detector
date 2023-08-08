@@ -25,4 +25,3 @@ if __name__ == '__main__':
     )
     model.model.save(filepath=os.path.join('out', 'models', 'TF', model.model_name), save_format='tf')
     model.model.save(filepath=os.path.join('out', 'models', 'HDF5', model.model_name + '.h5'), save_format='h5')
-
