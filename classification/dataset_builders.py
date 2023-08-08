@@ -79,13 +79,14 @@ class SegmentationDatasetBuilder:
     def __init__(self,
                  data_directory: str,
                  validation_percentage: float = 0.2):
+        data_path = pathlib.Path(data_directory)
         input_image_paths = [
             input_image_path
-            for input_image_path in glob.iglob(data_directory + '*/*/frames/*.png')
+            for input_image_path in glob.iglob(str(data_path / '*/*/frames/*.png'))
         ]
         mask_image_paths = [
             mask_image_path
-            for mask_image_path in glob.iglob(data_directory + '*/*/masks/*.png')
+            for mask_image_path in glob.iglob(str(data_path / '*/*/masks/*.png'))
         ]
         self.__image_count = len(input_image_paths)
         validation_size = int(self.__image_count * validation_percentage)
@@ -97,14 +98,14 @@ class SegmentationDatasetBuilder:
 
         samples_datasets = []
         masks_datasets = []
-        for match_path in glob.glob(data_directory + '*/*/'):
+        for game_directory_path in glob.glob(str(data_path / '*/*/')):
             match_input_image_paths = [
                 match_input_image_path
-                for match_input_image_path in glob.iglob(match_path + 'frames/*.png')
+                for match_input_image_path in glob.iglob(game_directory_path + 'frames/*.png')
             ]
             match_mask_image_paths = [
                 match_mask_image_path
-                for match_mask_image_path in glob.iglob(match_path + 'masks/*.png')
+                for match_mask_image_path in glob.iglob(game_directory_path + 'masks/*.png')
             ]
             match_input_image_paths.sort(key=lambda file_path: int(file_path.split('_')[-1].split('.')[-2]))
             match_mask_image_paths.sort(key=lambda file_path: int(file_path.split('_')[-1].split('.')[-2]))
