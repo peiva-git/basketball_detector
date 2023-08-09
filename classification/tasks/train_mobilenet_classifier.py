@@ -23,6 +23,6 @@ if __name__ == '__main__':
         epochs=100,
         callbacks=get_model_callbacks(model.model_name, early_stop_patience=10, reduce_lr_patience=5)
     )
-    model.model.save(filepath=os.path.join('out', '../models', 'TF', model.model_name), save_format='tf')
-    model.model.save(filepath=os.path.join('out', '../models', 'HDF5', model.model_name + '.h5'), save_format='h5')
-    model.model.save(filepath=os.path.join('out', '../models', 'Keras_v3', model.model_name + '.keras'))
+    model.model.save(filepath=os.path.join('out', 'models', 'TF', model.model_name), save_format='tf')
+    model.model.save(filepath=os.path.join('out', 'models', 'HDF5', model.model_name + '.h5'), save_format='h5')
+    model.model.save(filepath=os.path.join('out', 'models', 'Keras_v3', model.model_name + '.keras'))
