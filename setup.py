@@ -24,10 +24,11 @@ setup(
 )
 
 install_requires = [
-    'python_version>=3.8',
+    'python_version==3.10',
     'keras-cv==2.12.*',
     'tensorflow==2.12.*',
-    'numpy>=1.24.3',
+    'numpy==1.24.*',
     'keras-cv==0.6.*',
-    'keras-core'
+    'keras-core',
+    'opencv-python==4.8.*'
 ]
