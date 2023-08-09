@@ -1,9 +1,10 @@
 import os
 
-import keras.callbacks, keras.losses
+import keras.callbacks
+import keras.losses
 
 from classification.dataset_builders import SegmentationDatasetBuilder
-from classification.models.classification import Segmentation
+from classification.models.segmentation import Segmentation
 
 builder = SegmentationDatasetBuilder(
     data_directory='/mnt/SharedData2/tesi/dataset/testing-dataset/frames/',
@@ -23,5 +24,5 @@ callbacks = [
 # Train the model, doing validation at the end of each epoch.
 epochs = 10
 model.fit(train_batches, epochs=epochs, validation_data=validation_batches, callbacks=callbacks)
-model.save(filepath=os.path.join('out', 'models', 'TF', 'segmenter'), save_format='tf')
-model.save(filepath=os.path.join('out', 'models', 'HDF5', 'segmenter' + '.h5'), save_format='h5')
+model.save(filepath=os.path.join('out', '../models', 'TF', 'segmenter'), save_format='tf')
+model.save(filepath=os.path.join('out', '../models', 'HDF5', 'segmenter' + '.h5'), save_format='h5')
