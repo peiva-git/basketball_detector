@@ -1,7 +1,7 @@
 import os
 
 import classification
-from classification.models.models import MobileNet, get_model_callbacks
+from classification.models.classification import MobileNet, get_model_callbacks
 
 import tensorflow as tf
 

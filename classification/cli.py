@@ -4,7 +4,7 @@ import os.path
 import tensorflow as tf
 
 from .dataset_builders import ClassificationDatasetBuilder
-from .models.models import SimpleClassifier
+from .models.classification import SimpleClassifier
 
 
 def train_command(debug_enabled: bool = False):
