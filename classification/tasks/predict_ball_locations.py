@@ -21,9 +21,9 @@ def divide_frame_into_patches(frame, stride: int = 5, window_size: int = 50) -> 
                          position_width:position_width + window_size
                             ]
             patches.append((position_height, position_width, current_patch))
-            position_width = position_width + stride
+            position_width += stride
         position_width = 0
-        position_height = position_height + stride
+        position_height += stride
 
     return patches
 
