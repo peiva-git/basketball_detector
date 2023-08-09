@@ -110,7 +110,7 @@ class SegmentationDatasetBuilder:
             match_input_image_paths.sort(key=lambda file_path: int(file_path.split('_')[-1].split('.')[-2]))
             match_mask_image_paths.sort(key=lambda file_path: int(file_path.split('_')[-1].split('.')[-2]))
 
-            samples_dataset = tf.data.Dataset.from_tensor_slices(tf.constant(match_mask_image_paths))
+            samples_dataset = tf.data.Dataset.from_tensor_slices(tf.constant(match_input_image_paths))
             masks_dataset = tf.data.Dataset.from_tensor_slices(tf.constant(match_mask_image_paths))
             samples_datasets.append(samples_dataset)
             masks_datasets.append(masks_dataset)

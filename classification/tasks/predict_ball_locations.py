@@ -1,9 +1,10 @@
 from typing import Any
 
 import cv2 as cv
+import tensorflow as tf
 
 
-def divide_frame_into_patches(frame, stride: int = 5, window_size: int = 50) -> [(int, int, Any)]:
+def divide_frame_into_patches(frame, stride: int = 5, window_size: int = 50) -> [(int, int, cv.UMat)]:
     # could try out with a stride of 10 and a window_size of 100 as well
     height, width, channels = frame.shape
     position_height = 0
@@ -20,7 +21,8 @@ def divide_frame_into_patches(frame, stride: int = 5, window_size: int = 50) -> 
                          position_height:position_height + window_size,
                          position_width:position_width + window_size
                             ]
-            patches.append((position_height, position_width, current_patch))
+            current_patch_rgb = cv.cvtColor(current_patch, cv.COLOR_BGR2RGB)
+            patches.append((position_height, position_width, current_patch_rgb))
             position_width += stride
         position_width = 0
         position_height += stride
@@ -49,9 +51,6 @@ if __name__ == '__main__':
     image = cv.imread('/mnt/DATA/tesi/dataset/dataset_youtube/pallacanestro_trieste/stagione_2019-20_legabasket'
                       '/pallacanestro_trieste-virtus_roma/frame_00092.png')
     image_patches = divide_frame_into_patches(image, stride=5, window_size=50)
-    count = 1
-    for position_y, position_x, patch in image_patches:
-        cv.imwrite('/mnt/DATA/tesi/dataset/dataset_youtube/pallacanestro_trieste/stagione_2019-20_legabasket'
-                   f'/pallacanestro_trieste-virtus_roma/test/patch_x{position_x}_y{position_y}.png', patch)
-        print(f'Written image {count} out of {len(image_patches)}')
-        count += 1
+    patches_only = [element[2] for element in image_patches]
+    patches_dataset = tf.data.Dataset.from_tensor_slices(patches_only)
+    patches_dataset = patches_dataset.batch(batch_size=64)
