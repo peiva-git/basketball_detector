@@ -48,7 +48,7 @@ if __name__ == '__main__':
     # cv.destroyAllWindows()
     image = cv.imread('/mnt/DATA/tesi/dataset/dataset_youtube/pallacanestro_trieste/stagione_2019-20_legabasket'
                       '/pallacanestro_trieste-virtus_roma/frame_00092.png')
-    image_patches = divide_frame_into_patches(image, stride=5, window_size=50)
-    patches_only = [element[2] for element in image_patches]
+    patches_with_positions = divide_frame_into_patches(image, stride=5, window_size=50)
+    patches_only = [element[2] for element in patches_with_positions]
     patches_dataset = tf.data.Dataset.from_tensor_slices(patches_only)
     patches_dataset = patches_dataset.batch(batch_size=64)
