@@ -1,3 +1,2 @@
-from .dataset_builders import ClassificationDatasetBuilder
-from .models.classification import SimpleClassifier
+from .dataset_builders import ClassificationDatasetBuilder, SegmentationDatasetBuilder
 from .cli import train_command

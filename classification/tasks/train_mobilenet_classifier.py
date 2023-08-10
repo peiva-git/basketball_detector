@@ -1,12 +1,12 @@
 import os
 
-import classification
 from classification.models.classification import MobileNet, get_model_callbacks
+from classification.dataset_builders import ClassificationDatasetBuilder
 
 import tensorflow as tf
 
 if __name__ == '__main__':
-    builder = classification.ClassificationDatasetBuilder('/home/ubuntu/classification_dataset/pallacanestro_trieste')
+    builder = ClassificationDatasetBuilder('/mnt/DATA/tesi/dataset/dataset_classification/pallacanestro_trieste/')
     builder.configure_datasets_for_performance(shuffle_buffer_size=20000)
     train_dataset, val_dataset = builder.train_dataset, builder.validation_dataset
 
