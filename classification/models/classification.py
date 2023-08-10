@@ -43,7 +43,7 @@ class SimpleClassifier:
                  image_width: int = 50,
                  image_height: int = 50):
         self.__model = tf.keras.Sequential([
-            tf.keras.layers.Rescaling(1. / 255, input_shape=(image_width, image_height, 3)),
+            tf.keras.layers.Rescaling(1. / 255, input_shape=(image_height, image_width, 3)),
             tf.keras.layers.Conv2D(16, 3, padding='same', activation='relu'),
             tf.keras.layers.MaxPooling2D(),
             tf.keras.layers.Conv2D(32, 3, padding='same', activation='relu'),
