@@ -1,3 +1,5 @@
+import pathlib
+
 import cv2 as cv
 import tensorflow as tf
 
@@ -26,6 +28,17 @@ def divide_frame_into_patches(frame, stride: int = 5, window_size: int = 50) -> 
         position_height += stride
 
     return patches
+
+
+def write_frame_patches_to_disk(frame, target_directory: str, stride: int = 5, window_size: int = 50):
+    target = pathlib.Path(target_directory)
+    count = 1
+    image_patches = divide_frame_into_patches(frame, stride, window_size)
+    for position_y, position_x, patch in image_patches:
+        patch = cv.cvtColor(patch, cv.COLOR_RGB2BGR)
+        cv.imwrite(str(target / f'patch_x{position_x}_y{position_y}.png'), patch)
+        print(f'Written image {count} out of {len(image_patches)}')
+        count += 1
 
 
 if __name__ == '__main__':
