@@ -82,7 +82,7 @@ if __name__ == '__main__':
     print('Drawing detection rectangles on the frame...')
     for index, (height_coordinate, width_coordinate, image_patch) in enumerate(patches_with_positions):
         prediction = predictions[index]
-        if prediction[0] > prediction[1] and prediction[0] > 0.65:
+        if prediction[0] >= 0.9:
             # more likely that the patch is a ball
             print(f'Detected ball candidate at x: {width_coordinate}, y: {height_coordinate}')
             print(f'Ball probability: {prediction[0]}')
