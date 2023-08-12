@@ -1,6 +1,6 @@
 import unittest
 
-from classification import SimpleClassifier
+from classification.models.classification import SimpleClassifier
 
 
 class ModelsTestCase(unittest.TestCase):
