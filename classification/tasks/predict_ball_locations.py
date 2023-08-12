@@ -69,19 +69,24 @@ if __name__ == '__main__':
     # cv.destroyAllWindows()
     image = cv.imread('/mnt/DATA/tesi/dataset/dataset_youtube/pallacanestro_trieste/stagione_2019-20_legabasket'
                       '/pallacanestro_trieste-virtus_roma/frame_00092.png')
+    print('Frame read, dividing into patches...')
     patches_with_positions = divide_frame_into_patches(image, stride=5, window_size=50)
     patches_only = [element[2] for element in patches_with_positions]
+    print('Organizing patches into a tensorflow dataset...')
     patches_dataset = tf.data.Dataset.from_tensor_slices(patches_only)
-    patches_dataset = patches_dataset.cache()
     patches_dataset = patches_dataset.batch(batch_size=64)
-    patches_dataset = patches_dataset.prefetch(buffer_size=tf.data.AUTOTUNE)
+    patches_dataset = patches_dataset.prefetch(tf.data.AUTOTUNE)
     model = tf.keras.models.load_model('/home/peiva/mobilenet/models/Keras_v3/mobilenetv2.keras')
     predictions = model.predict(patches_dataset, callbacks=[tf.keras.callbacks.ProgbarLogger()])
 
+    print('Drawing detection rectangles on the frame...')
     for index, (height_coordinate, width_coordinate, image_patch) in enumerate(patches_with_positions):
         prediction = predictions[index]
-        if prediction[0] > prediction[1]:
+        if prediction[0] > prediction[1] and prediction[0] > 0.65:
             # more likely that the patch is a ball
+            print(f'Detected ball candidate at x: {width_coordinate}, y: {height_coordinate}')
+            print(f'Ball probability: {prediction[0]}')
+            print(f'No ball probability: {prediction[1]}')
             cv.rectangle(
                 image,
                 (width_coordinate, height_coordinate),
@@ -94,3 +99,4 @@ if __name__ == '__main__':
 
     cv.imshow('detections', image)
     cv.waitKey(0)
+    cv.destroyAllWindows()
