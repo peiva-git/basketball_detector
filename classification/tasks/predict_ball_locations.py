@@ -92,5 +92,5 @@ if __name__ == '__main__':
             # more likely that the patch is not a ball
             pass
 
-    cv.imshow('result', image)
-    cv.waitKey()
+    cv.imshow('detections', image)
+    cv.waitKey(0)
