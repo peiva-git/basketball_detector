@@ -1,7 +1,8 @@
 import os
 import tensorflow as tf
 
-from detector import SimpleClassifier, ClassificationDatasetBuilder
+from detector.models.classification import SimpleClassifier
+from detector.dataset_builders import  ClassificationDatasetBuilder
 
 
 def train_classifier_on_reduced_dataset(model: tf.keras.models.Model):
@@ -35,4 +36,4 @@ def train_classifier_on_reduced_dataset(model: tf.keras.models.Model):
 
 
 if __name__ == '__main__':
-    train_classifier_on_reduced_dataset(SimpleClassifier().model)
+    train_classifier_on_reduced_dataset(SimpleClassifier().detector)
