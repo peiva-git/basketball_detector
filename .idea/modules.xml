@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/tesi-classification.iml" filepath="$PROJECT_DIR$/.idea/tesi-classification.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../basketball_detector/.idea/basketball_detector.iml" filepath="$PROJECT_DIR$/../basketball_detector/.idea/basketball_detector.iml" />
     </modules>
   </component>
 </project>

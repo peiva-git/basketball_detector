@@ -3,8 +3,8 @@ import os
 import keras.callbacks
 import keras.losses
 
-from classification.dataset_builders import SegmentationDatasetBuilder
-from classification.models.segmentation import Segmentation
+from detector.dataset_builders import SegmentationDatasetBuilder
+from detector.models.segmentation import Segmentation
 
 builder = SegmentationDatasetBuilder(
     data_directory='/mnt/SharedData2/tesi/dataset/testing-dataset/frames/',

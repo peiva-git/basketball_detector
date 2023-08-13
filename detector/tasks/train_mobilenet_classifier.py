@@ -1,7 +1,7 @@
 import os
 
-from classification.models.classification import MobileNet, get_model_callbacks
-from classification.dataset_builders import ClassificationDatasetBuilder
+from detector.models.classification import MobileNet, get_model_callbacks
+from detector.dataset_builders import ClassificationDatasetBuilder
 
 import tensorflow as tf
 

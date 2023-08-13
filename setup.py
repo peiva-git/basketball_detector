@@ -7,7 +7,7 @@ with open('LICENSE.md') as f:
     license = f.read()
 
 setup(
-    name='classification',
+    name='detector',
     version='0.1',
     description='Classification package',
     long_description=readme,
@@ -18,7 +18,7 @@ setup(
     packages=find_packages(exclude=('tests', 'docs', 'out', 'assets')),
     entry_points={
         'console_scripts': [
-            'train-model = classification.cli:train_command'
+            'train-model = detector.cli:train_command'
         ]
     },
 )

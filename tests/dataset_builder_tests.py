@@ -1,12 +1,12 @@
 import unittest
 import numpy as np
 
-from classification.dataset_builders import ClassificationDatasetBuilder, SegmentationDatasetBuilder
+from detector.dataset_builders import ClassificationDatasetBuilder, SegmentationDatasetBuilder
 
 
 class ClassificationDatasetBuilderTestCase(unittest.TestCase):
     __NUMBER_OF_SAMPLES = 18
-    __BUILDER = ClassificationDatasetBuilder('../assets/test-sample-data-classification', validation_percentage=0.5)
+    __BUILDER = ClassificationDatasetBuilder('../assets/test-sample-data-detector', validation_percentage=0.5)
 
     def test_image_count(self):
         self.assertEqual(self.__BUILDER.number_of_images, self.__NUMBER_OF_SAMPLES,
