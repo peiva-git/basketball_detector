@@ -105,10 +105,10 @@ if __name__ == '__main__':
         end = time.time()
         print(f'Took {end - start} seconds to process frame {counter}'
               f' out of {int(capture.get(cv.CAP_PROP_FRAME_COUNT))}')
-        cv.imshow(f'frame {counter}', image)
         counter += 1
-        if cv.waitKey(1) == ord('q'):
-            break
+        # cv.imshow(f'frame {counter}', image)
+        # if cv.waitKey(1) == ord('q'):
+        #     break
 
     capture.release()
     out.release()
