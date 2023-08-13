@@ -6,16 +6,26 @@ with open('README.rst') as f:
 with open('LICENSE.md') as f:
     license = f.read()
 
+dependencies = [
+    'tensorflow==2.13.*',
+    'numpy==1.24.*',
+    'keras-cv==0.6.*',
+    'keras-core',
+    'opencv-python==4.8.*'
+]
+
 setup(
     name='detector',
-    version='0.1',
-    description='Classification package',
+    version='0.1dev',
+    description='Basketball detection package',
     long_description=readme,
     author='Ivan Pelizon',
     author_email='ivan.pelizon@gmail.com',
     url='',
     license=license,
     packages=find_packages(exclude=('tests', 'docs', 'out', 'assets')),
+    python_requires='>=3.8,<=3.11',
+    install_requires=dependencies,
     entry_points={
         'console_scripts': [
             'train-model = detector.cli:train_command'
@@ -23,11 +33,3 @@ setup(
     },
 )
 
-install_requires = [
-    'python_version==3.10',
-    'tensorflow==2.13.*',
-    'numpy==1.24.*',
-    'keras-cv==0.6.*',
-    'keras-core',
-    'opencv-python==4.8.*'
-]
