@@ -1,4 +1,5 @@
 import pathlib
+import time
 
 import cv2 as cv
 import tensorflow as tf
@@ -44,33 +45,11 @@ def write_frame_patches_to_disk(frame, target_directory: str,
         count += 1
 
 
-if __name__ == '__main__':
-    # with ~4ms inference time on a single patch, a whole image is evaluated in approx. 5 minutes
-    # with a window size of 50 and a stride of 5
-    # with a window size of 100 and a stride of 10, an image is evaluated in approx. 1 minute
-    # these values are estimated based on the mobilenetv2 inference time measurements displayed here
-    # https://keras.io/api/applications/#available-models
-    # capture = cv.VideoCapture('/mnt/DATA/tesi/dataset/dataset_youtube/pallacanestro_trieste/stagione_2019'
-    #                           '-20_legabasket/pallacanestro_trieste-virtus_roma/final_cut.mp4')
-    # if not capture.isOpened():
-    #     print("Can't open video file")
-    #     exit()
-    # while True:
-    #     ret, frame = capture.read()
-    #     if not ret:
-    #         print("Can't read next frame (stream end?). Exiting...")
-    #         break
-    #     image = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
-    #
-    #     if cv.waitKey(1) == ord('q'):
-    #         break
-    #
-    # capture.release()
-    # cv.destroyAllWindows()
-    image = cv.imread('/mnt/DATA/tesi/dataset/dataset_youtube/pallacanestro_trieste/stagione_2019-20_legabasket'
-                      '/pallacanestro_trieste-virtus_roma/frame_00092.png')
+def obtain_predictions_and_annotate_frame(frame,
+                                          stride: int = 5,
+                                          window_size: int = 50) -> ([int, int, cv.UMat], [int, int]):
     print('Frame read, dividing into patches...')
-    patches_with_positions = divide_frame_into_patches(image, stride=5, window_size=50)
+    patches_with_positions = divide_frame_into_patches(frame, stride=stride, window_size=window_size)
     patches_only = [element[2] for element in patches_with_positions]
     print('Organizing patches into a tensorflow dataset...')
     patches_dataset = tf.data.Dataset.from_tensor_slices(patches_only)
@@ -84,19 +63,51 @@ if __name__ == '__main__':
         prediction = predictions[index]
         if prediction[0] >= 0.9:
             # more likely that the patch is a ball
-            print(f'Detected ball candidate at x: {width_coordinate}, y: {height_coordinate}')
-            print(f'Ball probability: {prediction[0]}')
-            print(f'No ball probability: {prediction[1]}')
             cv.rectangle(
-                image,
+                frame,
                 (width_coordinate, height_coordinate),
-                (width_coordinate + 50, height_coordinate + 50),
+                (width_coordinate + window_size, height_coordinate + window_size),
                 color=(0, 255, 0)
             )
         else:
             # more likely that the patch is not a ball
             pass
+    return patches_with_positions, predictions
 
-    cv.imshow('detections', image)
-    cv.waitKey(0)
+
+if __name__ == '__main__':
+    # with ~4ms inference time on a single patch, a whole image is evaluated in approx. 5 minutes
+    # with a window size of 50 and a stride of 5
+    # with a window size of 100 and a stride of 10, an image is evaluated in approx. 1 minute
+    # these values are estimated based on the mobilenetv2 inference time measurements displayed here
+    # https://keras.io/api/applications/#available-models
+    capture = cv.VideoCapture('/mnt/DATA/tesi/dataset/dataset_youtube/pallacanestro_trieste/stagione_2019'
+                              '-20_legabasket/pallacanestro_trieste-virtus_roma/final_cut.mp4')
+    out = cv.VideoWriter(
+        '/mnt/DATA/tesi/dataset/dataset_youtube/pallacanestro_trieste/stagione_2019-20_legabasket/'
+        'pallacanestro_trieste-virtus_roma/annotated.mp4',
+        fourcc=0,
+        fps=0
+    )
+    if not capture.isOpened():
+        print("Can't open video file")
+        exit()
+    counter = 1
+    while True:
+        ret, image = capture.read()
+        if not ret:
+            print("Can't read next frame (stream end?). Exiting...")
+            break
+        print(f'Annotating frame {counter}...')
+        start = time.time()
+        obtain_predictions_and_annotate_frame(image)
+        out.write(image)
+        end = time.time()
+        print(f'Took {end - start} seconds to process frame {counter}')
+        cv.imshow(f'frame {counter}', image)
+        if cv.waitKey(1) == ord('q'):
+            break
+
+    capture.release()
+    out.release()
     cv.destroyAllWindows()
