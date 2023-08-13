@@ -98,13 +98,15 @@ if __name__ == '__main__':
         if not ret:
             print("Can't read next frame (stream end?). Exiting...")
             break
-        print(f'Annotating frame {counter}...')
+        print(f'Annotating frame {counter} out of {int(capture.get(cv.CAP_PROP_FRAME_COUNT))}')
         start = time.time()
         obtain_predictions_and_annotate_frame(image)
         out.write(image)
         end = time.time()
-        print(f'Took {end - start} seconds to process frame {counter}')
+        print(f'Took {end - start} seconds to process frame {counter}'
+              f' out of {int(capture.get(cv.CAP_PROP_FRAME_COUNT))}')
         cv.imshow(f'frame {counter}', image)
+        counter += 1
         if cv.waitKey(1) == ord('q'):
             break
 
