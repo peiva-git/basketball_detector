@@ -1,5 +1,5 @@
-tensorflow==2.12.*
-setuptools>=67.8.0
+tensorflow==2.13.*
+setuptools==67.8.*
 numpy<=1.24.3,>=1.22
 keras-cv==0.6.*
 keras-core
