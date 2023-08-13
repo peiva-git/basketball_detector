@@ -4,7 +4,7 @@ import keras.callbacks
 import keras.losses
 
 from detector.dataset_builders import SegmentationDatasetBuilder
-from detector.models.segmentation import Segmentation
+from detector.models.segmentation import PSPNet50
 
 builder = SegmentationDatasetBuilder(
     data_directory='/mnt/SharedData2/tesi/dataset/testing-dataset/frames/',
@@ -14,7 +14,7 @@ builder.configure_datasets_for_performance(shuffle_buffer_size=1000, input_batch
 train_batches = builder.train_dataset
 validation_batches = builder.validation_dataset
 
-model = Segmentation(image_size=(512, 1024)).model
+model = PSPNet50(image_size=(512, 1024)).model
 model.compile(optimizer='adam', loss=keras.losses.SparseCategoricalCrossentropy(from_logits=True), metrics=['accuracy'])
 
 callbacks = [
