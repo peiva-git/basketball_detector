@@ -19,8 +19,8 @@ def divide_frame_into_patches(frame, stride: int = 5, window_size: int = 50) -> 
     for window_height_index in range(number_of_height_windows):
         for window_width_index in range(number_of_width_windows):
             current_patch = frame[
-                         position_height:position_height + window_size,
-                         position_width:position_width + window_size
+                            position_height:position_height + window_size,
+                            position_width:position_width + window_size
                             ]
             current_patch_rgb = cv.cvtColor(current_patch, cv.COLOR_BGR2RGB)
             patches.append((position_height, position_width, current_patch_rgb))
@@ -60,7 +60,8 @@ def obtain_predictions(frame,
     return patches_with_positions, predictions
 
 
-def annotate_frame(frame, patches_with_positions, predictions, window_size: int = 50, threshold: float = 0.9) -> cv.UMat:
+def annotate_frame(frame, patches_with_positions, predictions, window_size: int = 50,
+                   threshold: float = 0.9) -> cv.UMat:
     for index, (height_coordinate, width_coordinate, image_patch) in enumerate(patches_with_positions):
         prediction = predictions[index]
         if prediction[0] >= threshold:
@@ -77,20 +78,17 @@ def annotate_frame(frame, patches_with_positions, predictions, window_size: int 
     return frame
 
 
-if __name__ == '__main__':
-    # with ~4ms inference time on a single patch, a whole image is evaluated in approx. 5 minutes
-    # with a window size of 50 and a stride of 5
-    # with a window size of 100 and a stride of 10, an image is evaluated in approx. 1 minute
-    # these values are estimated based on the mobilenetv2 inference time measurements displayed here
-    # https://keras.io/api/applications/#available-models
-    capture = cv.VideoCapture('/mnt/DATA/tesi/dataset/dataset_youtube/pallacanestro_trieste/stagione_2019'
-                              '-20_legabasket/pallacanestro_trieste-virtus_roma/final_cut.mp4')
-    out = cv.VideoWriter(
-        '/mnt/DATA/tesi/dataset/dataset_youtube/pallacanestro_trieste/stagione_2019-20_legabasket/'
-        'pallacanestro_trieste-virtus_roma/annotated.mp4',
-        fourcc=0,
-        fps=0
-    )
+def obtain_heatmap(frame, patches_with_positions, predictions):
+
+    pass
+
+
+def write_detections_video(input_video_path: str,
+                           target_video_path: str):
+    input_path = pathlib.Path(input_video_path)
+    target_path = pathlib.Path(target_video_path)
+    capture = cv.VideoCapture(str(input_path))
+    out = cv.VideoWriter(str(target_path), fourcc=0, fps=0)
     if not capture.isOpened():
         print("Can't open video file")
         exit()
@@ -112,7 +110,20 @@ if __name__ == '__main__':
         # cv.imshow(f'frame {counter}', image)
         # if cv.waitKey(1) == ord('q'):
         #     break
-
     capture.release()
     out.release()
     cv.destroyAllWindows()
+
+
+if __name__ == '__main__':
+    # with ~4ms inference time on a single patch, a whole image is evaluated in approx. 5 minutes
+    # with a window size of 50 and a stride of 5
+    # with a window size of 100 and a stride of 10, an image is evaluated in approx. 1 minute
+    # these values are estimated based on the mobilenetv2 inference time measurements displayed here
+    # https://keras.io/api/applications/#available-models
+    write_detections_video('/mnt/DATA/tesi/dataset/dataset_youtube/pallacanestro_trieste'
+                           '/stagione_2019'
+                           '-20_legabasket/pallacanestro_trieste-virtus_roma/final_cut.mp4',
+                           '/mnt/DATA/tesi/dataset/dataset_youtube/pallacanestro_trieste'
+                           '/stagione_2019-20_legabasket/'
+                           'pallacanestro_trieste-virtus_roma/annotated.mp4')
