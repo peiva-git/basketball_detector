@@ -45,9 +45,9 @@ def write_frame_patches_to_disk(frame, target_directory: str,
         count += 1
 
 
-def obtain_predictions_and_annotate_frame(frame,
-                                          stride: int = 5,
-                                          window_size: int = 50) -> ([int, int, cv.UMat], [int, int]):
+def obtain_predictions(frame,
+                       stride: int = 5,
+                       window_size: int = 50) -> ([int, int, cv.UMat], [int, int]):
     print('Frame read, dividing into patches...')
     patches_with_positions = divide_frame_into_patches(frame, stride=stride, window_size=window_size)
     patches_only = [element[2] for element in patches_with_positions]
@@ -57,11 +57,13 @@ def obtain_predictions_and_annotate_frame(frame,
     patches_dataset = patches_dataset.prefetch(tf.data.AUTOTUNE)
     model = tf.keras.models.load_model('/home/peiva/mobilenet/models/Keras_v3/mobilenetv2.keras')
     predictions = model.predict(patches_dataset, callbacks=[tf.keras.callbacks.ProgbarLogger()])
+    return patches_with_positions, predictions
 
-    print('Drawing detection rectangles on the frame...')
+
+def annotate_frame(frame, patches_with_positions, predictions, window_size: int = 50, threshold: float = 0.9) -> cv.UMat:
     for index, (height_coordinate, width_coordinate, image_patch) in enumerate(patches_with_positions):
         prediction = predictions[index]
-        if prediction[0] >= 0.9:
+        if prediction[0] >= threshold:
             # more likely that the patch is a ball
             cv.rectangle(
                 frame,
@@ -72,7 +74,7 @@ def obtain_predictions_and_annotate_frame(frame,
         else:
             # more likely that the patch is not a ball
             pass
-    return patches_with_positions, predictions
+    return frame
 
 
 if __name__ == '__main__':
@@ -100,7 +102,8 @@ if __name__ == '__main__':
             break
         print(f'Annotating frame {counter} out of {int(capture.get(cv.CAP_PROP_FRAME_COUNT))}')
         start = time.time()
-        obtain_predictions_and_annotate_frame(image)
+        patches_and_positions, patches_predictions = obtain_predictions(image)
+        annotate_frame(image, patches_and_positions, patches_predictions)
         out.write(image)
         end = time.time()
         print(f'Took {end - start} seconds to process frame {counter}'
