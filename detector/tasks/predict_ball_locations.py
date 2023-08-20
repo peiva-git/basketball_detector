@@ -1,8 +1,11 @@
 import pathlib
 import time
+from itertools import product
 
 import cv2 as cv
+import numpy
 import tensorflow as tf
+import numpy as np
 
 
 def divide_frame_into_patches(frame, stride: int = 5, window_size: int = 50) -> [(int, int, cv.UMat)]:
@@ -78,9 +81,28 @@ def annotate_frame(frame, patches_with_positions, predictions, window_size: int 
     return frame
 
 
-def obtain_heatmap(frame, patches_with_positions, predictions):
+def obtain_heatmap(frame, patches_with_positions, predictions, window_size: int = 50):
+    frame_height, frame_width, _ = frame.shape
+    heatmap = np.zeros((frame_height, frame_width, 1), numpy.float32)
+    pixel_to_patches_map = dict()
 
-    pass
+    for index, (patch_position_y, patch_position_x, patch) in enumerate(patches_with_positions):
+        for row in range(patch_position_y, patch_position_y + window_size):
+            for column in range(patch_position_x, patch_position_x + window_size):
+                try:
+                    pixel_to_patches_map[(row, column)].append(index)
+                except KeyError:
+                    pixel_to_patches_map[(row, column)] = [index]
+    for row, column in product(range(frame_height), range(frame_width)):
+        try:
+            patches_ball_probabilities = \
+                [predictions[patch_index][0] for patch_index in pixel_to_patches_map[(row, column)]]
+            pixel_ball_probability = sum(patches_ball_probabilities) / len(pixel_to_patches_map[(row, column)])
+            heatmap[row, column] = pixel_ball_probability
+        except KeyError:
+            print(f'No patch contains pixel x: {column}, y: {row}, assigning a probability of 0')
+            pass
+    return heatmap
 
 
 def write_detections_video(input_video_path: str,
