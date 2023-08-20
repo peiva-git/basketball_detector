@@ -1,6 +1,7 @@
 import pathlib
 import time
 from itertools import product
+from statistics import mean
 
 import cv2 as cv
 import numpy
@@ -113,14 +114,15 @@ def write_detections_video(input_video_path: str,
     out = cv.VideoWriter(str(target_path), fourcc=0, fps=0)
     if not capture.isOpened():
         print("Can't open video file")
-        exit()
+        return
     counter = 1
+    frame_processing_times = [int]
     while True:
         ret, image = capture.read()
         if not ret:
             print("Can't read next frame (stream end?). Exiting...")
             break
-        print(f'Annotating frame {counter} out of {int(capture.get(cv.CAP_PROP_FRAME_COUNT))}')
+        print(f'Processing frame {counter} out of {int(capture.get(cv.CAP_PROP_FRAME_COUNT))}')
         start = time.time()
         patches_and_positions, patches_predictions = obtain_predictions(image)
         annotate_frame(image, patches_and_positions, patches_predictions)
@@ -128,6 +130,8 @@ def write_detections_video(input_video_path: str,
         end = time.time()
         print(f'Took {end - start} seconds to process frame {counter}'
               f' out of {int(capture.get(cv.CAP_PROP_FRAME_COUNT))}')
+        frame_processing_times.append(end - start)
+        print(f'Average processing speed {mean(frame_processing_times)} seconds')
         counter += 1
         # cv.imshow(f'frame {counter}', image)
         # if cv.waitKey(1) == ord('q'):
