@@ -84,7 +84,7 @@ def annotate_frame(frame, patches_with_positions, predictions, window_size: int 
 
 def obtain_heatmap(frame, patches_with_positions, predictions, window_size: int = 50):
     frame_height, frame_width, _ = frame.shape
-    heatmap = np.zeros((frame_height, frame_width, 1), numpy.float32)
+    heatmap = np.zeros((frame_height, frame_width), numpy.float32)
     pixel_to_patches_map = dict()
 
     for index, (patch_position_y, patch_position_x, patch) in enumerate(patches_with_positions):
