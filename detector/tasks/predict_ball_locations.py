@@ -131,7 +131,7 @@ def write_detections_video(input_video_path: str,
         print(f'Took {end - start} seconds to process frame {counter}'
               f' out of {int(capture.get(cv.CAP_PROP_FRAME_COUNT))}')
         frame_processing_times.append(end - start)
-        print(f'Average processing speed {mean(frame_processing_times)} seconds')
+        print(f'Average processing speed: {mean(frame_processing_times)} seconds')
         counter += 1
         # cv.imshow(f'frame {counter}', image)
         # if cv.waitKey(1) == ord('q'):
