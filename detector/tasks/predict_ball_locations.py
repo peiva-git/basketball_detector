@@ -133,7 +133,7 @@ def write_detections_video(input_video_path: str,
     target_path = pathlib.Path(target_video_path)
     model_path = pathlib.Path(model_path)
     capture = cv.VideoCapture(str(input_path))
-    out = cv.VideoWriter(str(target_path), fourcc=0, fps=0)
+    out = cv.VideoWriter(str(target_path), fourcc=0, fps=0, frameSize=(1920, 1080))
     if not capture.isOpened():
         print("Can't open video file")
         return
