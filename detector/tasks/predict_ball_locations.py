@@ -166,12 +166,53 @@ def write_detections_video(input_video_path: str,
     cv.destroyAllWindows()
 
 
+def write_image_sequence_from_video(input_video_path: str,
+                                    target_directory_path: str,
+                                    model_path: str):
+    input_path = pathlib.Path(input_video_path)
+    target_path = pathlib.Path(target_directory_path)
+    model_path = pathlib.Path(model_path)
+    capture = cv.VideoCapture(str(input_path))
+    if not capture.isOpened():
+        print("Can't open video file")
+        return
+    counter = 1
+    frame_processing_times = []
+    while counter <= 10:
+        ret, image = capture.read()
+        if not ret:
+            print("Can't read next frame (stream end?). Exiting...")
+            break
+        print(f'Processing frame {counter} out of {int(capture.get(cv.CAP_PROP_FRAME_COUNT))}')
+        start = time.time()
+        patches_and_positions, patches_predictions = obtain_predictions(
+            image, str(model_path)
+        )
+        heatmap = obtain_heatmap(image, patches_and_positions, patches_predictions)
+        annotate_frame(image, heatmap)
+        cv.imwrite(str(target_path / f'frame_{counter}.png'), image)
+        end = time.time()
+        print(f'Took {end - start} seconds to process frame {counter}'
+              f' out of {int(capture.get(cv.CAP_PROP_FRAME_COUNT))}')
+        frame_processing_times.append(end - start)
+        print(f'Average processing speed: {mean(frame_processing_times)} seconds')
+        counter += 1
+        # cv.imshow(f'frame {counter}', image)
+        # if cv.waitKey(1) == ord('q'):
+        #     break
+    capture.release()
+    cv.destroyAllWindows()
+
+
 if __name__ == '__main__':
     # with ~4ms inference time on a single patch, a whole image is evaluated in approx. 5 minutes
     # with a window size of 50 and a stride of 5
     # with a window size of 100 and a stride of 10, an image is evaluated in approx. 1 minute
     # these values are estimated based on the mobilenetv2 inference time measurements displayed here
     # https://keras.io/api/applications/#available-models
-    write_detections_video(input_video_path='/home/ubuntu/test_videos/final_cut.mp4',
-                           target_video_path='home/ubuntu/test_videos/annotated.mp4',
-                           model_path='/home/ubuntu/basketball_detector/out/models/Keras_v3/mobilenetv2.keras')
+    write_image_sequence_from_video(input_video_path='/home/ubuntu/test_videos/final_cut.mp4',
+                                    target_directory_path='/home/ubuntu/test_videos',
+                                    model_path='/home/ubuntu/basketball_detector/out/models/Keras_v3/mobilenetv2.keras')
+    # write_detections_video(input_video_path='/home/ubuntu/test_videos/final_cut.mp4',
+    #                        target_video_path='home/ubuntu/test_videos/annotated.mp4',
+    #                        model_path='/home/ubuntu/basketball_detector/out/models/Keras_v3/mobilenetv2.keras')
