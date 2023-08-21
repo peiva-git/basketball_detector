@@ -50,16 +50,17 @@ def write_frame_patches_to_disk(frame, target_directory: str,
 
 
 def obtain_predictions(frame,
+                       model_path: str,
                        stride: int = 5,
                        window_size: int = 50) -> ([int, int, cv.UMat], [int, int]):
-    print('Frame read, dividing into patches...')
+    model_path = pathlib.Path(model_path)
     patches_with_positions = divide_frame_into_patches(frame, stride=stride, window_size=window_size)
     patches_only = [element[2] for element in patches_with_positions]
     print('Organizing patches into a tensorflow dataset...')
     patches_dataset = tf.data.Dataset.from_tensor_slices(patches_only)
     patches_dataset = patches_dataset.batch(batch_size=64)
     patches_dataset = patches_dataset.prefetch(tf.data.AUTOTUNE)
-    model = tf.keras.models.load_model('/home/peiva/mobilenet/models/Keras_v3/mobilenetv2.keras')
+    model = tf.keras.models.load_model(str(model_path))
     predictions = model.predict(patches_dataset, callbacks=[tf.keras.callbacks.ProgbarLogger()])
     return patches_with_positions, predictions
 
@@ -124,7 +125,10 @@ def write_detections_video(input_video_path: str,
             break
         print(f'Processing frame {counter} out of {int(capture.get(cv.CAP_PROP_FRAME_COUNT))}')
         start = time.time()
-        patches_and_positions, patches_predictions = obtain_predictions(image)
+        patches_and_positions, patches_predictions = obtain_predictions(
+            image, '/home/peiva/mobilenet/models/Keras_v3/mobilenetv2.keras'
+        )
+        heatmap = obtain_heatmap(image, patches_and_positions, patches_predictions)
         annotate_frame(image, patches_and_positions, patches_predictions)
         out.write(image)
         end = time.time()
