@@ -127,9 +127,11 @@ def annotate_frame(frame, heatmap, threshold: int = 10, margin: int = 10) -> (in
 
 
 def write_detections_video(input_video_path: str,
-                           target_video_path: str):
+                           target_video_path: str,
+                           model_path: str):
     input_path = pathlib.Path(input_video_path)
     target_path = pathlib.Path(target_video_path)
+    model_path = pathlib.Path(model_path)
     capture = cv.VideoCapture(str(input_path))
     out = cv.VideoWriter(str(target_path), fourcc=0, fps=0)
     if not capture.isOpened():
@@ -145,7 +147,7 @@ def write_detections_video(input_video_path: str,
         print(f'Processing frame {counter} out of {int(capture.get(cv.CAP_PROP_FRAME_COUNT))}')
         start = time.time()
         patches_and_positions, patches_predictions = obtain_predictions(
-            image, '/home/peiva/mobilenet/models/Keras_v3/mobilenetv2.keras'
+            image, str(model_path)
         )
         heatmap = obtain_heatmap(image, patches_and_positions, patches_predictions)
         annotate_frame(image, heatmap)
@@ -171,4 +173,5 @@ if __name__ == '__main__':
     # these values are estimated based on the mobilenetv2 inference time measurements displayed here
     # https://keras.io/api/applications/#available-models
     write_detections_video(input_video_path='/home/ubuntu/test_videos/final_cut.mp4',
-                           target_video_path='home/ubuntu/test_videos/annotated.mp4')
+                           target_video_path='home/ubuntu/test_videos/annotated.mp4',
+                           model_path='/home/ubuntu/basketball_detector/out/models/Keras_v3/mobilenetv2.keras')
