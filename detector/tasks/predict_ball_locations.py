@@ -114,7 +114,7 @@ def find_max_pixel(heatmap) -> (int, int):
     return max_index - int(max_index / heatmap_width) * heatmap_width, int(max_index / heatmap_width)
 
 
-def annotate_frame(frame, heatmap, threshold: int = 10, margin: int = 10):
+def annotate_frame(frame, heatmap, threshold: int = 10, margin: int = 10) -> (int, int, int, int):
     max_pixel = find_max_pixel(heatmap)
     _, _, _, bounding_box = cv.floodFill(heatmap, None, seedPoint=max_pixel, newVal=255, loDiff=threshold, flags=8)
     cv.rectangle(
@@ -123,6 +123,7 @@ def annotate_frame(frame, heatmap, threshold: int = 10, margin: int = 10):
         (bounding_box[0] + bounding_box[2] + margin, bounding_box[1] + bounding_box[3] + margin),
         color=(0, 255, 0)
     )
+    return bounding_box
 
 
 def write_detections_video(input_video_path: str,
