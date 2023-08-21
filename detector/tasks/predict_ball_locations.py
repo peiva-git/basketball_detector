@@ -65,8 +65,8 @@ def obtain_predictions(frame,
     return patches_with_positions, predictions
 
 
-def annotate_frame(frame, patches_with_positions, predictions, window_size: int = 50,
-                   threshold: float = 0.9) -> cv.UMat:
+def annotate_frame_with_ball_patches(frame, patches_with_positions, predictions, window_size: int = 50,
+                                     threshold: float = 0.9) -> cv.UMat:
     for index, (height_coordinate, width_coordinate, image_patch) in enumerate(patches_with_positions):
         prediction = predictions[index]
         if prediction[0] >= threshold:
@@ -111,7 +111,18 @@ def obtain_heatmap(frame, patches_with_positions, predictions, window_size: int 
 def find_max_pixel(heatmap) -> (int, int):
     max_index = heatmap.argmax()
     _, heatmap_width = heatmap.shape
-    return int(max_index / heatmap_width), max_index - int(max_index / heatmap_width) * heatmap_width
+    return max_index - int(max_index / heatmap_width) * heatmap_width, int(max_index / heatmap_width)
+
+
+def annotate_frame(frame, heatmap, threshold: int = 10, margin: int = 10):
+    max_pixel = find_max_pixel(heatmap)
+    _, _, _, bounding_box = cv.floodFill(heatmap, None, seedPoint=max_pixel, newVal=255, loDiff=threshold, flags=8)
+    cv.rectangle(
+        frame,
+        (bounding_box[0] - margin, bounding_box[1] - margin),
+        (bounding_box[0] + bounding_box[2] + margin, bounding_box[1] + bounding_box[3] + margin),
+        color=(0, 255, 0)
+    )
 
 
 def write_detections_video(input_video_path: str,
@@ -136,7 +147,7 @@ def write_detections_video(input_video_path: str,
             image, '/home/peiva/mobilenet/models/Keras_v3/mobilenetv2.keras'
         )
         heatmap = obtain_heatmap(image, patches_and_positions, patches_predictions)
-        annotate_frame(image, patches_and_positions, patches_predictions)
+        annotate_frame(image, heatmap)
         out.write(image)
         end = time.time()
         print(f'Took {end - start} seconds to process frame {counter}'
