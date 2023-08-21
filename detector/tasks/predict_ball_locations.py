@@ -170,9 +170,5 @@ if __name__ == '__main__':
     # with a window size of 100 and a stride of 10, an image is evaluated in approx. 1 minute
     # these values are estimated based on the mobilenetv2 inference time measurements displayed here
     # https://keras.io/api/applications/#available-models
-    write_detections_video('/mnt/DATA/tesi/dataset/dataset_youtube/pallacanestro_trieste'
-                           '/stagione_2019'
-                           '-20_legabasket/pallacanestro_trieste-virtus_roma/final_cut.mp4',
-                           '/mnt/DATA/tesi/dataset/dataset_youtube/pallacanestro_trieste'
-                           '/stagione_2019-20_legabasket/'
-                           'pallacanestro_trieste-virtus_roma/annotated.mp4')
+    write_detections_video(input_video_path='/home/ubuntu/test_videos/final_cut.mp4',
+                           target_video_path='home/ubuntu/test_videos/annotated.mp4')
