@@ -183,7 +183,7 @@ def write_image_sequence_from_video(input_video_path: str,
         if not ret:
             print("Can't read next frame (stream end?). Exiting...")
             break
-        print(f'Processing frame {counter} out of {int(capture.get(cv.CAP_PROP_FRAME_COUNT))}')
+        print(f'Processing frame {counter} out of {10}')
         start = time.time()
         patches_and_positions, patches_predictions = obtain_predictions(
             image, str(model_path)
