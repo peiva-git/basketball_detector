@@ -138,7 +138,7 @@ def write_detections_video(input_video_path: str,
         print("Can't open video file")
         return
     counter = 1
-    frame_processing_times = [int]
+    frame_processing_times = []
     while True:
         ret, image = capture.read()
         if not ret:
