@@ -104,7 +104,14 @@ def obtain_heatmap(frame, patches_with_positions, predictions, window_size: int 
         except KeyError:
             print(f'No patch contains pixel x: {column}, y: {row}, assigning a probability of 0')
             pass
-    return heatmap
+    heatmap_rescaled = heatmap * 255
+    return heatmap_rescaled.astype(np.uint8, copy=False)
+
+
+def find_max_pixel(heatmap) -> (int, int):
+    max_index = heatmap.argmax()
+    _, heatmap_width = heatmap.shape
+    return int(max_index / heatmap_width), max_index - int(max_index / heatmap_width) * heatmap_width
 
 
 def write_detections_video(input_video_path: str,
