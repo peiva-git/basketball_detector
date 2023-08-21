@@ -139,7 +139,7 @@ def write_detections_video(input_video_path: str,
         return
     counter = 1
     frame_processing_times = []
-    while True:
+    while counter <= 100:
         ret, image = capture.read()
         if not ret:
             print("Can't read next frame (stream end?). Exiting...")
