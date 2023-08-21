@@ -132,10 +132,11 @@ class SegmentationDatasetBuilder:
             num_parallel_calls=tf.data.AUTOTUNE
         )
         dataset = tf.data.Dataset.zip((samples, masks))
+        print(f'Found {dataset.cardinality().numpy()} frames in total')
         self.__train_dataset = dataset.skip(validation_size)
         self.__validation_dataset = dataset.take(validation_size)
-        print(tf.data.experimental.cardinality(self.__train_dataset).numpy(), 'frames in training dataset')
-        print(tf.data.experimental.cardinality(self.__validation_dataset).numpy(), 'frames in validation dataset')
+        print(f'{self.__train_dataset.cardinality().numpy()} frames in training dataset')
+        print(f'{self.__validation_dataset.cardinality().numpy()} frames in validation dataset')
 
     @staticmethod
     def __get_frame_from_path(filepath: tf.Tensor):
@@ -160,8 +161,7 @@ class SegmentationDatasetBuilder:
 
     @property
     def number_of_samples(self) -> int:
-        return tf.data.experimental.cardinality(self.__train_dataset).numpy() + \
-               tf.data.experimental.cardinality(self.__validation_dataset).numpy()
+        return self.__train_dataset.cardinality().numpy() + self.__validation_dataset.cardinality().numpy()
 
     def configure_datasets_for_performance(self, shuffle_buffer_size: int = 1000, input_batch_size: int = 10):
         self.__train_dataset = configure_for_performance(self.__train_dataset, shuffle_buffer_size, input_batch_size)
