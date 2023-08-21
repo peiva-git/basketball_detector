@@ -170,3 +170,22 @@ class PIDNet:
     @property
     def model_name(self):
         return self.__model_name
+
+
+class PIDNetSmall(PIDNet):
+    def __init__(self,
+                 input_shape,
+                 number_of_classes):
+        super().__init__(input_shape=input_shape,
+                         num_classes=number_of_classes,
+                         m=2,
+                         n=3,
+                         planes=32,
+                         ppm_planes=96,
+                         head_planes=128,
+                         augment=False)
+        self.__model_name = 'pidnet_small'
+
+    @property
+    def model_name(self):
+        return self.__model_name
