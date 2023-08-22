@@ -1,12 +1,28 @@
+import math
 import pathlib
 import time
 from itertools import product
 from statistics import mean
 
 import cv2 as cv
-import numpy
 import tensorflow as tf
 import numpy as np
+
+
+class PatchesSequence(tf.keras.utils.Sequence):
+
+    def __init__(self, patches: [], batch_size: int = 64):
+        self.__patches = patches
+        self.__batch_size = batch_size
+
+    def __getitem__(self, index):
+        low = index * self.__batch_size
+        high = min(low + self.__batch_size, len(self.__patches))
+        patches_batch = self.__patches[low:high]
+        return np.array([patch for patch in patches_batch])
+
+    def __len__(self):
+        return math.ceil(len(self.__patches) / self.__batch_size)
 
 
 def divide_frame_into_patches(frame, stride: int = 5, window_size: int = 50) -> [(int, int, cv.UMat)]:
@@ -56,12 +72,19 @@ def obtain_predictions(frame,
     model_path = pathlib.Path(model_path)
     patches_with_positions = divide_frame_into_patches(frame, stride=stride, window_size=window_size)
     patches_only = [element[2] for element in patches_with_positions]
-    print('Organizing patches into a tensorflow dataset...')
-    patches_dataset = tf.data.Dataset.from_tensor_slices(patches_only)
-    patches_dataset = patches_dataset.batch(batch_size=64)
-    patches_dataset = patches_dataset.prefetch(tf.data.AUTOTUNE)
     model = tf.keras.models.load_model(str(model_path))
-    predictions = model.predict(patches_dataset, callbacks=[tf.keras.callbacks.ProgbarLogger()])
+    patches_sequence = PatchesSequence(patches_only)
+    predictions = model.predict(patches_sequence, callbacks=[tf.keras.callbacks.ProgbarLogger()])
+    # predictions = []
+    # for patch in patches_only:
+    #     patch_tensor = tf.constant(patch)
+    #     patch_tensor = tf.expand_dims(patch_tensor, axis=0)
+    #     predictions.append(model(patch_tensor))
+    # print('Organizing patches into a tensorflow dataset...')
+    # patches_dataset = tf.data.Dataset.from_tensor_slices(patches_only)
+    # patches_dataset = patches_dataset.batch(batch_size=64)
+    # patches_dataset = patches_dataset.prefetch(tf.data.AUTOTUNE)
+    # predictions = model.predict(patches_dataset, callbacks=[tf.keras.callbacks.ProgbarLogger()])
     return patches_with_positions, predictions
 
 
@@ -85,7 +108,7 @@ def annotate_frame_with_ball_patches(frame, patches_with_positions, predictions,
 
 def obtain_heatmap(frame, patches_with_positions, predictions, window_size: int = 50):
     frame_height, frame_width, _ = frame.shape
-    heatmap = np.zeros((frame_height, frame_width), numpy.float32)
+    heatmap = np.zeros((frame_height, frame_width), np.float32)
     patch_indexes_by_pixel = dict()
 
     for index, (patch_position_y, patch_position_x, patch) in enumerate(patches_with_positions):
@@ -102,7 +125,8 @@ def obtain_heatmap(frame, patches_with_positions, predictions, window_size: int 
             pixel_ball_probability = sum(patches_ball_probabilities) / len(patch_indexes_by_pixel[(row, column)])
             heatmap[row, column] = pixel_ball_probability
         except KeyError:
-            print(f'No patch contains pixel x: {column}, y: {row}, assigning a probability of 0')
+            # No patch contains pixel x: column, y: row
+            # Assigning a probability of 0
             pass
     heatmap_rescaled = heatmap * 255
     return heatmap_rescaled.astype(np.uint8, copy=False)
@@ -114,7 +138,7 @@ def find_max_pixel(heatmap) -> (int, int):
     return max_index - int(max_index / heatmap_width) * heatmap_width, int(max_index / heatmap_width)
 
 
-def annotate_frame(frame, heatmap, threshold: int = 10, margin: int = 10) -> (int, int, int, int):
+def annotate_frame_and_heatmap(frame, heatmap, threshold: int = 10, margin: int = 10) -> (int, int, int, int):
     max_pixel = find_max_pixel(heatmap)
     _, _, _, bounding_box = cv.floodFill(heatmap, None, seedPoint=max_pixel, newVal=255, loDiff=threshold, flags=8)
     cv.rectangle(
@@ -150,7 +174,7 @@ def write_detections_video(input_video_path: str,
             image, str(model_path)
         )
         heatmap = obtain_heatmap(image, patches_and_positions, patches_predictions)
-        annotate_frame(image, heatmap)
+        annotate_frame_and_heatmap(image, heatmap)
         out.write(image)
         end = time.time()
         print(f'Took {end - start} seconds to process frame {counter}'
@@ -185,12 +209,15 @@ def write_image_sequence_from_video(input_video_path: str,
             break
         print(f'Processing frame {counter} out of {10}')
         start = time.time()
+        print('Obtaining predictions...')
         patches_and_positions, patches_predictions = obtain_predictions(
             image, str(model_path)
         )
+        print('Building heatmap from predictions...')
         heatmap = obtain_heatmap(image, patches_and_positions, patches_predictions)
-        annotate_frame(image, heatmap)
+        annotate_frame_and_heatmap(image, heatmap)
         cv.imwrite(str(target_path / f'frame_{counter}.png'), image)
+        cv.imwrite(str(target_path / f'mask_{counter}.png'), heatmap)
         end = time.time()
         print(f'Took {end - start} seconds to process frame {counter}'
               f' out of {int(capture.get(cv.CAP_PROP_FRAME_COUNT))}')
@@ -210,9 +237,12 @@ if __name__ == '__main__':
     # with a window size of 100 and a stride of 10, an image is evaluated in approx. 1 minute
     # these values are estimated based on the mobilenetv2 inference time measurements displayed here
     # https://keras.io/api/applications/#available-models
-    write_image_sequence_from_video(input_video_path='/home/ubuntu/test_videos/final_cut.mp4',
-                                    target_directory_path='/home/ubuntu/test_videos',
-                                    model_path='/home/ubuntu/basketball_detector/out/models/Keras_v3/mobilenetv2.keras')
+    write_image_sequence_from_video(input_video_path='/home/peiva/experiments/test_videos/final_cut.mp4',
+                                    target_directory_path='/home/peiva/experiments/test_videos',
+                                    model_path='/home/peiva/mobilenet/models/Keras_v3/mobilenetv2.keras')
+    # write_image_sequence_from_video(input_video_path='/home/ubuntu/test_videos/final_cut.mp4',
+    #                                 target_directory_path='/home/ubuntu/test_videos',
+    #                                 model_path='/home/ubuntu/basketball_detector/out/models/Keras_v3/mobilenetv2.keras')
     # write_detections_video(input_video_path='/home/ubuntu/test_videos/final_cut.mp4',
     #                        target_video_path='home/ubuntu/test_videos/annotated.mp4',
     #                        model_path='/home/ubuntu/basketball_detector/out/models/Keras_v3/mobilenetv2.keras')
