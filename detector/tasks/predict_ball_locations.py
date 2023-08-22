@@ -99,15 +99,7 @@ def annotate_frame_with_ball_patches(frame, patches_with_positions, predictions,
 def obtain_heatmap(frame, patches_with_positions, predictions, window_size: int = 50):
     frame_height, frame_width, _ = frame.shape
     heatmap = np.zeros((frame_height, frame_width), np.float32)
-    patch_indexes_by_pixel = dict()
-
-    for index, (patch_position_y, patch_position_x, patch) in enumerate(patches_with_positions):
-        for row, column in product(range(patch_position_y, patch_position_y + window_size),
-                                   range(patch_position_x, patch_position_x + window_size)):
-            try:
-                patch_indexes_by_pixel[(row, column)].append(index)
-            except KeyError:
-                patch_indexes_by_pixel[(row, column)] = [index]
+    patch_indexes_by_pixel = map_pixels_to_patch_indexes(patches_with_positions, window_size)
     for row, column in product(range(frame_height), range(frame_width)):
         try:
             patches_ball_probabilities = \
@@ -120,6 +112,18 @@ def obtain_heatmap(frame, patches_with_positions, predictions, window_size: int 
             pass
     heatmap_rescaled = heatmap * 255
     return heatmap_rescaled.astype(np.uint8, copy=False)
+
+
+def map_pixels_to_patch_indexes(patches_with_positions, window_size: int):
+    patch_indexes_by_pixel = dict()
+    for index, (patch_position_y, patch_position_x, _) in enumerate(patches_with_positions):
+        for row, column in product(range(patch_position_y, patch_position_y + window_size),
+                                   range(patch_position_x, patch_position_x + window_size)):
+            try:
+                patch_indexes_by_pixel[(row, column)].append(index)
+            except KeyError:
+                patch_indexes_by_pixel[(row, column)] = [index]
+    return patch_indexes_by_pixel
 
 
 def find_max_pixel(heatmap) -> (int, int):
