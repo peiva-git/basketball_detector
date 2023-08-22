@@ -75,16 +75,6 @@ def obtain_predictions(frame,
     model = tf.keras.models.load_model(str(model_path))
     patches_sequence = PatchesSequence(patches_only)
     predictions = model.predict(patches_sequence, callbacks=[tf.keras.callbacks.ProgbarLogger()])
-    # predictions = []
-    # for patch in patches_only:
-    #     patch_tensor = tf.constant(patch)
-    #     patch_tensor = tf.expand_dims(patch_tensor, axis=0)
-    #     predictions.append(model(patch_tensor))
-    # print('Organizing patches into a tensorflow dataset...')
-    # patches_dataset = tf.data.Dataset.from_tensor_slices(patches_only)
-    # patches_dataset = patches_dataset.batch(batch_size=64)
-    # patches_dataset = patches_dataset.prefetch(tf.data.AUTOTUNE)
-    # predictions = model.predict(patches_dataset, callbacks=[tf.keras.callbacks.ProgbarLogger()])
     return patches_with_positions, predictions
 
 
@@ -138,16 +128,24 @@ def find_max_pixel(heatmap) -> (int, int):
     return max_index - int(max_index / heatmap_width) * heatmap_width, int(max_index / heatmap_width)
 
 
-def annotate_frame_and_heatmap(frame, heatmap, threshold: int = 10, margin: int = 10) -> (int, int, int, int):
+def annotate_frame(frame,
+                   heatmap,
+                   threshold_delta: int = 10,
+                   margin: int = 0) -> ((int, int, int, int), cv.UMat):
     max_pixel = find_max_pixel(heatmap)
-    _, _, _, bounding_box = cv.floodFill(heatmap, None, seedPoint=max_pixel, newVal=255, loDiff=threshold, flags=8)
+    heatmap_height, heatmap_width = heatmap.shape
+    mask = np.zeros((heatmap_height + 2, heatmap_width + 2), np.uint8)
+    _, _, _, bounding_box = cv.floodFill(
+        image=heatmap, mask=mask, seedPoint=max_pixel, newVal=255, loDiff=threshold_delta,
+        flags=8 | (255 << 8) | cv.FLOODFILL_FIXED_RANGE | cv.FLOODFILL_MASK_ONLY
+    )
     cv.rectangle(
         frame,
         (bounding_box[0] - margin, bounding_box[1] - margin),
         (bounding_box[0] + bounding_box[2] + margin, bounding_box[1] + bounding_box[3] + margin),
         color=(0, 255, 0)
     )
-    return bounding_box
+    return bounding_box, mask
 
 
 def write_detections_video(input_video_path: str,
@@ -174,7 +172,7 @@ def write_detections_video(input_video_path: str,
             image, str(model_path)
         )
         heatmap = obtain_heatmap(image, patches_and_positions, patches_predictions)
-        annotate_frame_and_heatmap(image, heatmap)
+        annotate_frame(image, heatmap)
         out.write(image)
         end = time.time()
         print(f'Took {end - start} seconds to process frame {counter}'
@@ -215,9 +213,10 @@ def write_image_sequence_from_video(input_video_path: str,
         )
         print('Building heatmap from predictions...')
         heatmap = obtain_heatmap(image, patches_and_positions, patches_predictions)
-        annotate_frame_and_heatmap(image, heatmap)
+        _, mask = annotate_frame(image, heatmap)
         cv.imwrite(str(target_path / f'frame_{counter}.png'), image)
-        cv.imwrite(str(target_path / f'mask_{counter}.png'), heatmap)
+        cv.imwrite(str(target_path / f'heatmap_{counter}.png'), heatmap)
+        cv.imwrite(str(target_path / f'mask_{counter}.png'), mask)
         end = time.time()
         print(f'Took {end - start} seconds to process frame {counter}'
               f' out of {int(capture.get(cv.CAP_PROP_FRAME_COUNT))}')
