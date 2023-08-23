@@ -39,7 +39,7 @@ def make_layer(x_in, block, inplanes, planes, blocks_num, stride=1, expansion=1)
 
 class PIDNet:
     def __init__(self,
-                 input_shape=[1024, 2048, 3],
+                 input_shape=(1024, 2048, 3),
                  m=2,
                  n=3,
                  num_classes=19,
