@@ -98,14 +98,14 @@ class SegmentationDatasetBuilder:
 
         samples_datasets = []
         masks_datasets = []
-        for game_directory_path in glob.glob(str(data_path / '*/*/')):
+        for match_directory_path in glob.glob(str(data_path / '*/*/')):
             match_input_image_paths = [
                 match_input_image_path
-                for match_input_image_path in glob.iglob(game_directory_path + 'frames/*.png')
+                for match_input_image_path in glob.iglob(match_directory_path + 'frames/*.png')
             ]
             match_mask_image_paths = [
                 match_mask_image_path
-                for match_mask_image_path in glob.iglob(game_directory_path + 'masks/*.png')
+                for match_mask_image_path in glob.iglob(match_directory_path + 'masks/*.png')
             ]
             match_input_image_paths.sort(key=lambda file_path: int(file_path.split('_')[-1].split('.')[-2]))
             match_mask_image_paths.sort(key=lambda file_path: int(file_path.split('_')[-1].split('.')[-2]))
@@ -133,6 +133,7 @@ class SegmentationDatasetBuilder:
         )
         dataset = tf.data.Dataset.zip((samples, masks))
         print(f'Found {dataset.cardinality().numpy()} frames in total')
+        dataset = dataset.shuffle(buffer_size=dataset.cardinality(), reshuffle_each_iteration=False)
         self.__train_dataset = dataset.skip(validation_size)
         self.__validation_dataset = dataset.take(validation_size)
         print(f'{self.__train_dataset.cardinality().numpy()} frames in training dataset')
@@ -141,14 +142,13 @@ class SegmentationDatasetBuilder:
     @staticmethod
     def __get_frame_from_path(filepath: tf.Tensor):
         image_data = tf.io.read_file(filepath)
-        image = decode_image(image_data, image_width=1024, image_height=512)
-        image = tf.cast(image, tf.float32) / 255.0
+        image = decode_image(image_data, image_width=1920, image_height=1080)
         return image
 
     @staticmethod
     def __get_mask_from_path(filepath: tf.Tensor):
         image_data = tf.io.read_file(filepath)
-        image = decode_image(image_data, image_width=1024, image_height=512, channels=1)
+        image = decode_image(image_data, image_width=1920, image_height=1080, channels=1)
         return image
 
     @property

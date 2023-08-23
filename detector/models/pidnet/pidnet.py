@@ -174,8 +174,8 @@ class PIDNet:
 
 class PIDNetSmall(PIDNet):
     def __init__(self,
-                 input_shape,
-                 number_of_classes):
+                 number_of_classes,
+                 input_shape=(1024, 2048)):
         super().__init__(input_shape=input_shape,
                          num_classes=number_of_classes,
                          m=2,
