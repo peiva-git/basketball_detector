@@ -99,13 +99,14 @@ class SegmentationDatasetBuilder:
         samples_datasets = []
         masks_datasets = []
         for match_directory_path in glob.glob(str(data_path / '*/*/')):
+            match_directory = pathlib.Path(match_directory_path)
             match_input_image_paths = [
                 match_input_image_path
-                for match_input_image_path in glob.iglob(match_directory_path + 'frames/*.png')
+                for match_input_image_path in glob.iglob(str(match_directory / 'frames/*.png'))
             ]
             match_mask_image_paths = [
                 match_mask_image_path
-                for match_mask_image_path in glob.iglob(match_directory_path + 'masks/*.png')
+                for match_mask_image_path in glob.iglob(str(match_directory / 'masks/*.png'))
             ]
             match_input_image_paths.sort(key=lambda file_path: int(file_path.split('_')[-1].split('.')[-2]))
             match_mask_image_paths.sort(key=lambda file_path: int(file_path.split('_')[-1].split('.')[-2]))

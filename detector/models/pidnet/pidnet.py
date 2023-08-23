@@ -48,11 +48,12 @@ class PIDNet:
                  head_planes=128,
                  augment=True):
 
-        x_in = layers.Input(input_shape)
+        x_in = layers.Rescaling(scale=1. / 255)
+        x_in = layers.Resizing(height=input_shape[0], width=input_shape[1])(x_in)
+        x_in = layers.Input(input_shape)(x_in)
 
-        input_shape = tf.keras.backend.int_shape(x_in)
-        height_output = input_shape[1] // 8
-        width_output = input_shape[2] // 8
+        height_output = input_shape[0] // 8
+        width_output = input_shape[1] // 8
 
         # I Branch
         x = layers.Conv2D(planes, kernel_size=(3, 3), strides=2, padding='same')(x_in)
