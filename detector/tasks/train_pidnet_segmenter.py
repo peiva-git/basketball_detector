@@ -1,7 +1,7 @@
 import os
 
 from detector.dataset_builders import SegmentationDatasetBuilder
-from detector.models.classification import get_model_callbacks
+from detector.models import get_model_callbacks
 from detector.models.pidnet import PIDNetSmall
 
 import tensorflow as tf
