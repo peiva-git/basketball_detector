@@ -124,33 +124,27 @@ class SegmentationDatasetBuilder:
         for dataset in masks_datasets[1:]:
             masks = masks.concatenate(dataset)
 
-        samples = samples.map(
-            self.__get_frame_from_path,
+        filenames_dataset = tf.data.Dataset.zip((samples, masks))
+        filenames_dataset = filenames_dataset.shuffle(buffer_size=filenames_dataset.cardinality(),
+                                                      reshuffle_each_iteration=False)
+        dataset = filenames_dataset.map(
+            self.__get_frame_and_mask_from_filepaths,
             num_parallel_calls=tf.data.AUTOTUNE
         )
-        masks = masks.map(
-            self.__get_mask_from_path,
-            num_parallel_calls=tf.data.AUTOTUNE
-        )
-        dataset = tf.data.Dataset.zip((samples, masks))
+
         print(f'Found {dataset.cardinality().numpy()} frames in total')
-        dataset = dataset.shuffle(buffer_size=dataset.cardinality(), reshuffle_each_iteration=False)
         self.__train_dataset = dataset.skip(validation_size)
         self.__validation_dataset = dataset.take(validation_size)
         print(f'{self.__train_dataset.cardinality().numpy()} frames in training dataset')
         print(f'{self.__validation_dataset.cardinality().numpy()} frames in validation dataset')
 
     @staticmethod
-    def __get_frame_from_path(filepath: tf.Tensor):
-        image_data = tf.io.read_file(filepath)
-        image = decode_image(image_data, image_width=1920, image_height=1080)
-        return image
-
-    @staticmethod
-    def __get_mask_from_path(filepath: tf.Tensor):
-        image_data = tf.io.read_file(filepath)
-        image = decode_image(image_data, image_width=1920, image_height=1080, channels=1)
-        return image
+    def __get_frame_and_mask_from_filepaths(frame_filepath: tf.Tensor, mask_filepath: tf.Tensor):
+        frame_data = tf.io.read_file(frame_filepath)
+        mask_data = tf.io.read_file(mask_filepath)
+        frame = decode_image(frame_data, image_width=2048, image_height=1024)
+        mask = decode_image(mask_data, image_width=2048, image_height=1024, channels=1)
+        return frame, mask
 
     @property
     def train_dataset(self) -> tf.data.Dataset:

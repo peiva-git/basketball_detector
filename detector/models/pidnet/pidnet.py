@@ -47,10 +47,8 @@ class PIDNet:
                  ppm_planes=96,
                  head_planes=128,
                  augment=True):
-
-        x_in = layers.Rescaling(scale=1. / 255)
-        x_in = layers.Resizing(height=input_shape[0], width=input_shape[1])(x_in)
-        x_in = layers.Input(input_shape)(x_in)
+        x_in = layers.Input(input_shape)
+        x_in = layers.Rescaling(scale=1. / 255, input_shape=input_shape)(x_in)
 
         height_output = input_shape[0] // 8
         width_output = input_shape[1] // 8
@@ -141,7 +139,7 @@ class PIDNet:
             x = tf.image.resize(spp, size=(height_output, width_output), method='bilinear')
             dfm = Bag(x_, x, x_d, planes * 4)  # dfm
 
-        x_ = segmentation_head(dfm, head_planes, num_classes)  # final_layer
+        x_ = segmentation_head(dfm, head_planes, num_classes, scale_factor=8)  # final_layer
 
         # Prediction Head
         if augment:
@@ -176,7 +174,7 @@ class PIDNet:
 class PIDNetSmall(PIDNet):
     def __init__(self,
                  number_of_classes,
-                 input_shape=(1024, 2048)):
+                 input_shape=(1024, 2048, 3)):
         super().__init__(input_shape=input_shape,
                          num_classes=number_of_classes,
                          m=2,

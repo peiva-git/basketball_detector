@@ -8,15 +8,16 @@ import tensorflow as tf
 
 if __name__ == '__main__':
     builder = SegmentationDatasetBuilder('/mnt/DATA/tesi/dataset/dataset_segmentation/pallacanestro_trieste/')
-    builder.configure_datasets_for_performance(shuffle_buffer_size=500, input_batch_size=5)
+    builder.configure_datasets_for_performance(shuffle_buffer_size=10, input_batch_size=2)
     train_dataset, validation_dataset = builder.train_dataset, builder.validation_dataset
 
-    segmenter = PIDNetSmall(input_shape=(1024, 2048), number_of_classes=2)
+    segmenter = PIDNetSmall(input_shape=(1024, 2048, 3), number_of_classes=1)
     segmenter.model.compile(
-        loss=tf.keras.losses.CategoricalCrossentropy(from_logits=True),
+        loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
         optimizer=tf.keras.optimizers.SGD(momentum=0.9, learning_rate=0.045),
-        metrics=[tf.keras.metrics.Accuracy(), tf.keras.metrics.MeanIoU(num_classes=2)]
+        metrics=['accuracy']
     )
+    segmenter.model.summary()
     segmenter.model.fit(
         train_dataset,
         validation_data=validation_dataset,
