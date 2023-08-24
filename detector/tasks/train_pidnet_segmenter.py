@@ -14,7 +14,7 @@ if __name__ == '__main__':
 
     segmenter = PIDNetSmall(input_shape=(1024, 2048, 3), number_of_classes=2)
     segmenter.model.compile(
-        loss=tf.keras.losses.BinaryCrossentropy(),
+        loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
         optimizer=tf.keras.optimizers.SGD(momentum=0.05, learning_rate=0.01),
         metrics=['accuracy', tf.keras.metrics.IoU(num_classes=2, target_class_ids=[1],
                                                   sparse_y_true=False, sparse_y_pred=False)]
