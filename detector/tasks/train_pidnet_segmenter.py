@@ -19,7 +19,6 @@ if __name__ == '__main__':
         metrics=['accuracy', tf.keras.metrics.IoU(num_classes=2, target_class_ids=[1],
                                                   sparse_y_true=False, sparse_y_pred=False)]
     )
-    segmenter.model.summary()
     segmenter.model.fit(
         train_dataset,
         validation_data=validation_dataset,
