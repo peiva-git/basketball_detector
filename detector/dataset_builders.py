@@ -3,6 +3,7 @@ import pathlib
 import os.path
 from typing import Any
 
+import keras_cv.layers
 import tensorflow as tf
 import numpy as np
 
@@ -148,6 +149,12 @@ class SegmentationDatasetBuilder:
         mask = tf.one_hot(tf.cast(mask, tf.uint8), 2)
         mask = tf.squeeze(mask)
         return frame, mask
+
+    def augment_train_dataset(self):
+        augment_function = tf.keras.Sequential([
+            keras_cv.layers.RandomFlip(rate=1.0),
+            keras_cv.layers.RandomCrop(height=)
+        ])
 
     @property
     def train_dataset(self) -> tf.data.Dataset:
