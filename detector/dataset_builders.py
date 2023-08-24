@@ -155,7 +155,7 @@ class SegmentationDatasetBuilder:
             keras_cv.layers.RandomFlip(rate=1.0, seed=2023),
             keras_cv.layers.RandomCrop(height=1024, width=2048, seed=2023),
             keras_cv.layers.RandomRotation(factor=0.2, segmentation_classes=2, seed=2023),
-            keras_cv.layers.RandomTranslation((0.2, 0.2), seed=2023),
+            keras_cv.layers.RandomTranslation(height_factor=(-0.2, 0.2), width_factor=(-0.2, 0.2), seed=2023),
             keras_cv.layers.RandAugment((0, 1), geometric=False)
         ])
         self.__train_dataset = self.__train_dataset.map(
