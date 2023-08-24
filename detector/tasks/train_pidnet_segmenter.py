@@ -16,7 +16,8 @@ if __name__ == '__main__':
     segmenter.model.compile(
         loss=tf.keras.losses.BinaryCrossentropy(),
         optimizer=tf.keras.optimizers.SGD(momentum=0.05, learning_rate=0.01),
-        metrics=['accuracy', tf.keras.metrics.IoU(num_classes=2, target_class_ids=[1])]
+        metrics=['accuracy', tf.keras.metrics.IoU(num_classes=2, target_class_ids=[1],
+                                                  sparse_y_true=False, sparse_y_pred=False)]
     )
     segmenter.model.summary()
     segmenter.model.fit(
