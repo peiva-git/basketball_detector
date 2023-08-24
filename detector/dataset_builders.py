@@ -148,6 +148,7 @@ class SegmentationDatasetBuilder:
         # 2 as the number of classes
         mask = tf.one_hot(tf.cast(mask, tf.uint8), 2)
         mask = tf.squeeze(mask)
+        mask = tf.cast(mask, tf.float32)
         return frame, mask
 
     def augment_train_dataset(self):
