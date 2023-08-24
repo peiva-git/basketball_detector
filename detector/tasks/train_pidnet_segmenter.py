@@ -9,13 +9,13 @@ import tensorflow as tf
 if __name__ == '__main__':
     builder = SegmentationDatasetBuilder('/home/ubuntu/segmentation_dataset/pallacanestro_trieste')
     # builder.augment_train_dataset()
-    builder.configure_datasets_for_performance(shuffle_buffer_size=100, input_batch_size=10)
+    builder.configure_datasets_for_performance(shuffle_buffer_size=100, input_batch_size=12)
     train_dataset, validation_dataset = builder.train_dataset, builder.validation_dataset
 
     segmenter = PIDNetSmall(input_shape=(1024, 2048, 3), number_of_classes=2)
     segmenter.model.compile(
         loss=tf.keras.losses.BinaryCrossentropy(),
-        optimizer=tf.keras.optimizers.SGD(momentum=0.3, learning_rate=0.01),
+        optimizer=tf.keras.optimizers.SGD(momentum=0.0005, learning_rate=0.01),
         metrics=['accuracy', tf.keras.metrics.IoU(num_classes=2, target_class_ids=[1])]
     )
     segmenter.model.summary()
