@@ -9,7 +9,7 @@ import tensorflow as tf
 if __name__ == '__main__':
     builder = SegmentationDatasetBuilder('/home/ubuntu/segmentation_dataset/pallacanestro_trieste')
     # builder.augment_train_dataset()
-    builder.configure_datasets_for_performance(shuffle_buffer_size=100, input_batch_size=12)
+    builder.configure_datasets_for_performance(shuffle_buffer_size=50, input_batch_size=12)
     train_dataset, validation_dataset = builder.train_dataset, builder.validation_dataset
 
     segmenter = PIDNetSmall(input_shape=(1024, 2048, 3), number_of_classes=2)
