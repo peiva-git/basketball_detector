@@ -16,7 +16,8 @@ def segmentation_head(x_in, interplanes, outplanes, scale_factor=None):
 
     x = layers.BatchNormalization(momentum=bn_mom)(x)
     x = layers.Activation("relu")(x)
-    x = layers.Conv2D(outplanes, kernel_size=(1, 1), use_bias=range, padding="valid")(x)  # bias difference
+    # bias difference
+    x = layers.Conv2D(outplanes, kernel_size=(1, 1), use_bias=range, padding="valid", activation='softmax')(x)
 
     if scale_factor is not None:
         input_shape = tf.keras.backend.int_shape(x)

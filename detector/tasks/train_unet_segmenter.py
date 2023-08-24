@@ -1,7 +1,7 @@
 import os
 
 from detector.dataset_builders import SegmentationDatasetBuilder
-from detector.models import get_model_callbacks
+from detector.models import get_segmentation_model_callbacks
 
 import tensorflow as tf
 
@@ -23,7 +23,7 @@ if __name__ == '__main__':
         train_dataset,
         validation_data=validation_dataset,
         epochs=100,
-        callbacks=get_model_callbacks(segmenter.model_name, early_stop_patience=10, reduce_lr_patience=5)
+        callbacks=get_segmentation_model_callbacks(segmenter.model_name, early_stop_patience=10, reduce_lr_patience=5)
     )
     segmenter.model.save(filepath=os.path.join('out', 'models', 'TF', segmenter.model_name), save_format='tf')
     segmenter.model.save(filepath=os.path.join('out', 'models', 'HDF5', segmenter.model_name + '.h5'), save_format='h5')

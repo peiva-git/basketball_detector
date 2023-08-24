@@ -53,7 +53,7 @@ def train_command(debug_enabled: bool = False):
         train_dataset,
         validation_data=validation_dataset,
         epochs=args.epochs,
-        callbacks=detector.models.get_model_callbacks(
+        callbacks=detector.models.get_classification_model_callbacks(
             early_stop_patience=int(0.3 * args.epochs),
             reduce_lr_patience=int(0.2 * args.epochs)
         )
