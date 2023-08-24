@@ -186,7 +186,7 @@ class SegmentationDatasetAugmentor(tf.keras.layers.Layer):
             keras_cv.layers.RandomCrop(height=1024, width=2048, seed=seed),
         ])
 
-    def call(self, inputs, masks):
+    def call(self, inputs, masks, **kwargs):
         inputs = self.__augment_inputs(inputs)
-        labels = self.__augment_masks(masks)
+        masks = self.__augment_masks(masks)
         return inputs, masks
