@@ -9,7 +9,7 @@ from detector.models.segmentation import UNet
 
 if __name__ == '__main__':
     builder = SegmentationDatasetBuilder('/mnt/DATA/tesi/dataset/dataset_segmentation/pallacanestro_trieste/')
-    builder.configure_datasets_for_performance(shuffle_buffer_size=100, input_batch_size=10)
+    builder.configure_datasets_for_performance(shuffle_buffer_size=10, input_batch_size=2)
     train_dataset, validation_dataset = builder.train_dataset, builder.validation_dataset
 
     segmenter = UNet(input_shape=(512, 1024, 3), number_of_classes=2)
