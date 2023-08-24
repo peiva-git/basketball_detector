@@ -151,7 +151,6 @@ class SegmentationDatasetBuilder:
         return frame, mask
 
     def augment_train_dataset(self):
-
         self.__train_dataset = self.__train_dataset.map(
             SegmentationDatasetAugmentor(2023),
             num_parallel_calls=tf.data.AUTOTUNE
