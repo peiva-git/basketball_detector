@@ -153,7 +153,6 @@ class SegmentationDatasetBuilder:
     def augment_train_dataset(self):
         augment_function = tf.keras.Sequential([
             keras_cv.layers.RandomFlip(rate=1.0),
-            keras_cv.layers.RandomCrop(height=)
         ])
 
     @property
