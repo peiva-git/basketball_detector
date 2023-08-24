@@ -12,7 +12,7 @@ if __name__ == '__main__':
     builder.configure_datasets_for_performance(shuffle_buffer_size=100, input_batch_size=10)
     train_dataset, validation_dataset = builder.train_dataset, builder.validation_dataset
 
-    segmenter = UNet(input_shape=(512, 1024, 3))
+    segmenter = UNet(input_shape=(512, 1024, 3), number_of_classes=2)
     segmenter.model.compile(
         loss=tf.keras.losses.BinaryCrossentropy(),
         optimizer=tf.keras.optimizers.SGD(momentum=0.3, learning_rate=0.01),
