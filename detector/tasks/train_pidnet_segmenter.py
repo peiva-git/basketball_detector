@@ -26,5 +26,6 @@ if __name__ == '__main__':
         callbacks=get_segmentation_model_callbacks(segmenter.model_name, early_stop_patience=15, reduce_lr_patience=3)
     )
     segmenter.model.save(filepath=os.path.join('out', 'models', 'Keras_v3', segmenter.model_name + '.keras'))
+    segmenter.model.save(filepath=os.path.join('out', 'models', 'TF', segmenter.model_name), save_format='tf')
     segmenter.model.save(filepath=os.path.join('out', 'models', 'HDF5', segmenter.model_name + '.h5'), save_format='h5')
 

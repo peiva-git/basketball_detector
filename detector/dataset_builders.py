@@ -144,7 +144,7 @@ class SegmentationDatasetBuilder:
         frame_data = tf.io.read_file(frame_filepath)
         mask_data = tf.io.read_file(mask_filepath)
         frame = decode_image(frame_data, image_width=2048, image_height=1024)
-        mask = decode_image(mask_data, image_width=2048 // 8, image_height=1024 // 8, channels=1)
+        mask = decode_image(mask_data, image_width=2048, image_height=1024, channels=1)
         # 2 as the number of classes
         mask = tf.one_hot(tf.cast(mask, tf.uint8), 2)
         mask = tf.squeeze(mask)
