@@ -2,18 +2,19 @@ import os
 
 from detector.dataset_builders import SegmentationDatasetBuilder
 from detector.models import get_model_callbacks
-from detector.models.pidnet import PIDNetSmall
 
 import tensorflow as tf
 
+from detector.models.segmentation import UNet
+
 if __name__ == '__main__':
     builder = SegmentationDatasetBuilder('/mnt/DATA/tesi/dataset/dataset_segmentation/pallacanestro_trieste/')
-    builder.configure_datasets_for_performance(shuffle_buffer_size=10, input_batch_size=2)
+    builder.configure_datasets_for_performance(shuffle_buffer_size=100, input_batch_size=10)
     train_dataset, validation_dataset = builder.train_dataset, builder.validation_dataset
 
-    segmenter = PIDNetSmall(input_shape=(512, 1024, 3), number_of_classes=2)
+    segmenter = UNet(input_shape=(512, 1024, 3))
     segmenter.model.compile(
-        loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
+        loss=tf.keras.losses.BinaryCrossentropy(),
         optimizer=tf.keras.optimizers.SGD(momentum=0.3, learning_rate=0.01),
         metrics=['accuracy', tf.keras.metrics.IoU(num_classes=2, target_class_ids=[1])]
     )
@@ -27,4 +28,3 @@ if __name__ == '__main__':
     segmenter.model.save(filepath=os.path.join('out', 'models', 'TF', segmenter.model_name), save_format='tf')
     segmenter.model.save(filepath=os.path.join('out', 'models', 'HDF5', segmenter.model_name + '.h5'), save_format='h5')
     segmenter.model.save(filepath=os.path.join('out', 'models', 'Keras_v3', segmenter.model_name + '.keras'))
-
