@@ -86,9 +86,7 @@ class UNet:
             previous_block_activation = x  # Set aside next residual
 
         # Add a per-pixel classification layer
-        outputs = keras.layers.Conv2D(number_of_classes, 3, activation="softmax", padding="same")(
-            x
-        )
+        outputs = keras.layers.Conv2D(number_of_classes, 3, activation="softmax", padding="same")(x)
 
         self.__model = keras.Model(inputs, outputs)
         self.__model_name = 'unet'
