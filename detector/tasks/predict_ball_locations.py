@@ -1,3 +1,4 @@
+import concurrent.futures
 import math
 import pathlib
 import time
@@ -99,7 +100,21 @@ def annotate_frame_with_ball_patches(frame, patches_with_positions, predictions,
 def obtain_heatmap(frame, patches_with_positions, predictions, window_size: int = 50):
     frame_height, frame_width, _ = frame.shape
     heatmap = np.zeros((frame_height, frame_width), np.float32)
-    patch_indexes_by_pixel = map_pixels_to_patch_indexes(patches_with_positions, window_size)
+    patch_indexes_by_pixel = dict()
+    with concurrent.futures.ThreadPoolExecutor(20) as executor:
+        futures = [
+            executor.submit(
+                iterate_over_patch,
+                index,
+                patch_indexes_by_pixel,
+                patch_position_x,
+                patch_position_y,
+                window_size
+            )
+            for index, (patch_position_x, patch_position_y, _) in enumerate(patches_with_positions)
+        ]
+        concurrent.futures.wait(futures, 60)
+    # map_pixels_to_patch_indexes(patch_indexes_by_pixel, patches_with_positions, window_size)
     for row, column in product(range(frame_height), range(frame_width)):
         try:
             patches_ball_probabilities = \
@@ -114,16 +129,18 @@ def obtain_heatmap(frame, patches_with_positions, predictions, window_size: int 
     return heatmap_rescaled.astype(np.uint8, copy=False)
 
 
-def map_pixels_to_patch_indexes(patches_with_positions, window_size: int):
-    patch_indexes_by_pixel = dict()
+def map_pixels_to_patch_indexes(patch_indexes_by_pixel, patches_with_positions, window_size: int):
     for index, (patch_position_y, patch_position_x, _) in enumerate(patches_with_positions):
-        for row, column in product(range(patch_position_y, patch_position_y + window_size),
-                                   range(patch_position_x, patch_position_x + window_size)):
-            try:
-                patch_indexes_by_pixel[(row, column)].append(index)
-            except KeyError:
-                patch_indexes_by_pixel[(row, column)] = [index]
-    return patch_indexes_by_pixel
+        iterate_over_patch(index, patch_indexes_by_pixel, patch_position_x, patch_position_y, window_size)
+
+
+def iterate_over_patch(index, patch_indexes_by_pixel, patch_position_x, patch_position_y, window_size):
+    for row, column in product(range(patch_position_y, patch_position_y + window_size),
+                               range(patch_position_x, patch_position_x + window_size)):
+        try:
+            patch_indexes_by_pixel[(row, column)].append(index)
+        except KeyError:
+            patch_indexes_by_pixel[(row, column)] = [index]
 
 
 def find_max_pixel(heatmap) -> (int, int):
