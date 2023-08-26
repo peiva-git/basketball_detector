@@ -138,9 +138,9 @@ def iterate_over_patch(index, patch_indexes_by_pixel, patch_position_x, patch_po
     for row, column in product(range(patch_position_y, patch_position_y + window_size),
                                range(patch_position_x, patch_position_x + window_size)):
         try:
-            patch_indexes_by_pixel[(row, column)].append(index)
+            patch_indexes_by_pixel[(row, column)].add(index)
         except KeyError:
-            patch_indexes_by_pixel[(row, column)] = [index]
+            patch_indexes_by_pixel[(row, column)] = {index}
 
 
 def find_max_pixel(heatmap) -> (int, int):
