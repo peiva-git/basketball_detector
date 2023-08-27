@@ -31,7 +31,7 @@ def divide_frame_into_patches(frame, stride: int = 5, window_size: int = 50) -> 
     # could try out with a stride of 10 and a window_size of 100 as well
     # the origin of the coordinates' system is in the upper left corner of the image
     # with the x-axis facing to the right, and the y-axis facing down
-    height, width, channels = frame.shape
+    height, width, _ = frame.shape
     position_height = 0
     position_width = 0
     number_of_width_windows = int(width / stride) - int(window_size / stride)
