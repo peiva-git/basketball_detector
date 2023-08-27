@@ -2,6 +2,7 @@ import concurrent.futures
 import math
 import pathlib
 import time
+from collections import defaultdict
 from itertools import product
 from statistics import mean
 
@@ -100,21 +101,8 @@ def annotate_frame_with_ball_patches(frame, patches_with_positions, predictions,
 def obtain_heatmap(frame, patches_with_positions, predictions, window_size: int = 50):
     frame_height, frame_width, _ = frame.shape
     heatmap = np.zeros((frame_height, frame_width), np.float32)
-    patch_indexes_by_pixel = []
-    with concurrent.futures.ThreadPoolExecutor(10) as executor:
-        futures = [
-            executor.submit(
-                iterate_over_patch,
-                index,
-                patch_indexes_by_pixel,
-                patch_position_x,
-                patch_position_y,
-                window_size
-            )
-            for index, (patch_position_x, patch_position_y, _) in enumerate(patches_with_positions)
-        ]
-        concurrent.futures.wait(futures, 60)
-    # map_pixels_to_patch_indexes(patch_indexes_by_pixel, patches_with_positions, window_size)
+    patch_indexes_by_pixel = defaultdict(set)
+    map_pixels_to_patch_indexes(patch_indexes_by_pixel, patches_with_positions, window_size)
     for row, column in product(range(frame_height), range(frame_width)):
         try:
             patches_ball_probabilities = \
@@ -137,7 +125,7 @@ def map_pixels_to_patch_indexes(patch_indexes_by_pixel, patches_with_positions, 
 def iterate_over_patch(index, patch_indexes_by_pixel, patch_position_x, patch_position_y, window_size):
     for row, column in product(range(patch_position_y, patch_position_y + window_size),
                                range(patch_position_x, patch_position_x + window_size)):
-        patch_indexes_by_pixel.append((row, column, index))
+        patch_indexes_by_pixel[(row, column)].add(index)
 
 
 def find_max_pixel(heatmap) -> (int, int):
