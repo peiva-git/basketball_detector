@@ -81,6 +81,7 @@ class ClassificationDatasetBuilder:
 class ClassificationSequenceBuilder:
     def __init__(self, data_directory: str, batch_size: int, validation_percentage: float = 0.2):
         data_path = pathlib.Path(data_directory)
+        print('Gathering all image paths...')
         image_paths = [
             image_path
             for image_path in glob.iglob(str(data_path / '*/*/*/*'))

@@ -2,19 +2,21 @@ import os
 
 from detector.models.classification import MobileNet
 from detector.models import get_classification_model_callbacks
-from detector.dataset_builders import ClassificationDatasetBuilder
+from detector.dataset_builders import ClassificationDatasetBuilder, ClassificationSequenceBuilder
 
 import tensorflow as tf
 
 if __name__ == '__main__':
-    builder = ClassificationDatasetBuilder('/mnt/DATA/tesi/dataset/dataset_classification/pallacanestro_trieste/')
-    builder.configure_datasets_for_performance(shuffle_buffer_size=20000)
-    train_dataset, val_dataset = builder.train_dataset, builder.validation_dataset
+    # builder = ClassificationDatasetBuilder('/mnt/DATA/tesi/dataset/dataset_classification/pallacanestro_trieste/')
+    # builder.configure_datasets_for_performance(shuffle_buffer_size=20000)
+    # train_dataset, val_dataset = builder.train_dataset, builder.validation_dataset
+    builder = ClassificationSequenceBuilder('/mnt/DATA/tesi/dataset/dataset_classification/pallacanestro_trieste/', 32)
+    train_dataset, val_dataset = builder.training_sequence, builder.validation_sequence
 
-    detector = MobileNet()
+    detector = MobileNet(image_width=112, image_height=112)
     detector.model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
-        loss=tf.keras.losses.SparseCategoricalCrossentropy(),
+        loss=tf.keras.losses.BinaryCrossentropy(),
         metrics=['accuracy']
     )
 
