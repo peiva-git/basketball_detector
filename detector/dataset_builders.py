@@ -3,6 +3,7 @@ import math
 import pathlib
 import os.path
 from typing import Any
+from random import shuffle
 
 import keras_cv.layers
 import tensorflow as tf
@@ -75,6 +76,33 @@ class ClassificationDatasetBuilder:
     def configure_datasets_for_performance(self, shuffle_buffer_size: int = 10000, input_batch_size: int = 32):
         self.__train_dataset = configure_for_performance(self.__train_dataset, shuffle_buffer_size, input_batch_size)
         self.__validation_dataset = self.__validation_dataset.batch(input_batch_size)
+
+
+class ClassificationSequenceBuilder:
+    def __init__(self, data_directory: str, batch_size: int, validation_percentage: float = 0.2):
+        data_path = pathlib.Path(data_directory)
+        image_paths = [
+            image_path
+            for image_path in glob.iglob(str(data_path / '*/*/*/*'))
+            if image_path.endswith('.png')
+        ]
+        shuffle(image_paths)
+        print(f'Found {len(image_paths)} images')
+        validation_size = int(len(image_paths) * validation_percentage)
+        validation_paths = image_paths[:validation_size]
+        training_paths = image_paths[validation_size:]
+        print(f'{len(validation_paths)} images in validation dataset')
+        print(f'{len(training_paths)} images in training dataset')
+        self.__training_sequence = ClassificationSequence(training_paths, batch_size)
+        self.__validation_sequence = ClassificationSequence(validation_paths, batch_size)
+
+    @property
+    def training_sequence(self):
+        return self.__training_sequence
+
+    @property
+    def validation_sequence(self):
+        return self.__validation_sequence
 
 
 class ClassificationSequence(tf.keras.utils.Sequence):
