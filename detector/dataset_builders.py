@@ -1,4 +1,5 @@
 import glob
+import math
 import pathlib
 import os.path
 from typing import Any
@@ -32,8 +33,8 @@ class ClassificationDatasetBuilder:
         validation_size = int(self.__image_count * validation_percentage)
         self.__train_dataset = all_images_dataset.skip(validation_size)
         self.__validation_dataset = all_images_dataset.take(validation_size)
-        print(tf.data.experimental.cardinality(self.__train_dataset).numpy(), 'images in training dataset')
-        print(tf.data.experimental.cardinality(self.__validation_dataset).numpy(), 'images in validation dataset')
+        print(self.__train_dataset.cardinality().numpy(), 'images in training dataset')
+        print(self.__validation_dataset.cardinality().numpy(), 'images in validation dataset')
 
         self.__train_dataset = self.__train_dataset.map(
             self.__get_image_label_pair_from_path,
@@ -74,6 +75,40 @@ class ClassificationDatasetBuilder:
     def configure_datasets_for_performance(self, shuffle_buffer_size: int = 10000, input_batch_size: int = 32):
         self.__train_dataset = configure_for_performance(self.__train_dataset, shuffle_buffer_size, input_batch_size)
         self.__validation_dataset = self.__validation_dataset.batch(input_batch_size)
+
+
+class ClassificationSequence(tf.keras.utils.Sequence):
+    def __init__(self, images_paths: list[str], batch_size: int):
+        self.__batch_size = batch_size
+        self.__image_paths = images_paths
+        self.__class_names = np.unique(sorted([path.split(os.path.sep)[-2] for path in images_paths]))
+
+    def __getitem__(self, index):
+        low = index * self.__batch_size
+        high = min(low + self.__batch_size, len(self.__image_paths))
+        batch_paths = self.__image_paths[low:high]
+        batch_labels = [
+            self.__get_label(tf.constant(image_path))
+            for image_path in batch_paths
+        ]
+        batch_images = [
+            self.__get_image(tf.constant(image_path))
+            for image_path in batch_paths
+        ]
+        return tf.stack(batch_images), tf.stack(batch_labels)
+
+    def __len__(self):
+        return math.ceil(len(self.__image_paths) / self.__batch_size)
+
+    def __get_label(self, file_path: tf.Tensor) -> int:
+        parts = tf.strings.split(file_path, os.path.sep)
+        one_hot = parts[-2] == self.__class_names
+        return tf.argmax(one_hot)
+
+    @staticmethod
+    def __get_image(file_path: tf.Tensor):
+        image_data = tf.io.read_file(file_path)
+        return decode_image(image_data, image_width=112, image_height=112, channels=3)
 
 
 class SegmentationDatasetBuilder:
