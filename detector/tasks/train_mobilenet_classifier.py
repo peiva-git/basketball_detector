@@ -13,19 +13,19 @@ if __name__ == '__main__':
     builder = ClassificationSequenceBuilder('/mnt/DATA/tesi/dataset/dataset_classification/pallacanestro_trieste/', 32)
     train_dataset, val_dataset = builder.training_sequence, builder.validation_sequence
 
-    detector = MobileNet(image_width=112, image_height=112)
-    detector.model.compile(
+    classifier = MobileNet(image_width=112, image_height=112)
+    classifier.model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
         loss=tf.keras.losses.BinaryCrossentropy(),
         metrics=['accuracy']
     )
 
-    detector.model.fit(
+    classifier.model.fit(
         train_dataset,
         validation_data=val_dataset,
         epochs=100,
-        callbacks=get_classification_model_callbacks(detector.model_name, early_stop_patience=10, reduce_lr_patience=5)
+        callbacks=get_classification_model_callbacks(classifier.model_name, early_stop_patience=10, reduce_lr_patience=5)
     )
-    detector.model.save(filepath=os.path.join('out', 'models', 'TF', detector.model_name), save_format='tf')
-    detector.model.save(filepath=os.path.join('out', 'models', 'HDF5', detector.model_name + '.h5'), save_format='h5')
-    detector.model.save(filepath=os.path.join('out', 'models', 'Keras_v3', detector.model_name + '.keras'))
+    classifier.model.save(filepath=os.path.join('out', 'models', 'TF', classifier.model_name), save_format='tf')
+    classifier.model.save(filepath=os.path.join('out', 'models', 'HDF5', classifier.model_name + '.h5'), save_format='h5')
+    classifier.model.save(filepath=os.path.join('out', 'models', 'Keras_v3', classifier.model_name + '.keras'))
