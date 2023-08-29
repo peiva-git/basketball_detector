@@ -84,8 +84,7 @@ class ClassificationSequenceBuilder:
         print('Gathering all image paths...')
         image_paths = [
             image_path
-            for image_path in glob.iglob(str(data_path / '*/*/*/*'))
-            if image_path.endswith('.png')
+            for image_path in glob.iglob(str(data_path / '*/*/*/*.png'))
         ]
         shuffle(image_paths)
         print(f'Found {len(image_paths)} images')
