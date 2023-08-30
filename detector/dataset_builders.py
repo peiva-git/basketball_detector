@@ -70,7 +70,7 @@ class ClassificationDatasetBuilder:
     def __get_image_label_pair_from_path(self, file_path: tf.Tensor) -> (Any, int):
         label = self.__get_label(file_path)
         image_data = tf.io.read_file(file_path)
-        image = decode_image(image_data)
+        image = decode_image(image_data, image_width=112, image_height=112)
         return image, label
 
     def configure_datasets_for_performance(self, shuffle_buffer_size: int = 10000, input_batch_size: int = 32):
