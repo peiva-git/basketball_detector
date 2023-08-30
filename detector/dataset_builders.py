@@ -93,8 +93,8 @@ class ClassificationSequenceBuilder:
         training_paths = image_paths[validation_size:]
         print(f'{len(validation_paths)} images in validation dataset')
         print(f'{len(training_paths)} images in training dataset')
-        self.__training_sequence = ClassificationSequence(training_paths, batch_size)
-        self.__validation_sequence = ClassificationSequence(validation_paths, batch_size)
+        self.__training_sequence = ClassificationSequence(data_directory, training_paths, batch_size)
+        self.__validation_sequence = ClassificationSequence(data_directory, validation_paths, batch_size)
 
     @property
     def training_sequence(self):
@@ -106,10 +106,11 @@ class ClassificationSequenceBuilder:
 
 
 class ClassificationSequence(tf.keras.utils.Sequence):
-    def __init__(self, images_paths: list[str], batch_size: int):
+    def __init__(self, data_directory: str, images_paths: list[str], batch_size: int):
+        data_path = pathlib.Path(data_directory)
         self.__batch_size = batch_size
         self.__image_paths = images_paths
-        self.__class_names = np.unique(sorted([path.split(os.path.sep)[-2] for path in images_paths]))
+        self.__class_names = np.unique(sorted([item.name for item in data_path.glob('*/*/*')]))
         print(f'Found classes {self.__class_names}')
 
     def __getitem__(self, index):
