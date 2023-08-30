@@ -10,7 +10,7 @@ if __name__ == '__main__':
     # builder = ClassificationDatasetBuilder('/mnt/DATA/tesi/dataset/dataset_classification/pallacanestro_trieste/')
     # builder.configure_datasets_for_performance(shuffle_buffer_size=20000)
     # train_dataset, val_dataset = builder.train_dataset, builder.validation_dataset
-    builder = ClassificationSequenceBuilder('/home/ubuntu/dataset_classification/pallacanestro_trieste/', 64)
+    builder = ClassificationSequenceBuilder('/home/ubuntu/classification_dataset/pallacanestro_trieste/', 64)
     train_sequence, val_sequence = builder.training_sequence, builder.validation_sequence
 
     classifier = MobileNet(number_of_classes=2, image_width=112, image_height=112)
