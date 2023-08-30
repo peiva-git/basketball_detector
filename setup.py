@@ -11,7 +11,7 @@ dependencies = [
     'numpy==1.24.*',
     'keras-cv==0.6.*',
     'keras-core',
-    'opencv-python==4.8.*'
+    'opencv-python==4.5.*'
 ]
 
 setup(
