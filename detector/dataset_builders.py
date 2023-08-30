@@ -110,6 +110,7 @@ class ClassificationSequence(tf.keras.utils.Sequence):
         self.__batch_size = batch_size
         self.__image_paths = images_paths
         self.__class_names = np.unique(sorted([path.split(os.path.sep)[-2] for path in images_paths]))
+        print(f'Found classes {self.__class_names}')
 
     def __getitem__(self, index):
         low = index * self.__batch_size
