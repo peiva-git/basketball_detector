@@ -7,22 +7,22 @@ from detector.dataset_builders import ClassificationDatasetBuilder, Classificati
 import tensorflow as tf
 
 if __name__ == '__main__':
-    builder = ClassificationDatasetBuilder('/home/ubuntu/classification_dataset/pallacanestro_trieste/')
-    builder.configure_datasets_for_performance(shuffle_buffer_size=20000)
-    train_dataset, val_dataset = builder.train_dataset, builder.validation_dataset
-    # builder = ClassificationSequenceBuilder('/home/ubuntu/classification_dataset/pallacanestro_trieste/', 64)
-    # train_sequence, val_sequence = builder.training_sequence, builder.validation_sequence
+    # builder = ClassificationDatasetBuilder('/home/ubuntu/classification_dataset/pallacanestro_trieste/')
+    # builder.configure_datasets_for_performance(shuffle_buffer_size=20000)
+    # train_dataset, val_dataset = builder.train_dataset, builder.validation_dataset
+    builder = ClassificationSequenceBuilder('/home/ubuntu/classification_dataset/pallacanestro_trieste/', 64)
+    train_sequence, val_sequence = builder.training_sequence, builder.validation_sequence
 
     classifier = MobileNet(number_of_classes=2, image_width=112, image_height=112)
     classifier.model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
-        loss=tf.keras.losses.BinaryCrossentropy(),
+        loss=tf.keras.losses.SparseCategoricalCrossentropy(),
         metrics=['accuracy']
     )
 
     classifier.model.fit(
-        train_dataset,
-        validation_data=val_dataset,
+        train_sequence,
+        validation_data=val_sequence,
         epochs=100,
         callbacks=get_classification_model_callbacks(classifier.model_name, early_stop_patience=10, reduce_lr_patience=5)
     )
