@@ -7,13 +7,13 @@ from detector.models.classification import EfficientNet
 import tensorflow as tf
 
 if __name__ == '__main__':
-    builder = ClassificationSequenceBuilder('/home/ubuntu/classification_dataset/pallacanestro_trieste/', 64)
+    builder = ClassificationSequenceBuilder('/home/ubuntu/classification_dataset/pallacanestro_trieste/', 8)
     train_sequence, val_sequence = builder.training_sequence, builder.validation_sequence
 
     classifier = EfficientNet(number_of_classes=2)
     classifier.model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
-        loss=tf.keras.losses.BinaryCrossentropy(),
+        loss=tf.keras.losses.SparseCategoricalCrossentropy(),
         metrics=['accuracy']
     )
     classifier.model.fit(
