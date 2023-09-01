@@ -16,7 +16,7 @@ def get_classification_model_callbacks(
             mode='max',
             save_best_only=True
         ),
-        tf.keras.callbacks.BackupAndRestore(backup_dir=os.path.join(model_dir_path, 'backup')),
+        tf.keras.callbacks.BackupAndRestore(backup_dir=os.path.join(model_dir_path, 'backup'), save_freq=10000),
         tf.keras.callbacks.EarlyStopping(
             monitor='loss',
             min_delta=0.001,
