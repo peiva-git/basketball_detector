@@ -16,8 +16,13 @@ if __name__ == '__main__':
     classifier = MobileNet(number_of_classes=2, image_width=112, image_height=112)
     classifier.model.compile(
         optimizer=tf.keras.optimizers.SGD(learning_rate=0.01, momentum=0.9),
-        loss=tf.keras.losses.SparseCategoricalCrossentropy(ignore_class=1),
-        metrics=['accuracy']
+        loss=tf.keras.losses.SparseCategoricalCrossentropy(),
+        metrics=[
+            tf.keras.metrics.SparseCategoricalAccuracy(),
+            tf.keras.metrics.AUC(),
+            tf.keras.metrics.Precision(class_id=0),
+            tf.metrics.Recall(class_id=0)
+        ]
     )
 
     classifier.model.fit(
