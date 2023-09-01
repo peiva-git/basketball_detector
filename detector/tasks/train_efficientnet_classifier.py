@@ -13,8 +13,13 @@ if __name__ == '__main__':
     classifier = EfficientNet(number_of_classes=2)
     classifier.model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
-        loss=tf.keras.losses.SparseCategoricalCrossentropy(),
-        metrics=['accuracy']
+        loss=tf.keras.losses.BinaryCrossentropy(),
+        metrics=[
+            tf.keras.metrics.BinaryAccuracy(),
+            tf.keras.metrics.AUC(),
+            tf.keras.metrics.Precision(),
+            tf.keras.metrics.Recall()
+        ]
     )
     classifier.model.fit(
         train_sequence,
