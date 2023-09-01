@@ -123,6 +123,10 @@ def patch_indexes_from_coordinates(row: int, column: int, window_size: int = 50,
         return [0, 1]
     if row == 0 and column < stride * 3:
         return [0, 1, 2]
+    if row == 0 and column < stride * 4:
+        return [0, 1, 2, 3]
+    if row == 0 and column < stride * 5:
+        return [0, 1, 2, 3, 4]
 
 
 def map_pixels_to_patch_indexes(patch_indexes_by_pixel, patches_with_positions, window_size: int):
