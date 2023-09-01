@@ -117,12 +117,12 @@ def obtain_heatmap(frame, patches_with_positions, predictions, window_size: int 
 
 
 def patch_indexes_from_coordinates(row: int, column: int, window_size: int = 50, stride: int = 10) -> list[int]:
-    if row == 0 and column == 0:
+    if row == 0 and column < stride:
         return [0]
-    if row == 0 and column == 40:
-        return [0, 1, 2]
-    else:
+    if row == 0 and column < stride * 2:
         return [0, 1]
+    if row == 0 and column < stride * 3:
+        return [0, 1, 2]
 
 
 def map_pixels_to_patch_indexes(patch_indexes_by_pixel, patches_with_positions, window_size: int):
