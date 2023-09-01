@@ -16,7 +16,7 @@ if __name__ == '__main__':
     classifier = MobileNet(number_of_classes=2, image_width=112, image_height=112)
     classifier.model.compile(
         optimizer=tf.keras.optimizers.SGD(learning_rate=0.01, momentum=0.9),
-        loss=tf.keras.losses.SparseCategoricalCrossentropy(),
+        loss=tf.keras.losses.BinaryCrossentropy(),
         metrics=[
             tf.keras.metrics.SparseCategoricalAccuracy(),
             tf.keras.metrics.AUC(),

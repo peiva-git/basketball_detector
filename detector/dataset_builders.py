@@ -133,7 +133,7 @@ class ClassificationSequence(tf.keras.utils.Sequence):
     def __get_label(self, file_path: tf.Tensor) -> int:
         parts = tf.strings.split(file_path, os.path.sep)
         one_hot = parts[-2] == self.__class_names
-        return tf.argmax(one_hot)
+        return tf.one_hot(tf.argmax(one_hot), 2)
 
     @staticmethod
     def __get_image(file_path: tf.Tensor):
