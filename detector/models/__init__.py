@@ -33,8 +33,7 @@ def get_classification_model_callbacks(
             patience=reduce_lr_patience,
             cooldown=2,
             min_lr=0.001
-        ),
-        tf.keras.callbacks.ProgbarLogger()
+        )
     ]
 
 
@@ -68,7 +67,6 @@ def get_segmentation_model_callbacks(
             patience=reduce_lr_patience,
             cooldown=2,
             min_lr=0.001
-        ),
-        tf.keras.callbacks.ProgbarLogger()
+        )
     ]
 
