@@ -12,5 +12,6 @@ class PredictionTestCase(unittest.TestCase):
         self.assertListEqual(patch_indexes_from_coordinates(0, 20, stride=10, window_size=50), [0, 1, 2])
         self.assertListEqual(patch_indexes_from_coordinates(0, 30, stride=10, window_size=50), [0, 1, 2, 3])
         self.assertListEqual(patch_indexes_from_coordinates(0, 40, stride=10, window_size=50), [0, 1, 2, 3, 4])
+        self.assertListEqual(patch_indexes_from_coordinates(0, 50, stride=10, window_size=50), [1, 2, 3, 4, 5])
 
 
