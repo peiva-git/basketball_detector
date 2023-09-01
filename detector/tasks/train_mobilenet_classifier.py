@@ -24,7 +24,7 @@ if __name__ == '__main__':
         train_sequence,
         validation_data=val_sequence,
         epochs=100,
-        verbose=2,
+        verbose=1,
         callbacks=get_classification_model_callbacks(classifier.model_name, early_stop_patience=10, reduce_lr_patience=5)
     )
     classifier.model.save(filepath=os.path.join('out', 'models', 'Keras_v3', classifier.model_name + '.keras'))
