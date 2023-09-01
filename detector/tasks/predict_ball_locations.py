@@ -1,4 +1,3 @@
-import concurrent.futures
 import math
 import pathlib
 import time
@@ -76,7 +75,7 @@ def obtain_predictions(frame,
     patches_only = [element[2] for element in patches_with_positions]
     model = tf.keras.models.load_model(str(model_path))
     patches_sequence = PatchesSequence(patches_only)
-    predictions = model.predict(patches_sequence, callbacks=[tf.keras.callbacks.ProgbarLogger()])
+    predictions = model.predict(patches_sequence)
     return patches_with_positions, predictions
 
 
