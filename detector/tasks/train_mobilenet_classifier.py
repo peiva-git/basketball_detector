@@ -18,7 +18,7 @@ if __name__ == '__main__':
         optimizer=tf.keras.optimizers.SGD(learning_rate=0.01, momentum=0.9),
         loss=tf.keras.losses.BinaryCrossentropy(),
         metrics=[
-            tf.keras.metrics.SparseCategoricalAccuracy(),
+            tf.keras.metrics.BinaryAccuracy(),
             tf.keras.metrics.AUC(),
             tf.keras.metrics.Precision(class_id=0),
             tf.metrics.Recall(class_id=0)
