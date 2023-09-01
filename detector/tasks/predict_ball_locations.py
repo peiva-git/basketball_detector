@@ -116,6 +116,11 @@ def obtain_heatmap(frame, patches_with_positions, predictions, window_size: int 
     return heatmap_rescaled.astype(np.uint8, copy=False)
 
 
+def patch_indexes_from_coordinates(row: int, column: int, window_size: int = 50, stride: int = 10) -> list[int]:
+    if row == 0 and column == 0:
+        return [0]
+
+
 def map_pixels_to_patch_indexes(patch_indexes_by_pixel, patches_with_positions, window_size: int):
     for index, (patch_position_y, patch_position_x, _) in enumerate(patches_with_positions):
         iterate_over_patch(index, patch_indexes_by_pixel, patch_position_x, patch_position_y, window_size)
