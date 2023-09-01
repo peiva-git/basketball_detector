@@ -27,8 +27,12 @@ def convert_dataset_to_paddleseg_format(dataset_path: str, target_path: str):
 
     for sample_index in range(len(images)):
         with Image.open(images[sample_index]) as image:
-            image.save(str(target / f'images/image{sample_index + 1}.png'))
+            resized_image = image.resize((1024, 512))
+            resized_image.save(str(target / f'images/image{sample_index + 1}.png'))
+            resized_image.close()
             image.close()
         with Image.open(labels[sample_index]) as label:
-            label.save(str(target / f'labels/label{sample_index + 1}.png'))
+            resized_label = label.resize((1024, 512))
+            resized_label.save(str(target / f'labels/label{sample_index + 1}.png'))
+            resized_label.close()
             label.close()
