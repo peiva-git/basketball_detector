@@ -20,8 +20,8 @@ if __name__ == '__main__':
         metrics=[
             tf.keras.metrics.BinaryAccuracy(),
             tf.keras.metrics.AUC(),
-            tf.keras.metrics.Precision(class_id=0),
-            tf.metrics.Recall(class_id=0)
+            tf.keras.metrics.Precision(),
+            tf.metrics.Recall()
         ]
     )
 
