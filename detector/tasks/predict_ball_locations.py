@@ -135,6 +135,8 @@ def patch_indexes_from_coordinates(row: int, column: int,
         return [1, 2, 3, 4, 5]
     if row == 0 and window_size + stride <= column < stride * 7:
         return [2, 3, 4, 5, 6]
+    if row == 0 and window_size + stride * (number_of_width_windows - 3) <= column < stride * (number_of_width_windows - 2) + window_size:
+        return [95, 96]
     if row == 0 and window_size + stride * (number_of_width_windows - 2) <= column < stride * (number_of_width_windows - 1) + window_size:
         return [96]
 
