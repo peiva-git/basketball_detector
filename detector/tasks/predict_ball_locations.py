@@ -121,7 +121,7 @@ def patch_indexes_from_coordinates(row: int, column: int,
                                    window_size: int = 50, stride: int = 10) -> list[int]:
     number_of_width_windows = int(frame_width / stride) - int(window_size / stride)
     number_of_height_windows = int(frame_height / stride) - int(window_size / stride)
-    if row == 0:
+    if row < stride:
         if column < stride * (int(window_size / stride) - 1):
             return [i for i in range(int(column / stride) + 1)]
         if stride * (int(window_size / stride) - 1) <= column < stride * (number_of_width_windows - int(window_size /stride)) + window_size:
