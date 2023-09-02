@@ -136,11 +136,11 @@ def patch_indexes_from_coordinates(row: int, column: int,
     if row == 0 and window_size + stride <= column < stride * 7:
         return [2, 3, 4, 5, 6]
     if row == 0 and window_size + stride * (number_of_width_windows - 4) <= column < stride * (number_of_width_windows - 3) + window_size:
-        return [94, 95, 96]
+        return [i for i in range(94, number_of_width_windows)]
     if row == 0 and window_size + stride * (number_of_width_windows - 3) <= column < stride * (number_of_width_windows - 2) + window_size:
-        return [95, 96]
+        return [i for i in range(95, number_of_width_windows)]
     if row == 0 and window_size + stride * (number_of_width_windows - 2) <= column < stride * (number_of_width_windows - 1) + window_size:
-        return [96]
+        return [i for i in range(96, number_of_width_windows)]
 
 
 def map_pixels_to_patch_indexes(patch_indexes_by_pixel, patches_with_positions, window_size: int):
