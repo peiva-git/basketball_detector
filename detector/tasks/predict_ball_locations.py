@@ -122,12 +122,12 @@ def patch_indexes_from_coordinates(row: int, column: int,
     number_of_width_windows = int(frame_width / stride) - int(window_size / stride)
     number_of_height_windows = int(frame_height / stride) - int(window_size / stride)
     if row == 0:
-        if column < stride * 4:
+        if column < stride * (int(window_size / stride) - 1):
             return [i for i in range(int(column / stride) + 1)]
-        if stride * 4 <= column < stride * (number_of_width_windows - 5) + window_size:
-            return [i for i in range(int(column / stride) - 4, int(column / stride) + 1)]
-        if stride * (number_of_width_windows - 5) + window_size <= column < stride * (number_of_width_windows - 1) + window_size:
-            return sorted([i for i in range(number_of_width_windows - 1, int(column / stride) - 5, -1)])
+        if stride * (int(window_size / stride) - 1) <= column < stride * (number_of_width_windows - int(window_size /stride)) + window_size:
+            return [i for i in range(int(column / stride) - int(window_size / stride) + 1, int(column / stride) + 1)]
+        if stride * (number_of_width_windows - int(window_size / stride)) + window_size <= column < stride * (number_of_width_windows - 1) + window_size:
+            return sorted([i for i in range(number_of_width_windows - 1, int(column / stride) - int(window_size / stride), -1)])
 
 
 def map_pixels_to_patch_indexes(patch_indexes_by_pixel, patches_with_positions, window_size: int):
