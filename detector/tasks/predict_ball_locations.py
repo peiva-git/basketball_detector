@@ -124,7 +124,7 @@ def patch_indexes_from_coordinates(row: int, column: int,
     if row == 0:
         if column < stride * 4:
             return [i for i in range(int(column / stride) + 1)]
-        if stride * 4 <= column < stride * (number_of_width_windows - 4) + window_size:
+        if stride * 4 <= column < stride * (number_of_width_windows - 5) + window_size:
             return [i for i in range(int(column / stride) - 4, int(column / stride) + 1)]
         if stride * (number_of_width_windows - 5) + window_size <= column < stride * (number_of_width_windows - 1) + window_size:
             return sorted([i for i in range(number_of_width_windows - 1, int(column / stride) - 5, -1)])
