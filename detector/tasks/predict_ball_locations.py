@@ -121,16 +121,20 @@ def patch_indexes_from_coordinates(row: int, column: int,
                                    window_size: int = 50, stride: int = 10) -> list[int]:
     number_of_width_windows = int(frame_width / stride) - int(window_size / stride)
     number_of_height_windows = int(frame_height / stride) - int(window_size / stride)
-    return __get_indexes(row, column, number_of_width_windows, window_size, stride)
+    return __get_indexes(row, column, number_of_height_windows, number_of_width_windows, window_size, stride)
 
 
-def __get_indexes(row: int, column: int, number_of_width_windows: int, window_size: int = 50, stride: int = 10):
+def __get_indexes(row: int, column: int, number_of_height_windows: int, number_of_width_windows: int, window_size: int = 50, stride: int = 10):
     if column < stride * (int(window_size / stride) - 1):
-        if row < stride * (int(window_size / stride) - 1): # stride * 4
+        if row < stride * (int(window_size / stride) - 1):  # stride * 4
             result = []
             for mult in range(int(row / stride) + 1):
                 result.extend([i for i in range(number_of_width_windows * mult, number_of_width_windows * mult + int(column / stride) + 1)])
             return result
+        if stride * (int(window_size / stride) - 1) <= row < stride * (number_of_height_windows - int(window_size / stride)) + window_size:
+            pass
+        if stride * (number_of_height_windows - int(window_size / stride)) + window_size <= row < stride * (number_of_height_windows - 1) + window_size:
+            pass
     if stride * (int(window_size / stride) - 1) <= column < stride * (number_of_width_windows - int(window_size / stride)) + window_size:
         if row < stride * (int(window_size / stride) - 1):
             result = []
