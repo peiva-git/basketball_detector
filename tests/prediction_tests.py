@@ -22,7 +22,12 @@ class PredictionTestCase(unittest.TestCase):
         (10, 0, [0, 97]),
         (10, 10, [0, 1, 97, 98]),
         (10, 20, [0, 1, 2, 97, 98, 99]),
-        (10, 30, [0, 1, 2, 3, 97, 98, 99, 100])
+        (10, 30, [0, 1, 2, 3, 97, 98, 99, 100]),
+        # third row
+        (20, 0, [0, 97, 194]),
+        (20, 10, [0, 1, 97, 98, 194, 195]),
+        (20, 20, [0, 1, 2, 97, 98, 99, 194, 195, 196]),
+        (20, 30, [0, 1, 2, 3, 97, 98, 99, 100, 194, 195, 196, 197]),
     ])
     def test_patch_indexes_from_coordinates(self, row: int, column: int, expected: list[int]):
         self.assertListEqual(patch_indexes_from_coordinates(row, column, 512, 1024, stride=10, window_size=50), expected)

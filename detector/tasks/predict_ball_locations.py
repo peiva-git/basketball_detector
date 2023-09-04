@@ -130,7 +130,21 @@ def patch_indexes_from_coordinates(row: int, column: int,
         if stride * (int(window_size / stride) - 1) <= column < stride * (number_of_width_windows - int(window_size / stride)) + window_size:
             indexes_to_append = [i for i in range(int(column / stride) - int(window_size / stride) + 1 + number_of_width_windows, int(column / stride) + 1 + number_of_width_windows)]
         if stride * (number_of_width_windows - int(window_size / stride)) + window_size <= column < stride * (number_of_width_windows - 1) * window_size:
-            return sorted([i for i in range(number_of_width_windows + number_of_width_windows - 1, int(column / stride) - int(window_size / stride) + number_of_width_windows, -1)])
+            indexes_to_append = sorted([i for i in range(number_of_width_windows + number_of_width_windows - 1, int(column / stride) - int(window_size / stride) + number_of_width_windows, -1)])
+        result = __get_first_row_indexes(column, number_of_width_windows, window_size, stride)
+        result.extend(indexes_to_append)
+        return result
+    if stride * 2 <= row < stride * 3:
+        indexes_to_append = []
+        if column < stride * (int(window_size / stride) - 1):
+            indexes_to_append.extend([i for i in range(number_of_width_windows, number_of_width_windows + int(column / stride) + 1)])
+            indexes_to_append.extend([i for i in range(number_of_width_windows * 2, number_of_width_windows * 2 + int(column / stride) + 1)])
+        if stride * (int(window_size / stride) - 1) <= column < stride * (number_of_width_windows - int(window_size / stride)) + window_size:
+            indexes_to_append.extend([i for i in range(int(column / stride) - int(window_size / stride) + 1 + number_of_width_windows, int(column / stride) + 1 + number_of_width_windows)])
+            indexes_to_append.extend([i for i in range(int(column / stride) - int(window_size / stride) + 1 + number_of_width_windows * 2, int(column / stride) + 1 + number_of_width_windows * 2)])
+        if stride * (number_of_width_windows - int(window_size / stride)) + window_size <= column < stride * (number_of_width_windows - 1) * window_size:
+            indexes_to_append.extend(sorted([i for i in range(number_of_width_windows * 2 - 1, int(column / stride) - int(window_size / stride) + number_of_width_windows, -1)]))
+            indexes_to_append.extend(sorted([i for i in range(number_of_width_windows * 3 - 1, int(column / stride) - int(window_size / stride) + number_of_width_windows * 2, -1)]))
         result = __get_first_row_indexes(column, number_of_width_windows, window_size, stride)
         result.extend(indexes_to_append)
         return result
