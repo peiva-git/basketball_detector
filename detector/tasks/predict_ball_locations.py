@@ -132,25 +132,17 @@ def __get_indexes(row: int, column: int, number_of_width_windows: int, window_si
                 result.extend([i for i in range(number_of_width_windows * mult, number_of_width_windows * mult + int(column / stride) + 1)])
             return result
     if stride * (int(window_size / stride) - 1) <= column < stride * (number_of_width_windows - int(window_size / stride)) + window_size:
-        if row < stride:
-            return [i for i in range(int(column / stride) - int(window_size / stride) + 1, int(column / stride) + 1)]
-        if stride <= row < stride * 2:
-            return [i for i in range(int(column / stride) - int(window_size / stride) + 1, int(column / stride) + 1)] + \
-                   [i for i in range(int(column / stride) - int(window_size / stride) + 1 + number_of_width_windows, int(column / stride) + 1 + number_of_width_windows)]
-        if stride * 2 <= row < stride * 3:
-            return [i for i in range(int(column / stride) - int(window_size / stride) + 1, int(column / stride) + 1)] + \
-                   [i for i in range(int(column / stride) - int(window_size / stride) + 1 + number_of_width_windows, int(column / stride) + 1 + number_of_width_windows)] + \
-                   [i for i in range(int(column / stride) - int(window_size / stride) + 1 + number_of_width_windows * 2, int(column / stride) + 1 + number_of_width_windows * 2)]
+        if row < stride * (int(window_size / stride) - 1):
+            result = []
+            for mult in range(int(row / stride) + 1):
+                result.extend([i for i in range(int(column / stride) - int(window_size / stride) + 1 + number_of_width_windows * mult, int(column / stride) + 1 + number_of_width_windows * mult)])
+            return result
     if stride * (number_of_width_windows - int(window_size / stride)) + window_size <= column < stride * (number_of_width_windows - 1) + window_size:
-        if row < stride:
-            return sorted([i for i in range(number_of_width_windows - 1, int(column / stride) - int(window_size / stride), -1)])
-        if stride <= row < stride * 2:
-            return sorted([i for i in range(number_of_width_windows - 1, int(column / stride) - int(window_size / stride), -1)]) + \
-                   sorted([i for i in range(number_of_width_windows * 2 - 1, int(column / stride) - int(window_size / stride) + number_of_width_windows, -1)])
-        if stride * 2 <= row < stride * 3:
-            return sorted([i for i in range(number_of_width_windows - 1, int(column / stride) - int(window_size / stride), -1)]) + \
-                   sorted([i for i in range(number_of_width_windows * 2 - 1, int(column / stride) - int(window_size / stride) + number_of_width_windows, -1)]) + \
-                   sorted([i for i in range(number_of_width_windows * 3 - 1, int(column / stride) - int(window_size / stride) + number_of_width_windows * 2, -1)])
+        if row < stride * (int(window_size / stride) - 1):
+            result = []
+            for mult in range(int(row / stride) + 1):
+                result.extend(sorted([i for i in range(number_of_width_windows * (mult + 1) - 1, int(column / stride) - int(window_size / stride) + number_of_width_windows * mult, -1)]))
+            return result
 
 
 def map_pixels_to_patch_indexes(patch_indexes_by_pixel, patches_with_positions, window_size: int):
