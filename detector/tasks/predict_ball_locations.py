@@ -122,12 +122,30 @@ def patch_indexes_from_coordinates(row: int, column: int,
     number_of_width_windows = int(frame_width / stride) - int(window_size / stride)
     number_of_height_windows = int(frame_height / stride) - int(window_size / stride)
     if row < stride:
+        return __get_first_row_indexes(column, number_of_width_windows, window_size, stride)
+    if stride <= row < stride * 2:
+        indexes_to_append = []
         if column < stride * (int(window_size / stride) - 1):
-            return [i for i in range(int(column / stride) + 1)]
-        if stride * (int(window_size / stride) - 1) <= column < stride * (number_of_width_windows - int(window_size /stride)) + window_size:
-            return [i for i in range(int(column / stride) - int(window_size / stride) + 1, int(column / stride) + 1)]
-        if stride * (number_of_width_windows - int(window_size / stride)) + window_size <= column < stride * (number_of_width_windows - 1) + window_size:
-            return sorted([i for i in range(number_of_width_windows - 1, int(column / stride) - int(window_size / stride), -1)])
+            indexes_to_append = [i for i in range(number_of_width_windows, number_of_width_windows + int(column / stride) + 1)]
+        if stride * (int(window_size / stride) - 1) <= column < stride * (number_of_width_windows - int(window_size / stride)) + window_size:
+            indexes_to_append = [i for i in range(int(column / stride) - int(window_size / stride) + 1 + number_of_width_windows, int(column / stride) + 1 + number_of_width_windows)]
+        if stride * (number_of_width_windows - int(window_size / stride)) + window_size <= column < stride * (number_of_width_windows - 1) * window_size:
+            return sorted([i for i in range(number_of_width_windows + number_of_width_windows - 1, int(column / stride) - int(window_size / stride) + number_of_width_windows, -1)])
+        result = __get_first_row_indexes(column, number_of_width_windows, window_size, stride)
+        result.extend(indexes_to_append)
+        return result
+
+
+def __get_first_row_indexes(column: int, number_of_width_windows: int, window_size: int = 50, stride: int = 10):
+    if column < stride * (int(window_size / stride) - 1):
+        return [i for i in range(int(column / stride) + 1)]
+    if stride * (int(window_size / stride) - 1) <= column < stride * (
+            number_of_width_windows - int(window_size / stride)) + window_size:
+        return [i for i in range(int(column / stride) - int(window_size / stride) + 1, int(column / stride) + 1)]
+    if stride * (number_of_width_windows - int(window_size / stride)) + window_size <= column < stride * (
+            number_of_width_windows - 1) + window_size:
+        return sorted(
+            [i for i in range(number_of_width_windows - 1, int(column / stride) - int(window_size / stride), -1)])
 
 
 def map_pixels_to_patch_indexes(patch_indexes_by_pixel, patches_with_positions, window_size: int):
