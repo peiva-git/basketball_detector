@@ -148,7 +148,7 @@ def __get_indexes(row: int, column: int, number_of_height_windows: int, number_o
         if stride * (int(window_size / stride)) <= row < stride * (number_of_height_windows - int(window_size / stride)) + window_size:
             result = []
             for mult in range(int((row - window_size) / stride) + 1, int(row / stride) + 1):
-                result.extend([i for i in range(number_of_width_windows * mult, number_of_width_windows * mult + int(column / stride) + 1)])
+                result.extend([i for i in range(number_of_width_windows * mult + int(column / window_size), number_of_width_windows * mult + int(column / stride) + 1)])
             return result
     if stride * (number_of_width_windows - int(window_size / stride)) + window_size <= column < stride * (number_of_width_windows - 1) + window_size:
         if row < stride * (int(window_size / stride)):
