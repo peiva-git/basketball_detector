@@ -97,21 +97,20 @@ def annotate_frame_with_ball_patches(frame, patches_with_positions, predictions,
     return frame
 
 
-def obtain_heatmap(frame, patches_with_positions, predictions, window_size: int = 50):
+def obtain_heatmap(frame, predictions, window_size: int = 50, stride: int = 10):
     frame_height, frame_width, _ = frame.shape
     heatmap = np.zeros((frame_height, frame_width), np.float32)
-    patch_indexes_by_pixel = defaultdict(set)
-    map_pixels_to_patch_indexes(patch_indexes_by_pixel, patches_with_positions, window_size)
+    number_of_width_windows = int(frame_width / stride) - int(window_size / stride)
+    number_of_height_windows = int(frame_height / stride) - int(window_size / stride)
     for row, column in product(range(frame_height), range(frame_width)):
-        try:
-            patches_ball_probabilities = \
-                [predictions[patch_index][0] for patch_index in patch_indexes_by_pixel[(row, column)]]
-            pixel_ball_probability = sum(patches_ball_probabilities) / len(patch_indexes_by_pixel[(row, column)])
+        pixel_indexes = __get_indexes(row, column,
+                                      number_of_height_windows, number_of_width_windows,
+                                      window_size, stride)
+        print(f'Found indexes for pixel ({row},{column})')
+        if len(pixel_indexes) != 0:
+            patches_ball_probabilities = [predictions[patch_index][0] for patch_index in pixel_indexes]
+            pixel_ball_probability = sum(patches_ball_probabilities) / len(pixel_indexes)
             heatmap[row, column] = pixel_ball_probability
-        except KeyError:
-            # No patch contains pixel x: column, y: row
-            # Assigning a probability of 0
-            pass
     heatmap_rescaled = heatmap * 255
     return heatmap_rescaled.astype(np.uint8, copy=False)
 
@@ -278,10 +277,10 @@ def write_detections_video(input_video_path: str,
             break
         print(f'Processing frame {counter} out of {int(capture.get(cv.CAP_PROP_FRAME_COUNT))}')
         start = time.time()
-        patches_and_positions, patches_predictions = obtain_predictions(
-            image, str(model_path)
+        _, patches_predictions = obtain_predictions(
+            image, str(model_path), stride=10, window_size=50
         )
-        heatmap = obtain_heatmap(image, patches_and_positions, patches_predictions)
+        heatmap = obtain_heatmap(image, patches_predictions, window_size=50, stride=10)
         annotate_frame(image, heatmap)
         out.write(image)
         end = time.time()
@@ -318,11 +317,11 @@ def write_image_sequence_from_video(input_video_path: str,
         print(f'Processing frame {counter} out of {10}')
         start = time.time()
         print('Obtaining predictions...')
-        patches_and_positions, patches_predictions = obtain_predictions(
-            image, str(model_path)
+        _, patches_predictions = obtain_predictions(
+            image, str(model_path), window_size=50, stride=10
         )
         print('Building heatmap from predictions...')
-        heatmap = obtain_heatmap(image, patches_and_positions, patches_predictions)
+        heatmap = obtain_heatmap(image, patches_predictions, window_size=50, stride=10)
         _, mask = annotate_frame(image, heatmap)
         cv.imwrite(str(target_path / f'frame_{counter}.png'), image)
         cv.imwrite(str(target_path / f'heatmap_{counter}.png'), heatmap)
