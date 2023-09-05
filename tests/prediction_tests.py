@@ -68,6 +68,8 @@ class PredictionTestCase(unittest.TestCase):
         (50, 1000, [193, 290, 387, 484, 581]),
         # last row
         (460, 0, sorted([4365, 4268, 4171, 4074, 3977])),
+        (460, 10, sorted([4365, 4366, 4268, 4269, 4171, 4172, 4074, 4075, 3977, 3978])),
+        (460, 50, sorted([4366, 4367, 4368, 4369, 4370, 4269, 4270, 4271, 4272, 4273, 4172, 4173, 4174, 4175, 4176, 4075, 4076, 4077, 4078, 4079, 3978, 3979, 3980, 3981, 3982])),
     ])
     def test_patch_indexes_from_coordinates(self, row: int, column: int, expected: list[int]):
         self.assertListEqual(patch_indexes_from_coordinates(row, column, 512, 1024, stride=10, window_size=50), expected)
