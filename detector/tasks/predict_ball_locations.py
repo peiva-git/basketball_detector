@@ -170,7 +170,10 @@ def __get_indexes(row: int, column: int, number_of_height_windows: int, number_o
                 result.extend(sorted([i for i in range(number_of_width_windows * (mult + 1) - 1, int(column / stride) - int(window_size / stride) + number_of_width_windows * mult - 1, -1)]))
             return result
         if stride * (number_of_height_windows - int(window_size / stride)) + window_size <= row < stride * (number_of_height_windows) + window_size:
-            pass
+            result = []
+            for mult in range(int((row - window_size) / stride) + 1, int(row / stride) + 1):
+                result.extend(sorted([i for i in range(number_of_width_windows * mult - 1, number_of_width_windows * (mult - 1) - int(window_size / stride) - 1 + int(column / stride), -1)]))
+            return result
 
 
 def map_pixels_to_patch_indexes(patch_indexes_by_pixel, patches_with_positions, window_size: int):
