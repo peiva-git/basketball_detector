@@ -144,7 +144,9 @@ def __get_indexes_for_lower_rows(row: int, column: int,
     return result
 
 
-def __get_indexes(row: int, column: int, number_of_height_windows: int, number_of_width_windows: int, window_size: int = 50, stride: int = 10):
+def __get_indexes(row: int, column: int,
+                  number_of_height_windows: int, number_of_width_windows: int,
+                  window_size: int = 50, stride: int = 10) -> list[int]:
     # comments assuming default values
     if column < stride * (int(window_size / stride) - 1):  # columns < 40 (less than 5 indexes per row)
         if row < stride * (int(window_size / stride)):  # rows < 50
@@ -167,6 +169,7 @@ def __get_indexes(row: int, column: int, number_of_height_windows: int, number_o
             return __get_indexes_for_middle_rows(row, column, number_of_width_windows, window_size, stride)
         if stride * (number_of_height_windows - int(window_size / stride)) + window_size <= row < stride * (number_of_height_windows) + window_size:
             return __get_indexes_for_lower_rows(row, column, number_of_width_windows, window_size, stride)
+
     if stride * (number_of_width_windows - int(window_size / stride)) + window_size <= column < stride * (number_of_width_windows) + window_size:
         if row < stride * (int(window_size / stride)):
             result = []
@@ -183,6 +186,7 @@ def __get_indexes(row: int, column: int, number_of_height_windows: int, number_o
             for mult in range(int((row - window_size) / stride) + 1, int(row / stride) + 1):
                 result.extend(sorted([i for i in range(number_of_width_windows * mult - 1, number_of_width_windows * (mult - 1) - int(window_size / stride) - 1 + int(column / stride), -1)]))
             return result
+    return []
 
 
 def map_pixels_to_patch_indexes(patch_indexes_by_pixel, patches_with_positions, window_size: int):
