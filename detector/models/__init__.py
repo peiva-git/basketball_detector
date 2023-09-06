@@ -11,10 +11,8 @@ def get_classification_model_callbacks(
     return [
         tf.keras.callbacks.ModelCheckpoint(
             filepath=os.path.join(model_dir_path, 'checkpoint'),
-            save_weights_only=True,
             monitor='val_accuracy',
-            mode='max',
-            save_best_only=True
+            mode='max'
         ),
         tf.keras.callbacks.BackupAndRestore(backup_dir=os.path.join(model_dir_path, 'backup'), save_freq=10000),
         tf.keras.callbacks.EarlyStopping(
