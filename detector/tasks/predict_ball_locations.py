@@ -165,9 +165,28 @@ def __get_indexes(row: int, column: int,
                 result.extend([i for i in range(number_of_width_windows * mult,
                                                 number_of_width_windows * mult + int(column / stride) + 1)])
             return result
-        return __get_indexes_for_middle_or_lower_rows(row, column,
-                                                      number_of_height_windows, number_of_width_windows,
-                                                      window_size, stride)
+        if stride * (int(window_size / stride)) \
+                <= row < stride * (number_of_height_windows - int(window_size / stride)) + window_size:
+            result = []
+            for mult in range(int((row - window_size) / stride) + 1, int(row / stride) + 1):
+                result.extend([i for i in range(number_of_width_windows * mult,
+                                                number_of_width_windows * mult + int(column / stride) + 1)])
+            return result
+        if stride * (number_of_height_windows - int(window_size / stride)) + window_size \
+                <= row < stride * number_of_height_windows + window_size - stride:
+            result = []
+            for mult in range(int((row - window_size) / stride) + 1, int(row / stride) + 1):
+                result.extend([i for i in range(number_of_width_windows * (mult - 1) + int(column / window_size),
+                                        number_of_width_windows * (mult - 1) + int(column / stride) + 1)])
+            return result
+        if stride * number_of_height_windows + window_size - stride \
+                <= row < stride * number_of_height_windows + window_size:
+            return [i for i in
+                    range(number_of_width_windows * (number_of_height_windows - 1),
+                          number_of_width_windows * (number_of_height_windows - 1) + int(column / stride) + 1)
+                    ]
+        else:
+            return []
 
     if stride * (int(window_size / stride) - 1) \
             <= column < stride * (number_of_width_windows - int(window_size / stride)) + window_size:
@@ -192,7 +211,8 @@ def __get_indexes(row: int, column: int,
                 result.extend(sorted([
                     i for i in
                     range(number_of_width_windows * (mult + 1) - 1,
-                          int(column / stride) - int(window_size / stride) + number_of_width_windows * mult - 1, -1)
+                          int(column / stride) - int(window_size / stride) + number_of_width_windows * mult - 1,
+                          -1)
                 ]))
             return result
         if stride * (int(window_size / stride)) \
