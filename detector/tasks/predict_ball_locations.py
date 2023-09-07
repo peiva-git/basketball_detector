@@ -177,7 +177,7 @@ def __get_indexes(row: int, column: int,
             result = []
             for mult in range(int((row - window_size) / stride) + 1, int(row / stride) + 1):
                 result.extend([i for i in range(number_of_width_windows * (mult - 1) + int(column / window_size),
-                                        number_of_width_windows * (mult - 1) + int(column / stride) + 1)])
+                                                number_of_width_windows * (mult - 1) + int(column / stride) + 1)])
             return result
         if stride * number_of_height_windows + window_size - stride \
                 <= row < stride * number_of_height_windows + window_size:

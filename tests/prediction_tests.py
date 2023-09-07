@@ -90,7 +90,19 @@ class PredictionTestCase(unittest.TestCase):
         # second-to-last row
         (510, 0, []),
         # last row
-        (511, 0, [])
+        (511, 0, []),
+        # fifth-to-last column
+        (0, 1019, [96]),
+        (10, 1019, [96, 193]),
+        (20, 1019, [96, 193, 290]),
+        (30, 1019, [96, 193, 290, 387]),
+        (40, 1019, [96, 193, 290, 387, 484]),
+        (50, 1019, [193, 290, 387, 484, 581]),
+        # last columns
+        (0, 1020, []),
+        (0, 1021, []),
+        (0, 1022, []),
+        (0, 1023, [])
     ])
     def test_patch_indexes_from_coordinates(self, row: int, column: int, expected: list[int]):
         self.assertListEqual(patch_indexes_from_coordinates(row, column, 512, 1024, stride=10, window_size=50), expected)
