@@ -138,7 +138,7 @@ def __get_indexes(row: int, column: int,
                 <= row < stride * (number_of_height_windows - int(window_size / stride)) + window_size:
             result = []
             for mult in range(int((row - window_size) / stride) + 1, int(row / stride) + 1):
-                result.extend([i for i in range(number_of_width_windows * mult,
+                result.extend([i for i in range(number_of_width_windows * mult + int(column / window_size),
                                                 number_of_width_windows * mult + int(column / stride) + 1)])
             return result
         if stride * (number_of_height_windows - int(window_size / stride)) + window_size \
@@ -357,8 +357,8 @@ if __name__ == '__main__':
     # these values are estimated based on the mobilenetv2 inference time measurements displayed here
     # https://keras.io/api/applications/#available-models
     write_image_sequence_from_video(input_video_path='/home/peiva/experiments/test_videos/final_cut.mp4',
-                                    target_directory_path='/home/peiva/experiments/test_videos',
-                                    model_path='/home/peiva/mobilenet/models/Keras_v3/mobilenetv2.keras')
+                                    target_directory_path='/home/peiva/experiments/',
+                                    model_path='/home/peiva/mobilenet/first_test/models/Keras_v3/mobilenetv2.keras')
     # write_image_sequence_from_video(input_video_path='/home/ubuntu/test_videos/final_cut.mp4',
     #                                 target_directory_path='/home/ubuntu/test_videos',
     #                                 model_path='/home/ubuntu/basketball_detector/out/models/Keras_v3/mobilenetv2.keras')
