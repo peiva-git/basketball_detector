@@ -7,7 +7,7 @@ def get_classification_model_callbacks(
         model_name: str,
         early_stop_patience: int,
         reduce_lr_patience: int) -> [tf.keras.callbacks.Callback]:
-    model_dir_path = os.path.join('out', 'training-callback-results', model_name)
+    model_dir_path = os.path.join('out', 'training-callback-results', 'model_checkpoints', model_name)
     return [
         tf.keras.callbacks.ModelCheckpoint(
             filepath=os.path.join(model_dir_path, 'checkpoint'),

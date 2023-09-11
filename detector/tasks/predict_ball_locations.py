@@ -368,7 +368,7 @@ if __name__ == '__main__':
     # https://keras.io/api/applications/#available-models
     write_image_sequence_from_video(input_video_path='/home/peiva/experiments/test_videos/final_cut.mp4',
                                     target_directory_path='/home/peiva/experiments/',
-                                    model_path='/home/peiva/mobilenet/first_test/models/Keras_v3/mobilenetv2.keras')
+                                    model_path='/home/peiva/mobilenet/second_test/')
     # write_image_sequence_from_video(input_video_path='/home/ubuntu/test_videos/final_cut.mp4',
     #                                 target_directory_path='/home/ubuntu/test_videos',
     #                                 model_path='/home/ubuntu/basketball_detector/out/models/Keras_v3/mobilenetv2.keras')
