@@ -12,10 +12,14 @@ TEST_DATA_DIR = '/mnt/DATA/tesi/dataset/dataset_paddleseg/images/'
 
 if __name__ == '__main__':
     session = ort.InferenceSession(
-        '/home/peiva/ppliteSeg/inference_model.onnx',
+        #'/home/peiva/ppliteSeg/inference_model.onnx',
+        '/home/ubuntu/PaddleSeg/output/inference_model.onnx',
         providers=['CUDAExecutionProvider', 'CPUExecutionProvider']
     )
-    stream = CamGear(source='/mnt/DATA/tesi/dataset/dataset_youtube/pallacanestro_trieste/stagione_2019-20_legabasket/pallacanestro_trieste-dolomiti_energia_trentino/final_cut.mp4').start()
+    stream = CamGear(
+        #source='/mnt/DATA/tesi/dataset/dataset_youtube/pallacanestro_trieste/stagione_2019-20_legabasket/pallacanestro_trieste-dolomiti_energia_trentino/final_cut.mp4'
+        source='/home/ubuntu/final_cut.mp4'
+    ).start()
     index = 1
     while True:
         frame = stream.read()
@@ -36,7 +40,8 @@ if __name__ == '__main__':
         masked_image = np.where(mask[..., None], color, frame_resized)
         frame_with_overlay = cv.addWeighted(frame_resized, 0.8, masked_image, 0.2, 0)
         # cv.imshow('Output', frame_with_overlay)
-        cv.imwrite(f'/home/peiva/experiments/test_videos/overlay{index}.png', frame_with_overlay)
+        #cv.imwrite(f'/home/peiva/experiments/test_videos/overlay{index}.png', frame_with_overlay)
+        cv.imwrite(f'/home/ubuntu/results/overlay{index}.png', frame_with_overlay)
         index += 1
 
         key = cv.waitKey(1) & 0xFF
