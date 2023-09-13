@@ -26,7 +26,7 @@ if __name__ == '__main__':
     print('Reading video...')
     stream = CamGear(
         #source='/mnt/DATA/tesi/dataset/dataset_youtube/pallacanestro_trieste/stagione_2019-20_legabasket/pallacanestro_trieste-dolomiti_energia_trentino/final_cut.mp4'
-        source='/home/ubuntu/final_cut.mp4'
+        source='/home/ubuntu/test_video.mp4'
     ).start()
     index = 1
     while True:
