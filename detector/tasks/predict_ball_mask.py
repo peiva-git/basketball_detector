@@ -16,9 +16,9 @@ MODEL_PATH = '/home/peiva/ppliteSeg/inference_model.onnx'
 if __name__ == '__main__':
     option = fd.RuntimeOption()
     option.use_gpu()
-    model_file = os.path.join('home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'model.pdmodel')
-    params_file = os.path.join('home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'model.pdiparams')
-    config_file = os.path.join('home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'deploy.yml')
+    model_file = os.path.join('/home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'model.pdmodel')
+    params_file = os.path.join('/home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'model.pdiparams')
+    config_file = os.path.join('/home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'deploy.yml')
     model = fd.vision.segmentation.PaddleSegModel(
         model_file, params_file, config_file, runtime_option=option
     )
