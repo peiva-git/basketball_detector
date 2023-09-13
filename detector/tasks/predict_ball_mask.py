@@ -34,20 +34,6 @@ if __name__ == '__main__':
         if frame is None:
             break
         frame_resized = cv.resize(frame, (2048, 1024))
-        # frame_channels_first = np.moveaxis(cv.cvtColor(frame_resized, cv.COLOR_BGR2RGB), source=-1, destination=0)
-        # batch = np.expand_dims(frame_channels_first, axis=0)
-        # input_name = runtime.get_input_info(0).name
-        # print(f'Input name: {input_name}')
-        #
-        # output = runtime.infer({
-        #     input_name: batch.astype(np.float32)
-        # })
-        # mask_channels_first = np.asarray(output[0], dtype=np.uint8)
-        # mask = np.moveaxis(mask_channels_first, source=0, destination=-1).squeeze()
-        # # mask_rescaled = mask * 255
-        # color = np.array([0, 255, 0], dtype=np.uint8)
-        # masked_image = np.where(mask[..., None], color, frame_resized)
-        # frame_with_overlay = cv.addWeighted(frame_resized, 0.8, masked_image, 0.2, 0)
         #cv.imshow('Output', frame_with_overlay)
         #cv.imwrite(f'/home/peiva/experiments/test_videos/overlay{index}.png', frame_with_overlay)
         print(f'Predicting frame {index}...')
