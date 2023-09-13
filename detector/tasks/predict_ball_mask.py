@@ -14,6 +14,7 @@ MODEL_PATH = '/home/peiva/ppliteSeg/inference_model.onnx'
 # '/home/ubuntu/PaddleSeg/output/inference_model.onnx'
 
 if __name__ == '__main__':
+    print('Building model...')
     option = fd.RuntimeOption()
     option.use_gpu()
     model_file = os.path.join('/home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'model.pdmodel')
@@ -22,6 +23,7 @@ if __name__ == '__main__':
     model = fd.vision.segmentation.PaddleSegModel(
         model_file, params_file, config_file, runtime_option=option
     )
+    print('Reading video...')
     stream = CamGear(
         #source='/mnt/DATA/tesi/dataset/dataset_youtube/pallacanestro_trieste/stagione_2019-20_legabasket/pallacanestro_trieste-dolomiti_energia_trentino/final_cut.mp4'
         source='/home/ubuntu/final_cut.mp4'
@@ -48,8 +50,10 @@ if __name__ == '__main__':
         # frame_with_overlay = cv.addWeighted(frame_resized, 0.8, masked_image, 0.2, 0)
         #cv.imshow('Output', frame_with_overlay)
         #cv.imwrite(f'/home/peiva/experiments/test_videos/overlay{index}.png', frame_with_overlay)
+        print(f'Predicting frame {index}...')
         result = model.predict(frame_resized)
         vis_im = fd.vision.vis_segmentation(frame_resized, result, weight=0.5)
+        print(f'Writing overlay {index} to disk...')
         cv.imwrite(f'/home/ubuntu/results/overlay{index}.png', vis_im)
         index += 1
 
