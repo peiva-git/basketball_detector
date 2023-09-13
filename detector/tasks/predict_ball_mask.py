@@ -18,7 +18,7 @@ if __name__ == '__main__':
     option.use_gpu()
     model_file = os.path.join('/home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'model.pdmodel')
     params_file = os.path.join('/home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'model.pdiparams')
-    config_file = os.path.join('/home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'deploy.yml')
+    config_file = os.path.join('/home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'deploy.yaml')
     model = fd.vision.segmentation.PaddleSegModel(
         model_file, params_file, config_file, runtime_option=option
     )
