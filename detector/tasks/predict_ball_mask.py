@@ -96,6 +96,8 @@ if __name__ == '__main__':
     print('Building model...')
     option = fd.RuntimeOption()
     option.use_gpu()
+    option.use_trt_backend()
+    option.set_trt_input_shape('x', [1, 3, 1024, 2048])
     # model_file = os.path.join('/home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'model.pdmodel')
     # params_file = os.path.join('/home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'model.pdiparams')
     # config_file = os.path.join('/home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'deploy.yaml')
