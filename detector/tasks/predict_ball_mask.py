@@ -1,4 +1,3 @@
-import os
 import pathlib
 import random
 import time
@@ -16,6 +15,7 @@ MODEL_PATH = '/home/peiva/ppliteSeg/inference_model.onnx'
 batch_size = 5
 input_height = 1024
 input_width = 2048
+multi_heatmap_prediction = False
 
 
 def generate_random_crops(image: np.ndarray, number_of_crops: int, variance: int) -> [int, int, np.ndarray]:
@@ -65,6 +65,33 @@ def draw_crop_boundaries_on_frame(image: np.ndarray, crops: list[(int, int, np.n
             )
 
 
+def get_prediction_with_single_heatmap(
+        image: np.ndarray,
+        paddle_seg_model: fd.vision.segmentation.PaddleSegModel) -> np.ndarray:
+    result = paddle_seg_model.predict(image)
+    segmented_image = fd.vision.vis_segmentation(image, result, weight=0.5)
+    return segmented_image
+
+
+def get_prediction_with_multiple_heatmaps(
+        image: np.ndarray,
+        paddle_seg_model: fd.vision.segmentation.PaddleSegModel,
+        number_of_crops: int,
+        variance: int):
+    random_crops = generate_random_crops(image, number_of_crops, variance)
+    results = paddle_seg_model.batch_predict([
+        np.pad(crop[2], (
+            (crop[1], image.shape[0] - (crop[1] + crop[2].shape[0])),
+            (crop[0], image.shape[1] - (crop[0] + crop[2].shape[1])),
+            (0, 0)
+        ))
+        for crop in random_crops
+    ])
+    averaged_heatmap = np.mean([np.reshape(result.label_map, result.shape) for result in results], axis=0)
+    rescaled_heatmap = averaged_heatmap * 255
+    return rescaled_heatmap.astype(np.uint8)
+
+
 if __name__ == '__main__':
     print('Building model...')
     option = fd.RuntimeOption()
@@ -72,14 +99,20 @@ if __name__ == '__main__':
     # model_file = os.path.join('/home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'model.pdmodel')
     # params_file = os.path.join('/home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'model.pdiparams')
     # config_file = os.path.join('/home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'deploy.yaml')
-    model_file = pathlib.Path('/home/peiva/PycharmProjects/PaddleSeg/output/inference_model_softmax/model.pdmodel')
-    params_file = pathlib.Path('/home/peiva/PycharmProjects/PaddleSeg/output/inference_model_softmax/model.pdiparams')
-    config_file = pathlib.Path('/home/peiva/PycharmProjects/PaddleSeg/output/inference_model_softmax/deploy.yaml')
+    if multi_heatmap_prediction:
+        model_file = pathlib.Path('/home/peiva/PycharmProjects/PaddleSeg/output/inference_model_softmax/model.pdmodel')
+        params_file = pathlib.Path('/home/peiva/PycharmProjects/PaddleSeg/output/inference_model_softmax/model.pdiparams')
+        config_file = pathlib.Path('/home/peiva/PycharmProjects/PaddleSeg/output/inference_model_softmax/deploy.yaml')
+    else:
+        model_file = pathlib.Path('/home/peiva/PycharmProjects/PaddleSeg/output/inference_model/model.pdmodel')
+        params_file = pathlib.Path('/home/peiva/PycharmProjects/PaddleSeg/output/inference_model/model.pdiparams')
+        config_file = pathlib.Path('/home/peiva/PycharmProjects/PaddleSeg/output/inference_model/deploy.yaml')
     model = fd.vision.segmentation.PaddleSegModel(
         str(model_file), str(params_file), str(config_file), runtime_option=option
     )
     # model.postprocessor.store_score_map = True
-    model.postprocessor.apply_softmax = True
+    if multi_heatmap_prediction:
+        model.postprocessor.apply_softmax = True
     print('Reading video...')
     stream = CamGear(
         source='/mnt/DATA/tesi/dataset/dataset_youtube/pallacanestro_trieste/stagione_2019-20_legabasket/pallacanestro_trieste-virtus_roma/final_cut.mp4'
@@ -92,27 +125,18 @@ if __name__ == '__main__':
         if frame is None:
             break
         frame_resized = cv.resize(frame, (input_width, input_height))
-        random_crops = generate_random_crops(frame_resized, number_of_crops=batch_size, variance=100)
         print(f'Predicting frame {counter}...')
         start = time.time()
-        results = model.batch_predict([
-            np.pad(crop[2], (
-                (crop[1], input_height - (crop[1] + crop[2].shape[0])),
-                (crop[0], input_width - (crop[0] + crop[2].shape[1])),
-                (0, 0)
-            ))
-            for crop in random_crops
-        ])
-        averaged_heatmap = np.mean([np.reshape(result.label_map, result.shape) for result in results], axis=0)
-        rescaled_heatmap = averaged_heatmap * 255
-        # vis_im = fd.vision.vis_segmentation(frame_resized, result, weight=0.5)
-        # print(f'Writing overlay {index} to disk...')
-        # cv.imwrite(f'/home/ubuntu/results/overlay{index}.png', vis_im)
+        if multi_heatmap_prediction:
+            output = get_prediction_with_multiple_heatmaps(frame_resized, model, batch_size, 100)
+        else:
+            output = get_prediction_with_single_heatmap(frame_resized, model)
         end = time.time()
         print(f'Took {end - start} seconds to process frame {counter}')
         frame_processing_times.append(end - start)
         print(f'Average processing speed: {mean(frame_processing_times)} seconds')
-        cv.imshow('Output', rescaled_heatmap.astype(np.uint8))
+        print(f'{1 / (end - start)} FPS')
+        cv.imshow('Output', output)
         counter += 1
 
         key = cv.waitKey(1) & 0xFF
