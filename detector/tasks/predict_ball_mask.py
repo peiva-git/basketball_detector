@@ -1,8 +1,10 @@
 import os
 import pathlib
 import random
+import time
 
 from vidgear.gears import CamGear
+from statistics import mean
 
 import cv2 as cv
 import numpy as np
@@ -12,6 +14,8 @@ TEST_DATA_DIR = '/mnt/DATA/tesi/dataset/dataset_paddleseg/images/'
 MODEL_PATH = '/home/peiva/ppliteSeg/inference_model.onnx'
 # '/home/ubuntu/PaddleSeg/output/inference_model.onnx'
 batch_size = 5
+input_height = 1024
+input_width = 2048
 
 
 def generate_random_crops(image: np.ndarray, number_of_crops: int, variance: int) -> [int, int, np.ndarray]:
@@ -81,22 +85,35 @@ if __name__ == '__main__':
         source='/mnt/DATA/tesi/dataset/dataset_youtube/pallacanestro_trieste/stagione_2019-20_legabasket/pallacanestro_trieste-virtus_roma/final_cut.mp4'
         #source='/home/ubuntu/test_video.mp4'
     ).start()
-    index = 1
+    counter = 1
+    frame_processing_times = []
     while True:
         frame = stream.read()
         if frame is None:
             break
-        frame_resized = cv.resize(frame, (2048, 1024))
+        frame_resized = cv.resize(frame, (input_width, input_height))
         random_crops = generate_random_crops(frame_resized, number_of_crops=batch_size, variance=100)
-        print(f'Predicting frame {index}...')
-        results = model.batch_predict([cv.resize(crop[2], (2048, 1024)) for crop in random_crops])
-        averaged_heatmap = np.mean([np.reshape(result.label_map, (1024, 2048)) for result in results], axis=0)
+        print(f'Predicting frame {counter}...')
+        start = time.time()
+        results = model.batch_predict([
+            np.pad(crop[2], (
+                (crop[1], input_height - (crop[1] + crop[2].shape[0])),
+                (crop[0], input_width - (crop[0] + crop[2].shape[1])),
+                (0, 0)
+            ))
+            for crop in random_crops
+        ])
+        averaged_heatmap = np.mean([np.reshape(result.label_map, result.shape) for result in results], axis=0)
         rescaled_heatmap = averaged_heatmap * 255
         # vis_im = fd.vision.vis_segmentation(frame_resized, result, weight=0.5)
         # print(f'Writing overlay {index} to disk...')
         # cv.imwrite(f'/home/ubuntu/results/overlay{index}.png', vis_im)
+        end = time.time()
+        print(f'Took {end - start} seconds to process frame {counter}')
+        frame_processing_times.append(end - start)
+        print(f'Average processing speed: {mean(frame_processing_times)} seconds')
         cv.imshow('Output', rescaled_heatmap.astype(np.uint8))
-        index += 1
+        counter += 1
 
         key = cv.waitKey(1) & 0xFF
         if key == ord('q'):
