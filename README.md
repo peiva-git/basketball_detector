@@ -1,6 +1,6 @@
 # Basketball detector
 
-:basketball: **Basketball detector** is a deep-learning based tool that enables automatic
+:basketball: **BasketballDetector** is a deep-learning based tool that enables automatic
 ball detection in basketball videos.
 Currently, the project is still under development.
 
@@ -8,6 +8,10 @@ Currently, the project is still under development.
 
 - Python 3.8/3.9/3.10/3.11
 - CUDA >= 11.2, cuDNN >= 8.0
+
+A GPU with CUDA capabilities is required. Depending on your hardware and/or your OS,
+you might need different drivers: check out Nvidia's
+[official website](https://www.nvidia.com/Download/index.aspx?lang=en-us).
 
 ## Project setup
 
