@@ -1,7 +1,7 @@
 import glob
 import pathlib
 
-from PIL import Image
+import cv2 as cv
 
 
 def convert_dataset_to_paddleseg_format(dataset_path: str, target_path: str):
@@ -26,13 +26,9 @@ def convert_dataset_to_paddleseg_format(dataset_path: str, target_path: str):
         labels.extend(match_mask_paths)
 
     for sample_index in range(len(images)):
-        with Image.open(images[sample_index]) as image:
-            resized_image = image.resize((1024, 512))
-            resized_image.save(str(target / f'images/image{sample_index + 1}.png'))
-            resized_image.close()
-            image.close()
-        with Image.open(labels[sample_index]) as label:
-            resized_label = label.resize((1024, 512))
-            resized_label.save(str(target / f'labels/label{sample_index + 1}.png'))
-            resized_label.close()
-            label.close()
+        image = cv.imread(images[sample_index])
+        label = cv.imread(labels[sample_index])
+        resized_image = cv.resize(image, (1024, 512))
+        resized_label = cv.resize(label, (1024, 512))
+        cv.imwrite(str(target / f'images/image{sample_index + 1}.png'), resized_image)
+        cv.imwrite(str(target / f'labels/label{sample_index + 1}.png'), resized_label)
