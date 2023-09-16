@@ -5,6 +5,11 @@ import cv2 as cv
 
 
 def convert_dataset_to_paddleseg_format(dataset_path: str, target_path: str):
+    """
+    Convert a dataset annotated in MATLAB to PaddleSeg dataset format
+    :param dataset_path: path string pointing to the root of the MATLAB dataset
+    :param target_path: root of the newly created PaddleSeg dataset
+    """
     source = pathlib.Path(dataset_path)
     target = pathlib.Path(target_path)
     images = []
