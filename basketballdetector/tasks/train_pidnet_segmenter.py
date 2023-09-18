@@ -1,8 +1,8 @@
 import os
 
-from detector.dataset_builders import SegmentationDatasetBuilder
-from detector.models import get_segmentation_model_callbacks
-from detector.models.pidnet import PIDNetSmall
+from basketballdetector.dataset_builders import SegmentationDatasetBuilder
+from basketballdetector.models import get_segmentation_model_callbacks
+from basketballdetector.models.pidnet import PIDNetSmall
 
 import tensorflow as tf
 

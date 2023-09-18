@@ -1,8 +1,8 @@
 from keras import layers, models
 import tensorflow as tf
 
-from detector.models.pidnet.model_utils import PagFM, Light_Bag, PAPPM, DAPPPM, Bag, segmentation_head
-from detector.models.pidnet.resnet import basic_block, basicblock_expansion, bottleneck_expansion, bottleneck_block
+from basketballdetector.models.pidnet.model_utils import PagFM, Light_Bag, PAPPM, DAPPPM, Bag, segmentation_head
+from basketballdetector.models.pidnet.resnet import basic_block, basicblock_expansion, bottleneck_expansion, bottleneck_block
 
 bn_mom = 0.1
 

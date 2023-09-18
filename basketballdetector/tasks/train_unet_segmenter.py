@@ -1,11 +1,11 @@
 import os
 
-from detector.dataset_builders import SegmentationDatasetBuilder
-from detector.models import get_segmentation_model_callbacks
+from basketballdetector.dataset_builders import SegmentationDatasetBuilder
+from basketballdetector.models import get_segmentation_model_callbacks
 
 import tensorflow as tf
 
-from detector.models.segmentation import UNet
+from basketballdetector.models.segmentation import UNet
 
 if __name__ == '__main__':
     builder = SegmentationDatasetBuilder('/home/ubuntu/segmentation_dataset/pallacanestro_trieste')

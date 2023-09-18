@@ -3,8 +3,8 @@ import os
 import keras.callbacks
 import keras.losses
 
-from detector.dataset_builders import SegmentationDatasetBuilder
-from detector.models.segmentation import PSPNet50
+from basketballdetector.dataset_builders import SegmentationDatasetBuilder
+from basketballdetector.models.segmentation import PSPNet50
 
 builder = SegmentationDatasetBuilder(
     data_directory='/mnt/SharedData2/tesi/dataset/testing-dataset/frames/',
