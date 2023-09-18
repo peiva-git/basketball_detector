@@ -99,8 +99,11 @@ pip install fastdeploy-gpu-python -f https://www.paddlepaddle.org.cn/whl/fastdep
 ## Model training
 
 The segmentation model has been trained using a customized version of the sample
-configuration file found 
+configuration file for the PPLiteSeg model applied to the 
+[Cityscapes dataset](https://www.cityscapes-dataset.com/) found 
 [on the PaddleSeg repository](https://github.com/PaddlePaddle/PaddleSeg/blob/release/2.8/configs/pp_liteseg/pp_liteseg_stdc1_cityscapes_1024x512_scale1.0_160k.yml).
+
+### Environment setup
 
 
 To train the BasketballDetector segmentation model, run:
