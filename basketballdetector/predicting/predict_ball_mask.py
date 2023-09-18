@@ -8,15 +8,7 @@ import cv2 as cv
 import numpy as np
 import fastdeploy as fd
 
-from basketballdetector.predicting import generate_random_crops
-
-TEST_DATA_DIR = '/mnt/DATA/tesi/dataset/dataset_paddleseg/images/'
-MODEL_PATH = '/home/peiva/ppliteSeg/inference_model.onnx'
-# '/home/ubuntu/PaddleSeg/output/inference_model.onnx'
-batch_size = 5
-input_height = 1024
-input_width = 2048
-multi_heatmap_prediction = False
+from basketballdetector.predicting.utils import generate_random_crops
 
 
 def get_prediction_with_single_heatmap(
@@ -46,44 +38,46 @@ def get_prediction_with_multiple_heatmaps(
     return rescaled_heatmap.astype(np.uint8)
 
 
-if __name__ == '__main__':
+def write_predictions_video():
+    pass
+
+
+def show_prediction_frames(model_file_path: str,
+                           params_file_path: str,
+                           config_file_path: str,
+                           input_video_path: str,
+                           stack_heatmaps: bool = False,
+                           use_trt: bool = False,
+                           batch_size: int = None):
     print('Building model...')
     option = fd.RuntimeOption()
     option.use_gpu()
-    option.use_trt_backend()
-    option.set_trt_input_shape('x', [1, 3, 1024, 2048])
-    # model_file = os.path.join('/home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'model.pdmodel')
-    # params_file = os.path.join('/home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'model.pdiparams')
-    # config_file = os.path.join('/home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'deploy.yaml')
-    if multi_heatmap_prediction:
-        model_file = pathlib.Path('/home/peiva/PycharmProjects/PaddleSeg/output/inference_model_softmax/model.pdmodel')
-        params_file = pathlib.Path('/home/peiva/PycharmProjects/PaddleSeg/output/inference_model_softmax/model.pdiparams')
-        config_file = pathlib.Path('/home/peiva/PycharmProjects/PaddleSeg/output/inference_model_softmax/deploy.yaml')
-    else:
-        model_file = pathlib.Path('/home/peiva/PycharmProjects/PaddleSeg/output/inference_model/model.pdmodel')
-        params_file = pathlib.Path('/home/peiva/PycharmProjects/PaddleSeg/output/inference_model/model.pdiparams')
-        config_file = pathlib.Path('/home/peiva/PycharmProjects/PaddleSeg/output/inference_model/deploy.yaml')
+    if use_trt:
+        option.use_trt_backend()
+        option.set_trt_input_shape('x', [1, 3, 1024, 2048])
+    model_file = pathlib.Path(model_file_path)
+    params_file = pathlib.Path(params_file_path)
+    config_file = pathlib.Path(config_file_path)
+    video_input = pathlib.Path(input_video_path)
+
     model = fd.vision.segmentation.PaddleSegModel(
         str(model_file), str(params_file), str(config_file), runtime_option=option
     )
-    # model.postprocessor.store_score_map = True
-    if multi_heatmap_prediction:
+    if stack_heatmaps:
         model.postprocessor.apply_softmax = True
+
     print('Reading video...')
-    stream = CamGear(
-        source='/mnt/DATA/tesi/dataset/dataset_youtube/pallacanestro_trieste/stagione_2019-20_legabasket/pallacanestro_trieste-virtus_roma/final_cut.mp4'
-        #source='/home/ubuntu/test_video.mp4'
-    ).start()
+    stream = CamGear(source=str(video_input)).start()
     counter = 1
     frame_processing_times = []
     while True:
         frame = stream.read()
         if frame is None:
             break
-        frame_resized = cv.resize(frame, (input_width, input_height))
+        frame_resized = cv.resize(frame, (2048, 1024))
         print(f'Predicting frame {counter}...')
         start = time.time()
-        if multi_heatmap_prediction:
+        if stack_heatmaps:
             output = get_prediction_with_multiple_heatmaps(frame_resized, model, batch_size, 100)
         else:
             output = get_prediction_with_single_heatmap(frame_resized, model)
@@ -101,3 +95,16 @@ if __name__ == '__main__':
 
     cv.destroyAllWindows()
     stream.stop()
+
+
+if __name__ == '__main__':
+    show_prediction_frames(
+        '/home/peiva/PycharmProjects/PaddleSeg/output/inference_model/model.pdmodel',
+        '/home/peiva/PycharmProjects/PaddleSeg/output/inference_model/model.pdiparams',
+        '/home/peiva/PycharmProjects/PaddleSeg/output/inference_model_softmax/deploy.yaml',
+        '/mnt/DATA/tesi/dataset/dataset_youtube/pallacanestro_trieste/stagione_2019-20_legabasket'
+        '/pallacanestro_trieste-virtus_roma/final_cut.mp4',
+    )
+    # model_file = os.path.join('/home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'model.pdmodel')
+    # params_file = os.path.join('/home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'model.pdiparams')
+    # config_file = os.path.join('/home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'deploy.yaml')
