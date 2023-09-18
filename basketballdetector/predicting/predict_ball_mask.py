@@ -36,11 +36,15 @@ def get_prediction_with_multiple_heatmaps(
     #     for crop in random_crops
     # ]
     results = paddle_seg_model.batch_predict([
-        np.pad(crop[2], (
-            (crop[1], image.shape[0] - (crop[1] + crop[2].shape[0])),
-            (crop[0], image.shape[1] - (crop[0] + crop[2].shape[1])),
-            (0, 0)
-        ))
+        np.pad(
+            crop[2],
+            (
+                (crop[1], image.shape[0] - (crop[1] + crop[2].shape[0])),
+                (crop[0], image.shape[1] - (crop[0] + crop[2].shape[1])),
+                (0, 0)
+            ),
+            constant_values=127.5
+        )
         for crop in random_crops
     ])
     averaged_heatmap = np.mean([np.reshape(result.label_map, result.shape) for result in results], axis=0)
