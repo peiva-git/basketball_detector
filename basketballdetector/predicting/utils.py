@@ -27,8 +27,8 @@ def draw_crop_boundaries_on_frame(image: np.ndarray, crops: list[(int, int, np.n
 def generate_random_crops(image: np.ndarray, number_of_crops: int, variance: int) -> [int, int, np.ndarray]:
     image_height, image_width, _ = image.shape
     crops = []
-    crop_width = int(image_width * 0.9)
-    crop_height = int(image_height * 0.9)
+    crop_width = int(image_width * 0.8)
+    crop_height = int(image_height * 0.8)
     first_crop_x, first_crop_y, first_crop = __get_random_crop(image, crop_height, crop_width)
     crops.append((first_crop_x, first_crop_y, first_crop))
     for i in range(1, number_of_crops):
