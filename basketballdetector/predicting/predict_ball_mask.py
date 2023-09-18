@@ -25,6 +25,16 @@ def get_prediction_with_multiple_heatmaps(
         number_of_crops: int,
         variance: int):
     random_crops = generate_random_crops(image, number_of_crops, variance)
+    # results = [
+    #     paddle_seg_model.predict(
+    #         np.pad(crop[2], (
+    #             (crop[1], image.shape[0] - (crop[1] + crop[2].shape[0])),
+    #             (crop[0], image.shape[1] - (crop[0] + crop[2].shape[1])),
+    #             (0, 0)
+    #         ))
+    #     )
+    #     for crop in random_crops
+    # ]
     results = paddle_seg_model.batch_predict([
         np.pad(crop[2], (
             (crop[1], image.shape[0] - (crop[1] + crop[2].shape[0])),
@@ -42,13 +52,17 @@ def write_predictions_video():
     pass
 
 
+def write_image_sequence_predictions():
+    pass
+
+
 def show_prediction_frames(model_file_path: str,
                            params_file_path: str,
                            config_file_path: str,
                            input_video_path: str,
                            stack_heatmaps: bool = False,
-                           use_trt: bool = False,
-                           batch_size: int = None):
+                           number_of_heatmaps: int = None,
+                           use_trt: bool = False):
     print('Building model...')
     option = fd.RuntimeOption()
     option.use_gpu()
@@ -78,7 +92,7 @@ def show_prediction_frames(model_file_path: str,
         print(f'Predicting frame {counter}...')
         start = time.time()
         if stack_heatmaps:
-            output = get_prediction_with_multiple_heatmaps(frame_resized, model, batch_size, 100)
+            output = get_prediction_with_multiple_heatmaps(frame_resized, model, number_of_heatmaps, 100)
         else:
             output = get_prediction_with_single_heatmap(frame_resized, model)
         end = time.time()
@@ -101,7 +115,7 @@ if __name__ == '__main__':
     show_prediction_frames(
         '/home/peiva/PycharmProjects/PaddleSeg/output/inference_model/model.pdmodel',
         '/home/peiva/PycharmProjects/PaddleSeg/output/inference_model/model.pdiparams',
-        '/home/peiva/PycharmProjects/PaddleSeg/output/inference_model_softmax/deploy.yaml',
+        '/home/peiva/PycharmProjects/PaddleSeg/output/inference_model/deploy.yaml',
         '/mnt/DATA/tesi/dataset/dataset_youtube/pallacanestro_trieste/stagione_2019-20_legabasket'
         '/pallacanestro_trieste-virtus_roma/final_cut.mp4',
     )
