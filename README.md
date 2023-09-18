@@ -10,6 +10,7 @@ Currently, the project is still under development.
 2. [Project requirements](#project-requirements)
 3. [Project setup](#project-setup)
    1. [Special requirements](#special-requirements) 
+4. [Model training](#model-training)
 
 ## Description
 
@@ -100,4 +101,23 @@ pip install fastdeploy-gpu-python -f https://www.paddlepaddle.org.cn/whl/fastdep
 The segmentation model has been trained using a customized version of the sample
 configuration file found 
 [on the PaddleSeg repository](https://github.com/PaddlePaddle/PaddleSeg/blob/release/2.8/configs/pp_liteseg/pp_liteseg_stdc1_cityscapes_1024x512_scale1.0_160k.yml).
+
+
+To train the BasketballDetector segmentation model, run:
+```shell
+cd PaddleSeg
+export CUDA_VISIBLE_DEVICES=0
+python tools/train.py \
+--config ../basketballdetector/config/basketball_detector_pp_liteseg.yml \
+--do_eval \
+--use_vdl \
+--save_interval 500
+```
+The trained models will then be available in the `PaddleSeg/output` directory.
+More information on what these options do and on how to visualize the training process
+can be found [here](https://github.com/PaddlePaddle/PaddleSeg/blob/release/2.8/docs/train/train.md).
+
+
+
+
 
