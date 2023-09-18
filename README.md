@@ -68,7 +68,7 @@ This environment has been tested under the following conditions:
 
 Using the provided [conda environment file](conda/pp-fd-environment.yml), run:
 ```shell
-conda create --name  --myenv --file pp-fd-environment.yml
+conda create --name myenv --file pp-fd-environment.yml
 ```
 
 Don't forget to set up the required environment variables as well:
@@ -89,8 +89,15 @@ echo 'export LD_LIBRARY_PATH=$CONDA_PREFIX/lib/:$LD_LIBRARY_PATH' >> $CONDA_PREF
 Since currently only an outdated version of the `fastdeploy-gpu-python` package
 is available on [PyPi](https://pypi.org/project/fastdeploy-gpu-python/), you need to
 follow [additional steps](https://github.com/PaddlePaddle/FastDeploy#-install-fastdeploy-sdk-with-both-cpu-and-gpu-support)
-to install the latest version. 
-If you're using the provided conda environment, you need to run the following command:
+in order to install the latest version. 
+If you're using the provided conda environment, you can simply run the following command:
 ```shell
 pip install fastdeploy-gpu-python -f https://www.paddlepaddle.org.cn/whl/fastdeploy.html
 ```
+
+## Model training
+
+The segmentation model has been trained using a customized version of the sample
+configuration file found 
+[on the PaddleSeg repository](https://github.com/PaddlePaddle/PaddleSeg/blob/release/2.8/configs/pp_liteseg/pp_liteseg_stdc1_cityscapes_1024x512_scale1.0_160k.yml).
+
