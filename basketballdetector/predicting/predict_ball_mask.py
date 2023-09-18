@@ -61,24 +61,11 @@ def show_prediction_frames(model_file_path: str,
                            config_file_path: str,
                            input_video_path: str,
                            stack_heatmaps: bool = False,
-                           number_of_heatmaps: int = None,
+                           number_of_crops: int = None,
                            use_trt: bool = False):
-    print('Building model...')
-    option = fd.RuntimeOption()
-    option.use_gpu()
-    if use_trt:
-        option.use_trt_backend()
-        option.set_trt_input_shape('x', [1, 3, 1024, 2048])
-    model_file = pathlib.Path(model_file_path)
-    params_file = pathlib.Path(params_file_path)
-    config_file = pathlib.Path(config_file_path)
-    video_input = pathlib.Path(input_video_path)
 
-    model = fd.vision.segmentation.PaddleSegModel(
-        str(model_file), str(params_file), str(config_file), runtime_option=option
-    )
-    if stack_heatmaps:
-        model.postprocessor.apply_softmax = True
+    model, video_input = __setup_model(config_file_path, input_video_path, model_file_path, params_file_path,
+                                       stack_heatmaps, use_trt)
 
     print('Reading video...')
     stream = CamGear(source=str(video_input)).start()
@@ -92,7 +79,7 @@ def show_prediction_frames(model_file_path: str,
         print(f'Predicting frame {counter}...')
         start = time.time()
         if stack_heatmaps:
-            output = get_prediction_with_multiple_heatmaps(frame_resized, model, number_of_heatmaps, 100)
+            output = get_prediction_with_multiple_heatmaps(frame_resized, model, number_of_crops, 100)
         else:
             output = get_prediction_with_single_heatmap(frame_resized, model)
         end = time.time()
@@ -109,6 +96,25 @@ def show_prediction_frames(model_file_path: str,
 
     cv.destroyAllWindows()
     stream.stop()
+
+
+def __setup_model(config_file_path, input_video_path, model_file_path, params_file_path, stack_heatmaps, use_trt):
+    print('Building model...')
+    option = fd.RuntimeOption()
+    option.use_gpu()
+    if use_trt:
+        option.use_trt_backend()
+        option.set_trt_input_shape('x', [1, 3, 1024, 2048])
+    model_file = pathlib.Path(model_file_path)
+    params_file = pathlib.Path(params_file_path)
+    config_file = pathlib.Path(config_file_path)
+    video_input = pathlib.Path(input_video_path)
+    model = fd.vision.segmentation.PaddleSegModel(
+        str(model_file), str(params_file), str(config_file), runtime_option=option
+    )
+    if stack_heatmaps:
+        model.postprocessor.apply_softmax = True
+    return model, video_input
 
 
 if __name__ == '__main__':
