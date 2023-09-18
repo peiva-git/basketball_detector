@@ -19,7 +19,7 @@ class MobileNetUNet:
 
 
 class UNet:
-    def __init__(self, input_shape: (int, int, int) = (1024, 2048, 3), number_of_classes: int = 2):
+    def __init__(self, input_shape: (int, int, int) = (512, 1024, 3), number_of_classes: int = 2):
         inputs = keras.Input(shape=input_shape)
         x = keras.layers.Rescaling(1. / 255, input_shape=input_shape)(inputs)
 

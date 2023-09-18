@@ -1,4 +1,4 @@
-# Basketball detector
+# Basketball Detector
 
 :basketball: **BasketballDetector** is a deep-learning based tool that enables automatic
 ball detection in basketball videos.
