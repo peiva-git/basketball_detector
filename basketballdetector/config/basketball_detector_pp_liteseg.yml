@@ -13,7 +13,7 @@ train_dataset:
       max_scale_factor: 2.0
       scale_step_size: 0.25
     - type: RandomPaddingCrop
-      crop_size: [820, 410]
+      crop_size: [820, 410] # [0.8 * 1024, 0.8 * 512]
     - type: RandomPaddingCrop
       crop_size: [820, 410]
     - type: RandomPaddingCrop
