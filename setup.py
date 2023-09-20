@@ -29,7 +29,7 @@ setup(
     install_requires=dependencies,
     entry_points={
         'console_scripts': [
-            'train-model = basketballdetector.cli:train_command'
+            'save-predictions = basketballdetector.cli:save_predictions_command'
         ]
     },
 )

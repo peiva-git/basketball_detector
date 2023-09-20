@@ -56,8 +56,7 @@ def get_prediction_with_multiple_heatmaps(
 
 class PredictionHandler:
     __number_of_crops = None
-    __image_sequence_target_directory = pathlib.Path.cwd() / 'image_sequence'
-    __output_video_target_path = pathlib.Path.cwd() / 'predicted.mp4'
+    __predictions_target_dir = pathlib.Path.cwd() / 'output'
     __frame_processing_times = []
     __counter = 1
     __YT_URL_REGEX = re.compile(r'https://youtu.be/.{1,100}')
@@ -105,20 +104,12 @@ class PredictionHandler:
         self.__number_of_crops = number_of_crops
 
     @property
-    def image_sequence_target_directory(self):
-        return self.__image_sequence_target_directory
+    def predictions_target_directory(self):
+        return self.__predictions_target_dir
 
-    @image_sequence_target_directory.setter
-    def image_sequence_target_directory(self, target: str):
-        self.__image_sequence_target_directory = pathlib.Path(target)
-
-    @property
-    def output_video_target_path(self):
-        return self.__output_video_target_path
-
-    @output_video_target_path.setter
-    def output_video_target_path(self, output_video_target_path):
-        self.__output_video_target_path = output_video_target_path
+    @predictions_target_directory.setter
+    def predictions_target_directory(self, predictions_target_dir):
+        self.__predictions_target_dir = predictions_target_dir
 
     def show_prediction_frames(self):
         while True:
@@ -142,7 +133,7 @@ class PredictionHandler:
             if frame is None:
                 break
             output = self.__obtain_prediction(frame)
-            cv.imwrite(str(self.__image_sequence_target_directory / f'frame{self.__counter}.png'), output)
+            cv.imwrite(str(self.__predictions_target_dir / f'frame{self.__counter}.png'), output)
             self.__counter += 1
 
             key = cv.waitKey(1) & 0xFF
@@ -153,7 +144,7 @@ class PredictionHandler:
         self.__stream.stop()
 
     def write_predictions_video(self):
-        writer = WriteGear(output=str(self.__output_video_target_path), compression_mode=False)
+        writer = WriteGear(output=str(self.__predictions_target_dir / 'predictions.mp4'), compression_mode=False)
         while True:
             frame = self.__stream.read()
             if frame is None:

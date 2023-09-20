@@ -1,62 +1,77 @@
 import argparse
-import os.path
+import pathlib
 
-import tensorflow as tf
-
-import basketballdetector.models
-from .dataset_builders import ClassificationDatasetBuilder
-from .models.classification import SimpleClassifier
+from basketballdetector import PredictionHandler
 
 
-def train_command(debug_enabled: bool = False):
+def save_predictions_command():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--model',
-        help='The model to train',
-        choices=['simple-classifier', 'resnet'],
+        '--model_file',
+        help='model.pdmodel model definition file path',
         type=str,
         required=True
     )
     parser.add_argument(
-        '--dataset-dir',
-        help='Dataset root directory',
+        '--params_file',
+        help='model.pdiparams model parameters file path',
         type=str,
         required=True
     )
     parser.add_argument(
-        '--epochs',
-        help='Number of training epochs',
+        '--config_file',
+        help='deploy.yaml inference configuration file path',
+        type=str,
+        required=True
+    )
+    parser.add_argument(
+        '--input_video',
+        help='Input video path, could be a video filename or a YouTube link',
+        type=str,
+        required=True
+    )
+    parser.add_argument(
+        '--target_dir',
+        help='Prediction data target directory',
+        type=str,
+        required=False,
+        default=pathlib.Path.cwd() / 'output'
+    )
+    parser.add_argument(
+        '--save_mode',
+        help='Choose how the predictions will be saved',
+        choices=['video', 'img-seq'],
+        type=str,
+        required=False,
+        default='video'
+    )
+    parser.add_argument(
+        '--stack_heatmaps',
+        help='How many multiple heatmaps to stack',
         type=int,
-        required=True
+        required=False,
+        default=0
     )
+    parser.add_argument(
+        '--use_trt',
+        help='Whether to use TensorRT acceleration',
+        type=bool,
+        required=False,
+        default=False
+    )
+
     args = parser.parse_args()
+    predictor = PredictionHandler(
+        args.model_file,
+        args.params_file,
+        args.config_file,
+        args.input_video,
+        args.stack_heatmaps > 0,
+        args.use_trt
+    )
+    predictor.predictions_target_directory = args.target_dir
 
-    builder = ClassificationDatasetBuilder(args['dataset-dir'])
-    builder.configure_datasets_for_performance()
-    train_dataset, validation_dataset = builder.train_dataset, builder.validation_dataset
-
-    if debug_enabled:
-        train_dataset = train_dataset.take(int(len(train_dataset) * 0.05))
-        validation_dataset = validation_dataset.take(int(len(validation_dataset) * 0.05))
-
-    if args.model == 'simple-classifier':
-        model = SimpleClassifier(model_name=args.model).model
+    if args.save_mode == 'video':
+        predictor.write_predictions_video()
     else:
-        model = SimpleClassifier(model_name='resnet-classifier').model
-
-    model.compile(
-        optimizer='adam',
-        loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-        metrics=[tf.metrics.CategoricalAccuracy()]
-    )
-    model.fit(
-        train_dataset,
-        validation_data=validation_dataset,
-        epochs=args.epochs,
-        callbacks=basketballdetector.models.get_classification_model_callbacks(
-            early_stop_patience=int(0.3 * args.epochs),
-            reduce_lr_patience=int(0.2 * args.epochs)
-        )
-    )
-    model.save(filepath=os.path.join('out', 'models', 'TF', args.model), save_format='tf')
-    model.save(filepath=os.path.join('out', 'models', 'HDF5', args.model), save_format='h5')
+        predictor.write_image_sequence_prediction()
