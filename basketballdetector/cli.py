@@ -129,7 +129,6 @@ def display_predictions_command():
         args.stack_heatmaps > 0,
         args.use_trt
     )
-    predictor.predictions_target_directory = args.target_dir
     if args.stack_heatmaps > 0:
         predictor.number_of_crops = args.stack_heatmaps
 
