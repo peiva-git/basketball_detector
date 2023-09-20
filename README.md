@@ -96,7 +96,7 @@ If you're using the provided conda environment, you can simply run the following
 pip install fastdeploy-gpu-python -f https://www.paddlepaddle.org.cn/whl/fastdeploy.html
 ```
 
-## Model training
+## Using the PaddleSeg toolbox
 
 The segmentation model has been trained using a customized version of the sample
 configuration file for the PPLiteSeg model applied to the 
@@ -128,7 +128,7 @@ cd PaddleSeg
 pip install -v -e .
 ```
 
-### Training
+### Model training
 
 To train the BasketballDetector segmentation model, run:
 ```shell
@@ -145,6 +145,12 @@ More information on what these options do and on how to visualize the training p
 can be found [here](https://github.com/PaddlePaddle/PaddleSeg/blob/release/2.8/docs/train/train.md).
 
 
+### Model evaluation
 
-
-
+To evaluate the obtained model, run:
+```shell
+cd PaddleSeg
+python tools/val.py \
+--config ../basketballdetector/config/basketball_detector_pp_liteseg.yml \
+--model_path output/best_model/model.pdparams
+```
