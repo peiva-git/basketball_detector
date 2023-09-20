@@ -6,30 +6,7 @@ from basketballdetector import PredictionHandler
 
 def save_predictions_command():
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '--model_file',
-        help='model.pdmodel model definition file path',
-        type=str,
-        required=True
-    )
-    parser.add_argument(
-        '--params_file',
-        help='model.pdiparams model parameters file path',
-        type=str,
-        required=True
-    )
-    parser.add_argument(
-        '--config_file',
-        help='deploy.yaml inference configuration file path',
-        type=str,
-        required=True
-    )
-    parser.add_argument(
-        '--input_video',
-        help='Input video path, could be a video filename or a YouTube link',
-        type=str,
-        required=True
-    )
+    __add_common_args(parser)
     parser.add_argument(
         '--target_dir',
         help='Prediction data target directory',
@@ -45,34 +22,11 @@ def save_predictions_command():
         required=False,
         default='video'
     )
-    parser.add_argument(
-        '--stack_heatmaps',
-        help='How many multiple heatmaps to stack',
-        type=int,
-        required=False,
-        default=0
-    )
-    parser.add_argument(
-        '--use_trt',
-        help='Whether to use TensorRT acceleration',
-        type=bool,
-        required=False,
-        default=False
-    )
 
     args = parser.parse_args()
-    predictor = PredictionHandler(
-        args.model_file,
-        args.params_file,
-        args.config_file,
-        args.input_video,
-        args.stack_heatmaps > 0,
-        args.use_trt
-    )
-    predictor.predictions_target_directory = args.target_dir
-    if args.stack_heatmaps > 0:
-        predictor.number_of_crops = args.stack_heatmaps
+    predictor = __init_common_predictor(args)
 
+    predictor.predictions_target_directory = args.target_dir
     if args.save_mode == 'video':
         predictor.write_predictions_video()
     else:
@@ -81,6 +35,15 @@ def save_predictions_command():
 
 def display_predictions_command():
     parser = argparse.ArgumentParser()
+    __add_common_args(parser)
+
+    args = parser.parse_args()
+    predictor = __init_common_predictor(args)
+
+    predictor.show_prediction_frames()
+
+
+def __add_common_args(parser):
     parser.add_argument(
         '--model_file',
         help='model.pdmodel model definition file path',
@@ -119,8 +82,10 @@ def display_predictions_command():
         required=False,
         default=False
     )
+    return parser
 
-    args = parser.parse_args()
+
+def __init_common_predictor(args):
     predictor = PredictionHandler(
         args.model_file,
         args.params_file,
@@ -131,5 +96,6 @@ def display_predictions_command():
     )
     if args.stack_heatmaps > 0:
         predictor.number_of_crops = args.stack_heatmaps
+    return predictor
 
-    predictor.show_prediction_frames()
+
