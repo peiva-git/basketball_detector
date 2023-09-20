@@ -60,7 +60,7 @@ class PredictionHandler:
     __output_video_target_path = pathlib.Path.cwd() / 'predicted.mp4'
     __frame_processing_times = []
     __counter = 1
-    __YT_URL_REGEX = re.compile(r'https://youtu.be/[A-Za-z0-9]{1,20}/')
+    __YT_URL_REGEX = re.compile(r'https://youtu.be/.{1,100}')
 
     def __init__(self,
                  model_file_path: str,
@@ -190,8 +190,7 @@ if __name__ == '__main__':
         '/home/peiva/PycharmProjects/PaddleSeg/output/inference_model/model.pdmodel',
         '/home/peiva/PycharmProjects/PaddleSeg/output/inference_model/model.pdiparams',
         '/home/peiva/PycharmProjects/PaddleSeg/output/inference_model/deploy.yaml',
-        '/mnt/DATA/tesi/dataset/dataset_youtube/pallacanestro_trieste/stagione_2019-20_legabasket'
-        '/pallacanestro_trieste-virtus_roma/final_cut.mp4',
+        'https://youtu.be/ou36exQmXjg?si=0iMHyCTBPUzeXFCk',
     )
     predictor.show_prediction_frames()
     # model_file = os.path.join('/home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'model.pdmodel')
