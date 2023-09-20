@@ -69,7 +69,7 @@ This environment has been tested under the following conditions:
 
 Using the provided [conda environment file](conda/pp-fd-environment.yml), run:
 ```shell
-conda create --name myenv --file pp-fd-environment.yml
+conda create --name myenv-fd --file pp-fd-environment.yml
 ```
 
 Don't forget to set up the required environment variables as well:
@@ -77,7 +77,7 @@ Don't forget to set up the required environment variables as well:
 export LD_LIBRARY_PATH=$CONDA_PREFIX/lib/:$LD_LIBRARY_PATH
 ```
 
-You can automatize the process of adding the environment variables
+You can automate the process of adding the environment variables
 to execute automatically each time you activate your
 conda environment by running the following commands:
 ```shell
@@ -105,6 +105,30 @@ configuration file for the PPLiteSeg model applied to the
 
 ### Environment setup
 
+Before being able to train the model, you must install
+[Paddle](https://github.com/PaddlePaddle/Paddle)
+and [PaddleSeg](https://github.com/PaddlePaddle/PaddleSeg).
+It is recommended to do so in a separate environment. Again, you can also use
+the [provided conda environment](conda/pp-environment.yml)
+by running the following command:
+```shell
+conda create --name myenv-pp --file pp-fd-environment.yml
+```
+**Please note** that both the provided environment and the
+[Paddle PyPi release](https://pypi.org/project/paddlepaddle-gpu/) currently
+require the CUDA Runtime API version 10.2 to run correctly.
+If you want a different version, refer to the 
+[official documentation](https://www.paddlepaddle.org.cn/documentation/docs/en/install/pip/linux-pip_en.html).
+
+Also, to avoid unexpected errors, the [PaddleSeg](https://github.com/PaddlePaddle/PaddleSeg)
+package should be built from source using the provided repository,
+while being in the myenv-pp environment:
+```shell
+cd PaddleSeg
+pip install -v -e .
+```
+
+### Training
 
 To train the BasketballDetector segmentation model, run:
 ```shell
