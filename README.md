@@ -18,7 +18,7 @@ This project uses the
 [PaddleSeg toolkit](https://github.com/PaddlePaddle/PaddleSeg)
 to train a [PPLiteSeg model](https://github.com/PaddlePaddle/PaddleSeg/tree/release/2.8/configs/pp_liteseg).
 The configuration file used during training can be found 
-[here](basketballdetector/config/basketball_detector_pp_liteseg.yml).
+[here](basketballdetector/config/pp_liteseg_stdc1_basketballdetector_1024x512.yml).
 Inference is then performed using 
 [FastDeploy](https://github.com/PaddlePaddle/FastDeploy).
 In the following sections, you will find detailed instructions on how to set up
@@ -135,7 +135,7 @@ To train the BasketballDetector segmentation model, run:
 cd PaddleSeg
 export CUDA_VISIBLE_DEVICES=0
 python tools/train.py \
---config ../basketballdetector/config/basketball_detector_pp_liteseg.yml \
+--config ../basketballdetector/config/pp_liteseg_stdc1_basketballdetector_1024x512.yml \
 --do_eval \
 --use_vdl \
 --save_interval 500
@@ -151,6 +151,6 @@ To evaluate the obtained model, run:
 ```shell
 cd PaddleSeg
 python tools/val.py \
---config ../basketballdetector/config/basketball_detector_pp_liteseg.yml \
+--config ../basketballdetector/config/pp_liteseg_stdc1_basketballdetector_1024x512.yml \
 --model_path output/best_model/model.pdparams
 ```
