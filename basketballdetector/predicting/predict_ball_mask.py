@@ -1,5 +1,6 @@
 import pathlib
 import time
+import re
 
 from vidgear.gears import CamGear
 from vidgear.gears import WriteGear
@@ -9,7 +10,7 @@ import cv2 as cv
 import numpy as np
 import fastdeploy as fd
 
-from .utils import generate_random_crops
+from basketballdetector.predicting.utils import generate_random_crops
 
 
 def get_prediction_with_single_heatmap(
@@ -53,149 +54,146 @@ def get_prediction_with_multiple_heatmaps(
     return rescaled_heatmap.astype(np.uint8)
 
 
-def write_predictions_video(model_file_path: str,
-                            params_file_path: str,
-                            config_file_path: str,
-                            input_video_path: str,
-                            output_video_path: str,
-                            stack_heatmaps: bool = False,
-                            number_of_crops: int = None,
-                            use_trt: bool = False):
-    model = __setup_model(config_file_path,
-                          model_file_path,
-                          params_file_path,
-                          stack_heatmaps,
-                          use_trt)
-    input_video = pathlib.Path(input_video_path)
-    output_video = pathlib.Path(output_video_path)
-    print('Reading video...')
-    stream = CamGear(source=str(input_video)).start()
-    writer = WriteGear(output=str(output_video), compression_mode=False)
-    counter = 1
-    frame_processing_times = []
+class PredictionHandler:
+    __number_of_crops = None
+    __image_sequence_target_directory = pathlib.Path.cwd() / 'image_sequence'
+    __output_video_target_path = pathlib.Path.cwd() / 'predicted.mp4'
+    __frame_processing_times = []
+    __counter = 1
+    __YT_URL_REGEX = re.compile(r'https://youtu.be/[A-Za-z0-9]{1,20}/')
 
-    while True:
-        frame = stream.read()
-        if frame is None:
-            break
-        output = __obtain_prediction(counter, frame, frame_processing_times, model, number_of_crops, stack_heatmaps)
-        writer.write(output)
-        key = cv.waitKey(1) & 0xFF
-        if key == ord('q'):
-            break
-    cv.destroyAllWindows()
-    stream.stop()
-    writer.close()
+    def __init__(self,
+                 model_file_path: str,
+                 params_file_path: str,
+                 config_file_path: str,
+                 input_video_path: str,
+                 stack_heatmaps: bool = False,
+                 use_trt: bool = False):
+        self.__model_file = pathlib.Path(model_file_path)
+        self.__params_file = pathlib.Path(params_file_path)
+        self.__config_file = pathlib.Path(config_file_path)
+        self.__stack_heatmaps = stack_heatmaps
+        self.__use_trt = use_trt
+        if re.match(self.__YT_URL_REGEX, input_video_path) is not None:
+            # the input video path is a YouTube link
+            print('Start streaming from YouTube video...')
+            self.__stream = CamGear(source=input_video_path, stream_mode=True, logging=True).start()
+        else:
+            self.__stream = CamGear(source=str(pathlib.Path(input_video_path))).start()
+        self.__model = self.__setup_model()
 
+    def __setup_model(self):
+        print('Building model...')
+        option = fd.RuntimeOption()
+        option.use_gpu()
+        if self.__use_trt:
+            option.use_trt_backend()
+            option.set_trt_input_shape('x', [1, 3, 1024, 2048])
+        model = fd.vision.segmentation.PaddleSegModel(
+            str(self.__model_file), str(self.__params_file), str(self.__config_file), runtime_option=option
+        )
+        if self.__stack_heatmaps:
+            model.postprocessor.apply_softmax = True
+        return model
 
-def write_image_sequence_predictions(model_file_path: str,
-                                     params_file_path: str,
-                                     config_file_path: str,
-                                     input_video_path: str,
-                                     target_directory_path: str,
-                                     stack_heatmaps: bool = False,
-                                     number_of_crops: int = None,
-                                     use_trt: bool = False):
-    model = __setup_model(config_file_path,
-                          model_file_path,
-                          params_file_path,
-                          stack_heatmaps,
-                          use_trt)
-    target_directory = pathlib.Path(target_directory_path)
-    video_input = pathlib.Path(input_video_path)
-    print('Reading video...')
-    stream = CamGear(source=str(video_input)).start()
-    counter = 1
-    frame_processing_times = []
-    while True:
-        frame = stream.read()
-        if frame is None:
-            break
-        output = __obtain_prediction(counter, frame, frame_processing_times, model, number_of_crops, stack_heatmaps)
-        cv.imwrite(str(target_directory / f'frame{counter}.png'), output)
-        counter += 1
+    @property
+    def number_of_crops(self):
+        return self.__number_of_crops
 
-        key = cv.waitKey(1) & 0xFF
-        if key == ord('q'):
-            break
+    @number_of_crops.setter
+    def number_of_crops(self, number_of_crops):
+        self.__number_of_crops = number_of_crops
 
-    cv.destroyAllWindows()
-    stream.stop()
+    @property
+    def image_sequence_target_directory(self):
+        return self.__image_sequence_target_directory
 
+    @image_sequence_target_directory.setter
+    def image_sequence_target_directory(self, target: str):
+        self.__image_sequence_target_directory = pathlib.Path(target)
 
-def show_prediction_frames(model_file_path: str,
-                           params_file_path: str,
-                           config_file_path: str,
-                           input_video_path: str,
-                           stack_heatmaps: bool = False,
-                           number_of_crops: int = None,
-                           use_trt: bool = False):
+    @property
+    def output_video_target_path(self):
+        return self.__output_video_target_path
 
-    model = __setup_model(config_file_path, model_file_path, params_file_path, stack_heatmaps, use_trt)
-    video_input = pathlib.Path(input_video_path)
+    @output_video_target_path.setter
+    def output_video_target_path(self, output_video_target_path):
+        self.__output_video_target_path = output_video_target_path
 
-    print('Reading video...')
-    stream = CamGear(source=str(video_input)).start()
-    counter = 1
-    frame_processing_times = []
-    while True:
-        frame = stream.read()
-        if frame is None:
-            break
-        output = __obtain_prediction(counter, frame, frame_processing_times, model, number_of_crops, stack_heatmaps)
-        cv.imshow('Output', output)
-        counter += 1
+    def show_prediction_frames(self):
+        while True:
+            frame = self.__stream.read()
+            if frame is None:
+                break
+            output = self.__obtain_prediction(frame)
+            cv.imshow('Output', output)
+            self.__counter += 1
 
-        key = cv.waitKey(1) & 0xFF
-        if key == ord('q'):
-            break
+            key = cv.waitKey(1) & 0xFF
+            if key == ord('q'):
+                break
 
-    cv.destroyAllWindows()
-    stream.stop()
+        cv.destroyAllWindows()
+        self.__stream.stop()
 
+    def write_image_sequence_prediction(self):
+        while True:
+            frame = self.__stream.read()
+            if frame is None:
+                break
+            output = self.__obtain_prediction(frame)
+            cv.imwrite(str(self.__image_sequence_target_directory / f'frame{self.__counter}.png'), output)
+            self.__counter += 1
 
-def __setup_model(config_file_path, model_file_path, params_file_path, stack_heatmaps, use_trt):
-    print('Building model...')
-    option = fd.RuntimeOption()
-    option.use_gpu()
-    if use_trt:
-        option.use_trt_backend()
-        option.set_trt_input_shape('x', [1, 3, 1024, 2048])
-    model_file = pathlib.Path(model_file_path)
-    params_file = pathlib.Path(params_file_path)
-    config_file = pathlib.Path(config_file_path)
-    model = fd.vision.segmentation.PaddleSegModel(
-        str(model_file), str(params_file), str(config_file), runtime_option=option
-    )
-    if stack_heatmaps:
-        model.postprocessor.apply_softmax = True
-    return model
+            key = cv.waitKey(1) & 0xFF
+            if key == ord('q'):
+                break
 
+        cv.destroyAllWindows()
+        self.__stream.stop()
 
-def __obtain_prediction(counter, frame, frame_processing_times, model, number_of_crops, stack_heatmaps):
-    frame_resized = cv.resize(frame, (2048, 1024))
-    print(f'Predicting frame {counter}...')
-    start = time.time()
-    if stack_heatmaps:
-        output = get_prediction_with_multiple_heatmaps(frame_resized, model, number_of_crops, variance=100)
-    else:
-        output = get_prediction_with_single_heatmap(frame_resized, model)
-    end = time.time()
-    print(f'Took {end - start} seconds to process frame {counter}')
-    frame_processing_times.append(end - start)
-    print(f'Average processing speed: {mean(frame_processing_times)} seconds')
-    print(f'{1 / (end - start)} FPS')
-    return output
+    def write_predictions_video(self):
+        writer = WriteGear(output=str(self.__output_video_target_path), compression_mode=False)
+        while True:
+            frame = self.__stream.read()
+            if frame is None:
+                break
+            output = self.__obtain_prediction(frame)
+            writer.write(output)
+            key = cv.waitKey(1) & 0xFF
+            if key == ord('q'):
+                break
+        cv.destroyAllWindows()
+        self.__stream.stop()
+        writer.close()
+
+    def __obtain_prediction(self, frame):
+        frame_resized = cv.resize(frame, (2048, 1024))
+        print(f'Predicting frame {self.__counter}...')
+        start = time.time()
+        if self.__stack_heatmaps:
+            output = get_prediction_with_multiple_heatmaps(
+                frame_resized, self.__model, self.__number_of_crops, variance=100
+            )
+        else:
+            output = get_prediction_with_single_heatmap(frame_resized, self.__model)
+        end = time.time()
+        print(f'Took {end - start} seconds to process frame {self.__counter}')
+        self.__frame_processing_times.append(end - start)
+        print(f'Average processing speed: {mean(self.__frame_processing_times)} seconds')
+        print(f'{1 / (end - start)} FPS')
+        return output
 
 
 if __name__ == '__main__':
-    show_prediction_frames(
+    predictor = PredictionHandler(
         '/home/peiva/PycharmProjects/PaddleSeg/output/inference_model/model.pdmodel',
         '/home/peiva/PycharmProjects/PaddleSeg/output/inference_model/model.pdiparams',
         '/home/peiva/PycharmProjects/PaddleSeg/output/inference_model/deploy.yaml',
         '/mnt/DATA/tesi/dataset/dataset_youtube/pallacanestro_trieste/stagione_2019-20_legabasket'
         '/pallacanestro_trieste-virtus_roma/final_cut.mp4',
     )
+    predictor.show_prediction_frames()
     # model_file = os.path.join('/home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'model.pdmodel')
     # params_file = os.path.join('/home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'model.pdiparams')
     # config_file = os.path.join('/home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'deploy.yaml')
