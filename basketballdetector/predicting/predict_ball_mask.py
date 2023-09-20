@@ -2,6 +2,7 @@ import pathlib
 import time
 
 from vidgear.gears import CamGear
+from vidgear.gears import WriteGear
 from statistics import mean
 
 import cv2 as cv
@@ -52,8 +53,39 @@ def get_prediction_with_multiple_heatmaps(
     return rescaled_heatmap.astype(np.uint8)
 
 
-def write_predictions_video():
-    pass
+def write_predictions_video(model_file_path: str,
+                            params_file_path: str,
+                            config_file_path: str,
+                            input_video_path: str,
+                            output_video_path: str,
+                            stack_heatmaps: bool = False,
+                            number_of_crops: int = None,
+                            use_trt: bool = False):
+    model = __setup_model(config_file_path,
+                          model_file_path,
+                          params_file_path,
+                          stack_heatmaps,
+                          use_trt)
+    input_video = pathlib.Path(input_video_path)
+    output_video = pathlib.Path(output_video_path)
+    print('Reading video...')
+    stream = CamGear(source=str(input_video)).start()
+    writer = WriteGear(output=str(output_video), compression_mode=False)
+    counter = 1
+    frame_processing_times = []
+
+    while True:
+        frame = stream.read()
+        if frame is None:
+            break
+        output = __obtain_prediction(counter, frame, frame_processing_times, model, number_of_crops, stack_heatmaps)
+        writer.write(output)
+        key = cv.waitKey(1) & 0xFF
+        if key == ord('q'):
+            break
+    cv.destroyAllWindows()
+    stream.stop()
+    writer.close()
 
 
 def write_image_sequence_predictions(model_file_path: str,
