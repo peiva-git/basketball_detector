@@ -10,7 +10,7 @@ Currently, the project is still under development.
 2. [Project requirements](#project-requirements)
 3. [Project setup](#project-setup)
    1. [Special requirements](#special-requirements) 
-4. [Model training](#model-training)
+4. [Using the PaddleSeg toolbox](#using-the-paddleseg-toolbox)
 
 ## Description
 
