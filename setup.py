@@ -29,7 +29,8 @@ setup(
     install_requires=dependencies,
     entry_points={
         'console_scripts': [
-            'save-predictions = basketballdetector.cli:save_predictions_command'
+            'save-predictions = basketballdetector.cli:save_predictions_command',
+            'show-predictions = basketballdetector.cli:display_predictions_command'
         ]
     },
 )
