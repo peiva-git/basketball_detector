@@ -8,7 +8,7 @@ import cv2 as cv
 import numpy as np
 import fastdeploy as fd
 
-from basketballdetector.predicting.utils import generate_random_crops
+from .utils import generate_random_crops
 
 
 def get_prediction_with_single_heatmap(
@@ -56,8 +56,39 @@ def write_predictions_video():
     pass
 
 
-def write_image_sequence_predictions():
-    pass
+def write_image_sequence_predictions(model_file_path: str,
+                                     params_file_path: str,
+                                     config_file_path: str,
+                                     input_video_path: str,
+                                     target_directory_path: str,
+                                     stack_heatmaps: bool = False,
+                                     number_of_crops: int = None,
+                                     use_trt: bool = False):
+    model = __setup_model(config_file_path,
+                          model_file_path,
+                          params_file_path,
+                          stack_heatmaps,
+                          use_trt)
+    target_directory = pathlib.Path(target_directory_path)
+    video_input = pathlib.Path(input_video_path)
+    print('Reading video...')
+    stream = CamGear(source=str(video_input)).start()
+    counter = 1
+    frame_processing_times = []
+    while True:
+        frame = stream.read()
+        if frame is None:
+            break
+        output = __obtain_prediction(counter, frame, frame_processing_times, model, number_of_crops, stack_heatmaps)
+        cv.imwrite(str(target_directory / f'frame{counter}.png'), output)
+        counter += 1
+
+        key = cv.waitKey(1) & 0xFF
+        if key == ord('q'):
+            break
+
+    cv.destroyAllWindows()
+    stream.stop()
 
 
 def show_prediction_frames(model_file_path: str,
@@ -68,8 +99,8 @@ def show_prediction_frames(model_file_path: str,
                            number_of_crops: int = None,
                            use_trt: bool = False):
 
-    model, video_input = __setup_model(config_file_path, input_video_path, model_file_path, params_file_path,
-                                       stack_heatmaps, use_trt)
+    model = __setup_model(config_file_path, model_file_path, params_file_path, stack_heatmaps, use_trt)
+    video_input = pathlib.Path(input_video_path)
 
     print('Reading video...')
     stream = CamGear(source=str(video_input)).start()
@@ -79,18 +110,7 @@ def show_prediction_frames(model_file_path: str,
         frame = stream.read()
         if frame is None:
             break
-        frame_resized = cv.resize(frame, (2048, 1024))
-        print(f'Predicting frame {counter}...')
-        start = time.time()
-        if stack_heatmaps:
-            output = get_prediction_with_multiple_heatmaps(frame_resized, model, number_of_crops, 100)
-        else:
-            output = get_prediction_with_single_heatmap(frame_resized, model)
-        end = time.time()
-        print(f'Took {end - start} seconds to process frame {counter}')
-        frame_processing_times.append(end - start)
-        print(f'Average processing speed: {mean(frame_processing_times)} seconds')
-        print(f'{1 / (end - start)} FPS')
+        output = __obtain_prediction(counter, frame, frame_processing_times, model, number_of_crops, stack_heatmaps)
         cv.imshow('Output', output)
         counter += 1
 
@@ -102,7 +122,7 @@ def show_prediction_frames(model_file_path: str,
     stream.stop()
 
 
-def __setup_model(config_file_path, input_video_path, model_file_path, params_file_path, stack_heatmaps, use_trt):
+def __setup_model(config_file_path, model_file_path, params_file_path, stack_heatmaps, use_trt):
     print('Building model...')
     option = fd.RuntimeOption()
     option.use_gpu()
@@ -112,13 +132,28 @@ def __setup_model(config_file_path, input_video_path, model_file_path, params_fi
     model_file = pathlib.Path(model_file_path)
     params_file = pathlib.Path(params_file_path)
     config_file = pathlib.Path(config_file_path)
-    video_input = pathlib.Path(input_video_path)
     model = fd.vision.segmentation.PaddleSegModel(
         str(model_file), str(params_file), str(config_file), runtime_option=option
     )
     if stack_heatmaps:
         model.postprocessor.apply_softmax = True
-    return model, video_input
+    return model
+
+
+def __obtain_prediction(counter, frame, frame_processing_times, model, number_of_crops, stack_heatmaps):
+    frame_resized = cv.resize(frame, (2048, 1024))
+    print(f'Predicting frame {counter}...')
+    start = time.time()
+    if stack_heatmaps:
+        output = get_prediction_with_multiple_heatmaps(frame_resized, model, number_of_crops, variance=100)
+    else:
+        output = get_prediction_with_single_heatmap(frame_resized, model)
+    end = time.time()
+    print(f'Took {end - start} seconds to process frame {counter}')
+    frame_processing_times.append(end - start)
+    print(f'Average processing speed: {mean(frame_processing_times)} seconds')
+    print(f'{1 / (end - start)} FPS')
+    return output
 
 
 if __name__ == '__main__':
