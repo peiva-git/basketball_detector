@@ -111,12 +111,12 @@ Since the model's postprocessing leverages multiple heatmaps to obtain better re
 2. Pretrained Backbone: whether the model uses a backbone pretrained on the cityscapes dataset or not.
 In the latter case, using a pretrained backbone isn't possible since a custom number of input channels is used instead.
 
-| Model        | Backbone | Train Random Crops | Pretrained Backbone | Train  Resolution | Test  Resolution | Training Iters | mIoU | Ball Class IoU | Links                |
-|--------------|----------|--------------------|---------------------|-------------------|------------------|----------------|------|----------------|----------------------|
-| PP-LiteSeg-T | STDC1    | 1                  | Yes                 | 1024x512          | 2048x1024        | 160000         |      |                | config model log vdl |
-| PP-LiteSeg-T | STDC1    | 10                 | Yes                 | 1024x512          | 2048x1024        | 160000         |      |                | config model log vdl |
-| PP-LiteSeg-T | STDC1    | 1                  | No                  | 1024x512          | 2048x1024        | 160000         |      |                | config model log vdl | 
-| PP-LiteSeg-T | STDC1    | 10                 | No                  | 1024x512          | 2048x1024        | 160000         |      |                | config model log vdl |
+| Model        | Backbone | Train Random Crops | Pretrained Backbone | Train  Resolution | Test  Resolution | Training Iters | mIoU   | Ball Class IoU | Links                |
+|--------------|----------|--------------------|---------------------|-------------------|------------------|----------------|--------|----------------|----------------------|
+| PP-LiteSeg-T | STDC1    | 1                  | Yes                 | 1024x512          | 2048x1024        | 160000         | 0.8232 | 0.6466         | config model log vdl |
+| PP-LiteSeg-T | STDC1    | 10                 | Yes                 | 1024x512          | 2048x1024        | 160000         |        |                | config model log vdl |
+| PP-LiteSeg-T | STDC1    | 1                  | No                  | 1024x512          | 2048x1024        | 160000         |        |                | config model log vdl | 
+| PP-LiteSeg-T | STDC1    | 10                 | No                  | 1024x512          | 2048x1024        | 160000         |        |                | config model log vdl |
 
 ## Credits
 
