@@ -18,7 +18,7 @@ This project uses the
 [PaddleSeg toolkit](https://github.com/PaddlePaddle/PaddleSeg)
 to train a [PPLiteSeg model](https://github.com/PaddlePaddle/PaddleSeg/tree/release/2.8/configs/pp_liteseg).
 The configuration file used during training can be found 
-[here](basketballdetector/config/pp_liteseg_stdc1_basketballdetector_1024x512.yml).
+[here](basketballdetector/config/pp_liteseg_stdc1_basketballdetector_1024x512_pretrain-10rancrops.yml).
 Inference is then performed using 
 [FastDeploy](https://github.com/PaddlePaddle/FastDeploy).
 In the following sections, you will find detailed instructions on how to set up
@@ -99,7 +99,7 @@ pip install fastdeploy-gpu-python -f https://www.paddlepaddle.org.cn/whl/fastdep
 ## Results
 
 The following results have been obtained by training a model with 
-[this configuration](basketballdetector/config/pp_liteseg_stdc1_basketballdetector_1024x512.yml)
+[this configuration](basketballdetector/config/pp_liteseg_stdc1_basketballdetector_1024x512_pretrain-10rancrops.yml)
 using the tools provided by [PaddleSeg](https://github.com/PaddlePaddle/PaddleSeg/blob/release/2.8/docs/train/train.md).
 A detailed description on how these tools have been used is provided
 [here](basketballdetector/models/README.md).
