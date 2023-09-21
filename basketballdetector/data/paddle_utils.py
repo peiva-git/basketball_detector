@@ -1,3 +1,14 @@
+"""
+This module contains utility functions to convert the provided dataset into a PaddleSeg dataset.
+This function assumes the provided dataset has the following structure, starting from the dataset's root:
+1. The [season]/[match]/frames/ directory contains the video frames
+2. The [season]/[match]/masks/ directory contains the corresponding ground truth masks
+
+The same game may be played in different seasons. The correspondences between frames and masks are determined by
+the frame and mask indexes (the last integer in the filename).
+**Please note** that this script won't work if the filenames or the directory structure differ from the specification.
+"""
+
 import glob
 import pathlib
 

@@ -1,3 +1,7 @@
+"""
+This module contains the Command Line Interface functions for the project.
+"""
+
 import argparse
 import pathlib
 

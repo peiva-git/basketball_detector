@@ -1,3 +1,7 @@
+"""
+This module contains the functions and classes used for mask prediction
+"""
+
 import pathlib
 import time
 import re
@@ -16,6 +20,13 @@ from basketballdetector.predicting.utils import generate_random_crops
 def get_prediction_with_single_heatmap(
         image: np.ndarray,
         paddle_seg_model: fd.vision.segmentation.PaddleSegModel) -> np.ndarray:
+    """
+    This function generates a mask prediction from an input image, without using stacked heatmaps.
+    It is therefore faster but less accurate.
+    :param image: The input image
+    :param paddle_seg_model: The model performing the prediction
+    :return: The predicted mask, overlay on the input frame
+    """
     result = paddle_seg_model.predict(image)
     segmented_image = fd.vision.vis_segmentation(image, result, weight=0.5)
     return segmented_image
