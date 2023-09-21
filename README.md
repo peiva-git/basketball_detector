@@ -10,7 +10,7 @@ Currently, the project is still under development.
 2. [Project requirements](#project-requirements)
 3. [Project setup](#project-setup)
    1. [Special requirements](#special-requirements) 
-4. [Using the PaddleSeg toolbox](#using-the-paddleseg-toolbox)
+4. [Results](#results)
 
 ## Description
 
@@ -96,61 +96,31 @@ If you're using the provided conda environment, you can simply run the following
 pip install fastdeploy-gpu-python -f https://www.paddlepaddle.org.cn/whl/fastdeploy.html
 ```
 
-## Using the PaddleSeg toolbox
+## Results
 
-The segmentation model has been trained using a customized version of the sample
-configuration file for the PPLiteSeg model applied to the 
-[Cityscapes dataset](https://www.cityscapes-dataset.com/) found 
-[on the PaddleSeg repository](https://github.com/PaddlePaddle/PaddleSeg/blob/release/2.8/configs/pp_liteseg/pp_liteseg_stdc1_cityscapes_1024x512_scale1.0_160k.yml).
+The following results have been obtained by training a model with 
+[this configuration](basketballdetector/config/pp_liteseg_stdc1_basketballdetector_1024x512.yml)
+using the tools provided by [PaddleSeg](https://github.com/PaddlePaddle/PaddleSeg/blob/release/2.8/docs/train/train.md).
+A detailed description on how these tools have been used is provided
+[here](basketballdetector/models/README.md).
 
-### Environment setup
+In the following table you can find the summarized results of the obtained model.
+Most of the columns are self-explanatory, aside from:
+1. Train Random Crops: number of random crops transformations applied to each sample during training.
+Since the model's postprocessing leverages multiple heatmaps to obtain better results, a comparison has been made
+2. Pretrained Backbone: whether the model uses a backbone pretrained on the cityscapes dataset or not.
+In the latter case, using a pretrained backbone isn't possible since a custom number of input channels is used instead.
 
-Before being able to train the model, you must install
-[Paddle](https://github.com/PaddlePaddle/Paddle)
-and [PaddleSeg](https://github.com/PaddlePaddle/PaddleSeg).
-It is recommended to do so in a separate environment. Again, you can also use
-the [provided conda environment](conda/pp-environment.yml)
-by running the following command:
-```shell
-conda create --name myenv-pp --file pp-fd-environment.yml
-```
-**Please note** that both the provided environment and the
-[Paddle PyPi release](https://pypi.org/project/paddlepaddle-gpu/) currently
-require the CUDA Runtime API version 10.2 to run correctly.
-If you want a different version, refer to the 
-[official documentation](https://www.paddlepaddle.org.cn/documentation/docs/en/install/pip/linux-pip_en.html).
+| Model        | Backbone | Train Random Crops | Pretrained Backbone | Train  Resolution | Test  Resolution | Training Iters | mIoU | Ball Class IoU | Links                |
+|--------------|----------|--------------------|---------------------|-------------------|------------------|----------------|------|----------------|----------------------|
+| PP-LiteSeg-T | STDC1    | 1                  | Yes                 | 1024x512          | 2048x1024        | 160000         |      |                | config model log vdl |
+| PP-LiteSeg-T | STDC1    | 10                 | Yes                 | 1024x512          | 2048x1024        | 160000         |      |                | config model log vdl |
+| PP-LiteSeg-T | STDC1    | 1                  | No                  | 1024x512          | 2048x1024        | 160000         |      |                | config model log vdl | 
+| PP-LiteSeg-T | STDC1    | 10                 | No                  | 1024x512          | 2048x1024        | 160000         |      |                | config model log vdl |
 
-Also, to avoid unexpected errors, the [PaddleSeg](https://github.com/PaddlePaddle/PaddleSeg)
-package should be built from source using the provided repository,
-while being in the myenv-pp environment:
-```shell
-cd PaddleSeg
-pip install -v -e .
-```
+## Credits
 
-### Model training
-
-To train the BasketballDetector segmentation model, run:
-```shell
-cd PaddleSeg
-export CUDA_VISIBLE_DEVICES=0
-python tools/train.py \
---config ../basketballdetector/config/pp_liteseg_stdc1_basketballdetector_1024x512.yml \
---do_eval \
---use_vdl \
---save_interval 500
-```
-The trained models will then be available in the `PaddleSeg/output` directory.
-More information on what these options do and on how to visualize the training process
-can be found [here](https://github.com/PaddlePaddle/PaddleSeg/blob/release/2.8/docs/train/train.md).
-
-
-### Model evaluation
-
-To evaluate the obtained model, run:
-```shell
-cd PaddleSeg
-python tools/val.py \
---config ../basketballdetector/config/pp_liteseg_stdc1_basketballdetector_1024x512.yml \
---model_path output/best_model/model.pdparams
-```
+This project uses the [PaddleSeg toolbox](https://github.com/PaddlePaddle/PaddleSeg). All credits go to its authors.
+The model's pre- and post-processing steps are based on the paper
+[Real-time CNN-based Segmentation Architecture for Ball Detection in a Single View Setup](https://arxiv.org/abs/2007.11876).
+All credits go to its authors.
