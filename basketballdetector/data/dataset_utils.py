@@ -1,5 +1,5 @@
 """
-This module contains utility functions to convert the provided dataset into a PaddleSeg dataset.
+This module contains utility functions to convert the provided dataset into various formats.
 This function assumes the provided dataset has the following structure, starting from the dataset's root:
 1. The [season]/[match]/frames/ directory contains the video frames
 2. The [season]/[match]/masks/ directory contains the corresponding ground truth masks
@@ -13,6 +13,7 @@ import glob
 import pathlib
 
 import cv2 as cv
+import numpy as np
 
 
 def convert_dataset_to_paddleseg_format(dataset_path: str, target_path: str):
@@ -23,9 +24,20 @@ def convert_dataset_to_paddleseg_format(dataset_path: str, target_path: str):
     """
     source = pathlib.Path(dataset_path)
     target = pathlib.Path(target_path)
+    images, labels = __generate_ordered_filenames_lists(source)
+
+    for sample_index in range(len(images)):
+        image = cv.imread(images[sample_index])
+        label = cv.imread(labels[sample_index])
+        resized_image = cv.resize(image, (1024, 512))
+        resized_label = cv.resize(label, (1024, 512))
+        cv.imwrite(str(target / f'images/image{sample_index + 1}.png'), resized_image)
+        cv.imwrite(str(target / f'labels/label{sample_index + 1}.png'), resized_label)
+
+
+def __generate_ordered_filenames_lists(source):
     images = []
     labels = []
-
     for match_directory_path in glob.iglob(str(source / '*/*')):
         match_directory = pathlib.Path(match_directory_path)
         match_image_paths = [
@@ -40,11 +52,28 @@ def convert_dataset_to_paddleseg_format(dataset_path: str, target_path: str):
         match_mask_paths.sort(key=lambda file_path: int(file_path.split('_')[-1].split('.')[-2]))
         images.extend(match_image_paths)
         labels.extend(match_mask_paths)
+    return images, labels
 
-    for sample_index in range(len(images)):
-        image = cv.imread(images[sample_index])
+
+def convert_dataset_to_six_channel_images(dataset_path: str, target_path: str):
+    source = pathlib.Path(dataset_path)
+    target = pathlib.Path(target_path)
+    images, labels = __generate_ordered_filenames_lists(source)
+
+    image = cv.imread(images[0])
+    label = cv.imread(labels[0])
+    resized_image = cv.resize(image, (1024, 512))
+    resized_label = cv.resize(label, (1024, 512))
+    cv.imwrite(str(target / 'images/image1.png'), resized_image)
+    cv.imwrite(str(target / 'labels/label1.png'), resized_label)
+    for sample_index in range(1, len(images)):
+        current_image = cv.imread(images[sample_index])
+        previous_image = cv.imread(images[sample_index - 1])
+        current_image_resized = cv.resize(current_image, (1024, 512))
+        previous_image_resized = cv.resize(previous_image, (1024, 512))
         label = cv.imread(labels[sample_index])
-        resized_image = cv.resize(image, (1024, 512))
         resized_label = cv.resize(label, (1024, 512))
-        cv.imwrite(str(target / f'images/image{sample_index + 1}.png'), resized_image)
+        difference = current_image_resized - previous_image_resized
+        expanded_image = np.concatenate((current_image_resized, difference), axis=2)
+        cv.imwrite(str(target / f'images/image{sample_index + 1}.png'), expanded_image)
         cv.imwrite(str(target / f'labels/label{sample_index + 1}.png'), resized_label)
