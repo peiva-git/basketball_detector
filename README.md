@@ -5,6 +5,7 @@ ball detection in basketball broadcasting videos.
 Currently, the project is still under development.
 
 ![Detections video example](https://i.imgur.com/ERNXASA.gifv)
+
 ## Table of contents
 
 1. [Description](#description)
