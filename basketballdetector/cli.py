@@ -30,7 +30,7 @@ def save_predictions_command():
     args = parser.parse_args()
     predictor = __init_common_predictor(args)
 
-    predictor.predictions_target_directory = args.target_dir
+    predictor.predictions_target_directory = pathlib.Path(args.target_dir)
     if args.save_mode == 'video':
         predictor.write_predictions_video()
     else:

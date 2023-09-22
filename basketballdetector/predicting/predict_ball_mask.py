@@ -115,7 +115,7 @@ class PredictionHandler:
         return self.__number_of_crops
 
     @number_of_crops.setter
-    def number_of_crops(self, number_of_crops):
+    def number_of_crops(self, number_of_crops: int):
         self.__number_of_crops = number_of_crops
 
     @property
@@ -123,7 +123,7 @@ class PredictionHandler:
         return self.__predictions_target_dir
 
     @predictions_target_directory.setter
-    def predictions_target_directory(self, predictions_target_dir):
+    def predictions_target_directory(self, predictions_target_dir: pathlib.Path):
         self.__predictions_target_dir = predictions_target_dir
 
     def show_prediction_frames(self):
@@ -166,6 +166,7 @@ class PredictionHandler:
                 break
             output = self.__obtain_prediction(frame)
             writer.write(output)
+            self.__counter += 1
             key = cv.waitKey(1) & 0xFF
             if key == ord('q'):
                 break
