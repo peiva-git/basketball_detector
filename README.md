@@ -4,6 +4,8 @@
 ball detection in basketball broadcasting videos.
 Currently, the project is still under development.
 
+![Detections example video](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMXJ2dGNhczI0MGRrdmhuNmU3ZHQ3MG9zaHhkc3pxMGF5ajBtMmFseiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/DurYHJy6bj38Hydi7J/giphy.gif)
+
 ## Table of contents
 
 1. [Description](#description)
@@ -92,6 +94,10 @@ pip install fastdeploy-gpu-python -f https://www.paddlepaddle.org.cn/whl/fastdep
 Otherwise, check out the installation instructions on the
 [official website](https://github.com/PaddlePaddle/FastDeploy#-installation).
 Note that **using a conda environment is recommended**.
+
+## Making predictions
+
+
 
 ## Credits
 
