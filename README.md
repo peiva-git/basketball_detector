@@ -10,17 +10,12 @@ Currently, the project is still under development.
 2. [Project requirements](#project-requirements)
 3. [Project setup](#project-setup)
    1. [Special requirements](#special-requirements) 
-4. [Results](#results)
+4. [Credits](#credits)
 
 ## Description
 
-This project uses the 
-[PaddleSeg toolkit](https://github.com/PaddlePaddle/PaddleSeg)
-to train a [PPLiteSeg model](https://github.com/PaddlePaddle/PaddleSeg/tree/release/2.8/configs/pp_liteseg).
-The configuration file used during training can be found 
-[here](basketballdetector/config/pp_liteseg_stdc1_basketballdetector_1024x512_pretrain-10rancrops.yml).
-Inference is then performed using 
-[FastDeploy](https://github.com/PaddlePaddle/FastDeploy).
+This project uses the [BasketballTrainer package]() to train a **BasketballDetector** model.
+Inference is performed using the [FastDeploy](https://github.com/PaddlePaddle/FastDeploy) API.
 In the following sections, you will find detailed instructions on how to set up
 a working environment and how to use the model to predict the ball location.
 
@@ -58,8 +53,7 @@ More information about what development mode is can be found
 
 ### Importing the conda environment
 
-Alternatively, you can import the same
-[conda](https://docs.conda.io/projects/conda/en/latest/index.html) 
+Alternatively, you can import the same [conda](https://docs.conda.io/projects/conda/en/latest/index.html) 
 environment that was used during development.
 This environment has been tested under the following conditions:
 - Ubuntu 22.04 LTS
@@ -88,39 +82,20 @@ echo 'export LD_LIBRARY_PATH=$CONDA_PREFIX/lib/:$LD_LIBRARY_PATH' >> $CONDA_PREF
 ### Special requirements
 
 Since currently only an outdated version of the `fastdeploy-gpu-python` package
-is available on [PyPi](https://pypi.org/project/fastdeploy-gpu-python/), you need to
-follow [additional steps](https://github.com/PaddlePaddle/FastDeploy#-install-fastdeploy-sdk-with-both-cpu-and-gpu-support)
+is available on [PyPi](https://pypi.org/project/fastdeploy-gpu-python/), you need to follow
+[additional steps](https://github.com/PaddlePaddle/FastDeploy#-install-fastdeploy-sdk-with-both-cpu-and-gpu-support)
 in order to install the latest version. 
 If you're using the provided conda environment, you can simply run the following command:
 ```shell
 pip install fastdeploy-gpu-python -f https://www.paddlepaddle.org.cn/whl/fastdeploy.html
 ```
-
-## Results
-
-The following results have been obtained by training a model with 
-[this configuration](basketballdetector/config/pp_liteseg_stdc1_basketballdetector_1024x512_pretrain-10rancrops.yml)
-using the tools provided by [PaddleSeg](https://github.com/PaddlePaddle/PaddleSeg/blob/release/2.8/docs/train/train.md).
-A detailed description on how these tools have been used is provided
-[here](basketballdetector/models/README.md).
-
-In the following table you can find the summarized results of the obtained model.
-Most of the columns are self-explanatory, aside from:
-1. Train Random Crops: number of random crops transformations applied to each sample during training.
-Since the model's postprocessing leverages multiple heatmaps to obtain better results, a comparison has been made
-2. Pretrained Backbone: whether the model uses a backbone pretrained on the cityscapes dataset or not.
-In the latter case, using a pretrained backbone isn't possible since a custom number of input channels is used instead.
-
-| Model        | Backbone | Train Random Crops | Pretrained Backbone | Train  Resolution | Test  Resolution | Training Iters | mIoU   | Ball Class IoU | Links                |
-|--------------|----------|--------------------|---------------------|-------------------|------------------|----------------|--------|----------------|----------------------|
-| PP-LiteSeg-T | STDC1    | 1                  | Yes                 | 1024x512          | 2048x1024        | 160000         | 0.8232 | 0.6466         | config model log vdl |
-| PP-LiteSeg-T | STDC1    | 10                 | Yes                 | 1024x512          | 2048x1024        | 160000         |        |                | config model log vdl |
-| PP-LiteSeg-T | STDC1    | 1                  | No                  | 1024x512          | 2048x1024        | 160000         |        |                | config model log vdl | 
-| PP-LiteSeg-T | STDC1    | 10                 | No                  | 1024x512          | 2048x1024        | 160000         |        |                | config model log vdl |
+Otherwise, check out the installation instructions on the
+[official website](https://github.com/PaddlePaddle/FastDeploy#-installation).
+Note that **using a conda environment is recommended**.
 
 ## Credits
 
-This project uses the [PaddleSeg toolbox](https://github.com/PaddlePaddle/PaddleSeg). All credits go to its authors.
 The model's pre- and post-processing steps are based on the paper
 [Real-time CNN-based Segmentation Architecture for Ball Detection in a Single View Setup](https://arxiv.org/abs/2007.11876).
 All credits go to its authors.
+This project uses [pdoc](https://pdoc.dev/) to generate its documentation. All credits go to its authors.
