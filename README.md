@@ -4,9 +4,7 @@
 ball detection in basketball broadcasting videos.
 Currently, the project is still under development.
 
-<div style="width:100%;height:0;padding-bottom:50%;position:relative;">
-<iframe src="https://giphy.com/embed/DurYHJy6bj38Hydi7J" width="100%" height="100%" style="position:absolute" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
-</div>
+![Predictions video example](https://giphy.com/embed/DurYHJy6bj38Hydi7J)
 
 ## Table of contents
 
