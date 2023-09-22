@@ -4,7 +4,7 @@
 ball detection in basketball broadcasting videos.
 Currently, the project is still under development.
 
-![Predictions video example](https://giphy.com/embed/DurYHJy6bj38Hydi7J)
+![Predictions video example](https://media.giphy.com/media/DurYHJy6bj38Hydi7J/giphy.gif)
 
 ## Table of contents
 
