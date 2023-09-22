@@ -101,5 +101,3 @@ def __init_common_predictor(args):
     if args.stack_heatmaps > 0:
         predictor.number_of_crops = args.stack_heatmaps
     return predictor
-
-
