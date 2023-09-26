@@ -74,7 +74,7 @@ class PredictionHandler:
     __predictions_target_dir = pathlib.Path.cwd() / 'output'
     __frame_processing_times = []
     __counter = 1
-    __YT_URL_REGEX = re.compile(r'https://youtu.be/.{1,100}')
+    __YT_URL_REGEX = re.compile(r'https://youtu\.be/.{1,100}')
 
     def __init__(self,
                  model_file_path: str,
