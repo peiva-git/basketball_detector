@@ -11,7 +11,7 @@ dependencies = [
     'opencv-python==4.8.*',
     'vidgear==0.3.*',
     'statistics',
-    'fastdeploy-gpu-python==1.0.*',
+    'fastdeploy-gpu-python',
     'scikit-image==0.21.*',
     'pdoc'
 ]
