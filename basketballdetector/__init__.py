@@ -21,10 +21,13 @@ Both these commands have similar arguments:
 | --save_mode      | Choose how to save predictions, video or img-seq | No          | video    | save-predictions |
 
 Example:
-show-predictions --model_file inference_model/model.pdmodel \
-                 --params_file inference_model/model.pdiparams \
-                 --config_file inference_model/deploy.yaml \
-                 --input_video https://youtu.be/yrFjc0Yhos4?si=xadlwEt68Vg2yVec
+```
+show-predictions \
+--model_file inference_model/model.pdmodel \
+--params_file inference_model/model.pdiparams \
+--config_file inference_model/deploy.yaml \
+--input_video https://youtu.be/yrFjc0Yhos4?si=xadlwEt68Vg2yVec
+```
 """
 
 from .predicting import \
