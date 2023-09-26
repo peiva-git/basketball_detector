@@ -6,6 +6,8 @@ Currently, the project is still under development.
 
 <img src="https://media.giphy.com/media/DurYHJy6bj38Hydi7J/giphy.gif" alt="Detections video example" width="100%" height="400px"/>
 
+The complete video is available [here](https://youtu.be/jhQOChtrPWg)
+
 ## Table of contents
 
 1. [Description](#description)
@@ -16,10 +18,12 @@ Currently, the project is still under development.
 
 ## Description
 
-This project uses the [BasketballTrainer package]() to train a **BasketballDetector** model.
-Inference is performed using the [FastDeploy](https://github.com/PaddlePaddle/FastDeploy) API.
+This project uses the [BasketballTrainer package](https://github.com/peiva-git/basketball_trainer)
+to train a **BasketballDetector** model.
+This repository provides all the necessary code to perform inference using the 
+[FastDeploy](https://github.com/PaddlePaddle/FastDeploy) API.
 In the following sections, you will find detailed instructions on how to set up
-a working environment and how to use the model to predict the ball location.
+a working environment and how to use one a trained model to predict the ball location.
 
 ## Project requirements
 
@@ -56,7 +60,7 @@ More information about what development mode is can be found
 ### Importing the conda environment
 
 Alternatively, you can import the same [conda](https://docs.conda.io/projects/conda/en/latest/index.html) 
-environment that was used during development.
+environment that was used during development. **This is the recommended approach**.
 This environment has been tested under the following conditions:
 - Ubuntu 22.04 LTS
 - NVIDIA driver version 535.104.05 (installed from the
@@ -93,11 +97,11 @@ pip install fastdeploy-gpu-python -f https://www.paddlepaddle.org.cn/whl/fastdep
 ```
 Otherwise, check out the installation instructions on the
 [official website](https://github.com/PaddlePaddle/FastDeploy#-installation).
-Note that **using a conda environment is recommended**.
 
 ## Making predictions
 
-
+For information on how to use package to make predictions with the model, refer to the
+[official documentation](https://peiva-git.github.io/basketball_detector/).
 
 ## Credits
 
