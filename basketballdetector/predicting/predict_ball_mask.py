@@ -26,7 +26,7 @@ def get_prediction_with_single_heatmap(
     It is therefore faster but less accurate.
     :param image: The input image
     :param paddle_seg_model: The model performing the prediction
-    :return: The predicted mask, overlay on the input frame
+    :return: The predicted mask, overlay on the input image
     """
     result = paddle_seg_model.predict(image)
     segmented_image = fd.vision.vis_segmentation(image, result, weight=0.5)
@@ -38,6 +38,16 @@ def get_prediction_with_multiple_heatmaps(
         paddle_seg_model: fd.vision.segmentation.PaddleSegModel,
         number_of_crops: int,
         variance: int) -> np.ndarray:
+    """
+    This function generates a mask prediction from an input image and multiple random crops of that same image,
+    using stacked heatmaps. It is therefore more accurate but slower.
+    :param image: The input image
+    :param paddle_seg_model: The model performing the prediction
+    :param number_of_crops: Number of random crops to consider for the prediction
+    :param variance: How much the random crops should differ from the first one.
+    See `basketballdetector.predicting.utils.generate_random_crops`
+    :return: The predicted mask, overlay on the input image
+    """
     random_crops = generate_random_crops(image, number_of_crops, variance)
     # results = [
     #     paddle_seg_model.predict(
