@@ -6,6 +6,7 @@ import pathlib
 import time
 import re
 
+from skimage import color
 from vidgear.gears import CamGear
 from vidgear.gears import WriteGear
 from statistics import mean
@@ -66,7 +67,8 @@ def get_prediction_with_multiple_heatmaps(
     ])
     averaged_heatmap = np.mean([np.reshape(result.label_map, result.shape) for result in results], axis=0)
     rescaled_heatmap = averaged_heatmap * 255
-    return rescaled_heatmap.astype(np.uint8)
+    rescaled_heatmap = rescaled_heatmap.astype(np.uint8)
+    return color.label2rgb(rescaled_heatmap, image, saturation=1, alpha=0.5)
 
 
 class PredictionHandler:

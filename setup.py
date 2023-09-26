@@ -12,6 +12,7 @@ dependencies = [
     'vidgear==0.3.*',
     'statistics',
     'fastdeploy-gpu-python==1.0.*',
+    'scikit-image==0.21.*',
     'pdoc'
 ]
 
