@@ -25,7 +25,7 @@ jobs:
 
       # ADJUST THIS: install all dependencies (including pdoc)
       - run: pip install -e .
-      - run: pip install -U fastdeploy-gpu-python -f https://www.paddlepaddle.org.cn/whl/fastdeploy.html
+      - run: pip install -U fastdeploy-python -f https://www.paddlepaddle.org.cn/whl/fastdeploy.html
       # ADJUST THIS: build your documentation into docs/.
       # We use a custom build script for pdoc itself, ideally you just run `pdoc -o docs/ ...` here.
       - run: pdoc -o docs/ basketballdetector
