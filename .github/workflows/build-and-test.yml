@@ -24,6 +24,8 @@ jobs:
     - name: Install dependencies
       run: |
         conda env update --file conda/pp-fd-environment.yml --name base
+    - name: Update environment variables
+      run: export LD_LIBRARY_PATH=$CONDA_PREFIX/lib/:$LD_LIBRARY_PATH
     - name: Lint with flake8
       run: |
         conda install flake8

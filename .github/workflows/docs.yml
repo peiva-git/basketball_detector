@@ -23,10 +23,15 @@ jobs:
         with:
           python-version: '3.9'
 
-      # ADJUST THIS: install all dependencies (including pdoc)
-      - run: pip install -e .
-      # ADJUST THIS: build your documentation into docs/.
-      # We use a custom build script for pdoc itself, ideally you just run `pdoc -o docs/ ...` here.
+      - name: Add conda to system path
+        run: |
+          # $CONDA is an environment variable pointing to the root of the miniconda directory
+          echo $CONDA/bin >> $GITHUB_PATH
+      - name: Install dependencies
+        run: |
+          conda env update --file conda/pp-fd-environment.yml --name base
+      - name: Update environment variables
+        run: export LD_LIBRARY_PATH=$CONDA_PREFIX/lib/:$LD_LIBRARY_PATH
       - run: pdoc -o docs/ basketballdetector
 
       - uses: actions/upload-pages-artifact@v2

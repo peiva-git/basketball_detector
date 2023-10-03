@@ -9,12 +9,12 @@ with open('LICENSE') as f:
 dependencies = [
     'fastdeploy-gpu-python @ '
     'https://bj.bcebos.com/fastdeploy/release/wheels/fastdeploy_gpu_python-1.0.7-cp39-cp39-manylinux1_x86_64.whl',
-    'numpy',
+    'numpy==1.25.*',
     'opencv-python==4.8.*',
     'vidgear==0.3.*',
-    'statistics',
+    'statistics==1.0.*',
     'scikit-image==0.21.*',
-    'pdoc'
+    'pdoc==14.1.*'
 ]
 
 setup(
