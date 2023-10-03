@@ -88,15 +88,11 @@ echo 'export LD_LIBRARY_PATH=$CONDA_PREFIX/lib/:$LD_LIBRARY_PATH' >> $CONDA_PREF
 ### Special requirements
 
 Since currently only an outdated version of the `fastdeploy-gpu-python` package
-is available on [PyPi](https://pypi.org/project/fastdeploy-gpu-python/), you need to follow
+is available on [PyPi](https://pypi.org/project/fastdeploy-gpu-python/),
 [additional steps](https://github.com/PaddlePaddle/FastDeploy#-install-fastdeploy-sdk-with-both-cpu-and-gpu-support)
-in order to install the latest version. 
-If you're using the provided conda environment, you can simply run the following command:
-```shell
-pip install fastdeploy-gpu-python -f https://www.paddlepaddle.org.cn/whl/fastdeploy.html
-```
-Otherwise, check out the installation instructions on the
-[official website](https://github.com/PaddlePaddle/FastDeploy#-installation).
+need to be followed in order to install the latest version.
+This repository's requirements use the latest version made available [here](https://www.paddlepaddle.org.cn/whl/fastdeploy.html)
+by the FastDeploy authors.
 
 ## Making predictions
 
