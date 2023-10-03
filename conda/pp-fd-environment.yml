@@ -40,7 +40,7 @@ dependencies:
     - docutils==0.20.1
     - exceptiongroup==1.1.3
     - fastapi==0.103.1
-    - fastdeploy-gpu-python==1.0.7 @ https://www.paddlepaddle.org.cn/whl/fastdeploy.html
+    - fastdeploy-gpu-python @ https://bj.bcebos.com/fastdeploy/release/wheels/fastdeploy_gpu_python-1.0.7-cp39-cp39-manylinux1_x86_64.whl
     - fastdeploy-tools==0.0.5
     - h11==0.14.0
     - idna==3.4
