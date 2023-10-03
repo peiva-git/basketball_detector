@@ -1,5 +1,9 @@
 # Basketball Detector
 
+[![build and deploy docs](https://github.com/peiva-git/basketball_detector/actions/workflows/docs.yml/badge.svg)](https://github.com/peiva-git/basketball_detector/actions/workflows/docs.yml)
+[![build and test](https://github.com/peiva-git/basketball_detector/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/peiva-git/basketball_detector/actions/workflows/build-and-test.yml)
+![License](https://img.shields.io/github/license/peiva-git/basketball_detector)
+
 :basketball: **BasketballDetector** is a deep-learning based tool that enables automatic
 ball detection in basketball broadcasting videos.
 Currently, the project is still under development.
