@@ -32,9 +32,7 @@ jobs:
           conda env update --file conda/pp-fd-environment.yml --name base
       - name: Update environment variables
         run: export LD_LIBRARY_PATH=$CONDA_PREFIX/lib/:$LD_LIBRARY_PATH
-      - name: Activate conda environment
-        run: conda activate base
-      - run: pdoc -o docs/ basketballdetector
+      - run: $CONDA/envs/base/bin/pdoc -o docs/ basketballdetector
 
       - uses: actions/upload-pages-artifact@v2
         with:
