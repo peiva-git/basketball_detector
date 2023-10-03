@@ -7,7 +7,8 @@ with open('LICENSE') as f:
     license = f.read()
 
 dependencies = [
-    'fastdeploy-gpu-python==1.0.* @ https://www.paddlepaddle.org.cn/whl/fastdeploy.html',
+    'fastdeploy-gpu-python @ '
+    'https://bj.bcebos.com/fastdeploy/release/wheels/fastdeploy_gpu_python-1.0.7-cp39-cp39-manylinux1_x86_64.whl',
     'numpy',
     'opencv-python==4.8.*',
     'vidgear==0.3.*',
