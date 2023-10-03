@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Pelizon"
+- given-names: "Ivan"
+title: "BasketballDetector"
+version: 0.1dev
+date-released:
+url: "https://github.com/peiva-git/basketball_detector"
