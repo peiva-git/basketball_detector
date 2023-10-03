@@ -1,4 +1,4 @@
-name: Python Package using Conda
+name: build and test
 
 on:
   push:
