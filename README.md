@@ -43,6 +43,13 @@ you might need different drivers: check out Nvidia's
 **The recommended approach** is to use one of the two provided
 [conda](https://docs.conda.io/projects/conda/en/latest/index.html) environments made available [here](conda),
 one CPU based and the second GPU based.
+**Please note** that, if you're installing the dependencies directly with pip,
+an additional index source needs to be specified.
+That is, you need to run the following command to install the package in development mode:
+```shell
+pip install -f https://www.paddlepaddle.org.cn/whl/fastdeploy.html -e .
+```
+
 By default, the GPU based environment uses the `cudatoolkit=11.2` and `cudnn=8.0` conda packages.
 **If you want to use a different CUDA version**,
 refer to the [official documentation](https://github.com/PaddlePaddle/FastDeploy/tree/develop).
