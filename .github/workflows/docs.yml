@@ -31,7 +31,7 @@ jobs:
         run: |
           conda env update --file conda/fd-gpu.yml --name base
       - name: Install package
-        run: $CONDA/bin/pip install -e .
+        run: $CONDA/bin/pip install -f https://www.paddlepaddle.org.cn/whl/fastdeploy.html -e .
       - name: Build docs
         run: |
           export LD_LIBRARY_PATH=$CONDA/lib/:$LD_LIBRARY_PATH
