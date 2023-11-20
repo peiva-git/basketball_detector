@@ -95,7 +95,7 @@ def __add_common_args(parser):
     parser.add_argument(
         '--use_trt',
         help='Whether to use TensorRT acceleration',
-        type=bool,
+        action=argparse.BooleanOptionalAction,
         required=False,
         default=False
     )
