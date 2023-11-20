@@ -1,5 +1,10 @@
 """
-This module contains the Command Line Interface functions for the project.
+This module contains the Command Line Interface functions for the `basketballdetector` package.
+When the `basketballdetector` package is installed via the
+`pip install basketballdetector -f https://www.paddlepaddle.org.cn/whl/fastdeploy.html` command,
+the `save-predictions` and `show-predictions` commands are made available in the current environment.
+
+More information on the available arguments can be found in the `basketballdetector` package page.
 """
 
 import argparse
@@ -9,6 +14,13 @@ from basketballdetector import PredictionHandler
 
 
 def save_predictions_command():
+    """
+    This function is used as an entry point for the train command used by the `basketballdetector` package.
+    For a usage example, take a look at the `basketballdetector` package page.
+    The accepted command line arguments are `--model_file`, `--params_file`, `--config_file`, `--input_video`,
+    `--use_trt`, `--target_dir` and `--save_mode`.
+    :return: None
+    """
     parser = argparse.ArgumentParser()
     __add_common_args(parser)
     parser.add_argument(
@@ -38,6 +50,14 @@ def save_predictions_command():
 
 
 def display_predictions_command():
+    """
+    This function is used as an entry point for the train command used by the `basketballdetector` package.
+    For a usage example, take a look at the `basketballdetector` package page.
+    The accepted command line arguments are `--model_file`, `--params_file`, `--config_file`, `--input_video` and
+    `--use_trt`.
+    :return: None
+    :return:
+    """
     parser = argparse.ArgumentParser()
     __add_common_args(parser)
 
