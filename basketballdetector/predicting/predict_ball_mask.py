@@ -15,7 +15,9 @@ import fastdeploy as fd
 
 
 class PredictionHandler:
-    __number_of_crops = None
+    """
+    This class is used to perform predictions starting with an input video and a given model.
+    """
     __predictions_target_dir = pathlib.Path.cwd() / 'output'
     __frame_processing_times = []
     __counter = 1
@@ -27,6 +29,16 @@ class PredictionHandler:
                  config_file_path: str,
                  input_video_path: str,
                  use_trt: bool = False):
+        """
+        The constructor initializes the model and the video stream.
+        When one of the available methods is invoked, the video streaming and processing will start.
+        This class also takes care of performing the necessary cleanup when a stream is closed.
+        :param model_file_path: The path to the model.pdmodel file
+        :param params_file_path: The path to the model.pdiparams file
+        :param config_file_path: The path to the deploy.yaml file
+        :param input_video_path: Input video path, can be a local filepath or a YouTube sharing link
+        :param use_trt: Whether to use TensorRT acceleration, if available
+        """
         self.__model_file = pathlib.Path(model_file_path)
         self.__params_file = pathlib.Path(params_file_path)
         self.__config_file = pathlib.Path(config_file_path)
@@ -39,7 +51,7 @@ class PredictionHandler:
             self.__stream = CamGear(source=str(pathlib.Path(input_video_path))).start()
         self.__model = self.__setup_model()
 
-    def __setup_model(self):
+    def __setup_model(self) -> fd.vision.segmentation.PaddleSegModel:
         print('Building model...')
         option = fd.RuntimeOption()
         option.use_gpu()
@@ -52,14 +64,30 @@ class PredictionHandler:
         return model
 
     @property
-    def predictions_target_directory(self):
+    def predictions_target_directory(self) -> pathlib.Path:
+        """
+        This method returns the currently set output directory
+        :return: The currently set video output directory path
+        """
         return self.__predictions_target_dir
 
     @predictions_target_directory.setter
     def predictions_target_directory(self, predictions_target_dir: pathlib.Path):
+        """
+        This method sets a new target directory for the produced output video or image sequence
+        :param predictions_target_dir: The new output directory
+        :return: None
+        """
         self.__predictions_target_dir = predictions_target_dir
 
     def show_prediction_frames(self):
+        """
+        This method starts the video processing loop.
+        After EOF is encountered or if an error occurs,
+        the stream is closed and needs to be reopened before using it again.
+        This method displays the processed frames without saving them.
+        :return: None
+        """
         while True:
             frame = self.__stream.read()
             if frame is None:
@@ -76,6 +104,13 @@ class PredictionHandler:
         self.__stream.stop()
 
     def write_image_sequence_prediction(self):
+        """
+        This method starts the video processing loop.
+        After EOF is encountered or if an error occurs,
+        the stream is closed and needs to be reopened before using it again.
+        This method saves the processed frames as an image sequence in the specified directory.
+        :return: None
+        """
         while True:
             frame = self.__stream.read()
             if frame is None:
@@ -92,6 +127,13 @@ class PredictionHandler:
         self.__stream.stop()
 
     def write_predictions_video(self):
+        """
+        This method starts the video processing loop.
+        After EOF is encountered or if an error occurs,
+        the stream is closed and needs to be reopened before using it again.
+        This method saves the processed frames as a video in the specified directory.
+        :return: None
+        """
         writer = WriteGear(output=str(self.__predictions_target_dir / 'predictions.mp4'), compression_mode=False)
         while True:
             frame = self.__stream.read()
@@ -119,16 +161,3 @@ class PredictionHandler:
             end='\r'
         )
         return segmented_image
-
-
-if __name__ == '__main__':
-    predictor = PredictionHandler(
-        '/home/peiva/PycharmProjects/PaddleSeg/output/inference_model/model.pdmodel',
-        '/home/peiva/PycharmProjects/PaddleSeg/output/inference_model/model.pdiparams',
-        '/home/peiva/PycharmProjects/PaddleSeg/output/inference_model/deploy.yaml',
-        'https://youtu.be/ou36exQmXjg?si=0iMHyCTBPUzeXFCk',
-    )
-    predictor.show_prediction_frames()
-    # model_file = os.path.join('/home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'model.pdmodel')
-    # params_file = os.path.join('/home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'model.pdiparams')
-    # config_file = os.path.join('/home', 'ubuntu', 'PaddleSeg', 'output', 'inference_model', 'deploy.yaml')
