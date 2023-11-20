@@ -73,13 +73,6 @@ def __add_common_args(parser):
         required=True
     )
     parser.add_argument(
-        '--stack_heatmaps',
-        help='How many multiple heatmaps to stack',
-        type=int,
-        required=False,
-        default=0
-    )
-    parser.add_argument(
         '--use_trt',
         help='Whether to use TensorRT acceleration',
         type=bool,
@@ -95,9 +88,6 @@ def __init_common_predictor(args):
         args.params_file,
         args.config_file,
         args.input_video,
-        args.stack_heatmaps > 0,
         args.use_trt
     )
-    if args.stack_heatmaps > 0:
-        predictor.number_of_crops = args.stack_heatmaps
     return predictor

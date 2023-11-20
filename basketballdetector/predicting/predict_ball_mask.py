@@ -11,22 +11,7 @@ from vidgear.gears import WriteGear
 from statistics import mean
 
 import cv2 as cv
-import numpy as np
 import fastdeploy as fd
-
-
-def get_prediction_with_single_heatmap(
-        image: np.ndarray,
-        paddle_seg_model: fd.vision.segmentation.PaddleSegModel) -> np.ndarray:
-    """
-    This function generates a mask prediction from an input image, without using stacked heatmaps.
-    It is therefore faster but less accurate.
-    :param image: The input image
-    :param paddle_seg_model: The model performing the prediction
-    :return: The predicted mask, overlay on the input image
-    """
-
-    return segmented_image
 
 
 class PredictionHandler:
