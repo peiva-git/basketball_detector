@@ -18,8 +18,7 @@ The complete video is available [here](https://youtu.be/jhQOChtrPWg)
 1. [Description](#description)
 2. [Project requirements](#project-requirements)
 3. [Project setup](#project-setup)
-   1. [Installing the dependencies](#installing-the-dependencies)
-5. [Credits](#credits)
+4. [Credits](#credits)
 
 ## Description
 
@@ -40,8 +39,6 @@ you might need different drivers: check out Nvidia's
 [official website](https://www.nvidia.com/Download/index.aspx?lang=en-us).
 
 ## Project setup
-
-### Installing the dependencies
 
 **The recommended approach** is to use one of the two provided
 [conda](https://docs.conda.io/projects/conda/en/latest/index.html) environments made available [here](conda),
