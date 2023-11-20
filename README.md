@@ -1,7 +1,8 @@
 # Basketball Detector
 
 [![build and deploy docs](https://github.com/peiva-git/basketball_detector/actions/workflows/docs.yml/badge.svg)](https://github.com/peiva-git/basketball_detector/actions/workflows/docs.yml)
-[![build and test](https://github.com/peiva-git/basketball_detector/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/peiva-git/basketball_detector/actions/workflows/build-and-test.yml)
+[![build and test GPU](https://github.com/peiva-git/basketball_detector/actions/workflows/build-and-test-gpu.yml/badge.svg)](https://github.com/peiva-git/basketball_detector/actions/workflows/build-and-test-gpu.yml)
+[![build and test CPU](https://github.com/peiva-git/basketball_detector/actions/workflows/build-and-test-cpu.yml/badge.svg)](https://github.com/peiva-git/basketball_detector/actions/workflows/build-and-test-cpu.yml)
 ![License](https://img.shields.io/github/license/peiva-git/basketball_detector)
 
 :basketball: **BasketballDetector** is a deep-learning based tool that enables automatic
