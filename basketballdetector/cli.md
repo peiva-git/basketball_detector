@@ -6,7 +6,7 @@ Both these commands have similar arguments:
 
 | Parameter        | Description                                      | Is Required | Default  | Available for    |
 |------------------|--------------------------------------------------|-------------|----------|------------------|
-| --model_path     | Path to model.pdmodel model definition file      | Yes         | -        | Both commands    |
+| --model_file     | Path to model.pdmodel model definition file      | Yes         | -        | Both commands    |
 | --params_file    | Path to model.pdiparams parameters file          | Yes         | -        | Both commands    |
 | --config_file    | Path to deploy.yaml inference configuration file | Yes         | -        | Both commands    |
 | --input_video    | Input video path, or a YouTube link              | Yes         | -        | Both commands    |
