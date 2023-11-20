@@ -1,9 +1,10 @@
 """
-This is the root package, containing all the necessary tools to predict the basketball location
+This is the root package of the **BasketballDetector project**,
+containing all the necessary tools to predict the basketball location
 starting from an input video.
 
 The easiest way to use the trained model to obtain predictions is by using this package's Command Line Interface.
-Two commands are made available after the package is installed:
+Two commands are made available after the package is installed via `pip install basketballdetector`:
 1. save-predictions
 2. show-predictions
 
