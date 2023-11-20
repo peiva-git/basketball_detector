@@ -2,12 +2,12 @@ name: build and deploy docs
 
 # build the documentation whenever there are new commits on main
 on:
-  push:
+  workflow_run:
+    workflows: ["build and test"]
     branches:
       - master
-    # Alternative: only build for tags.
-    # tags:
-    #   - '*'
+    types:
+      - completed
 
 # security: restrict permissions for CI jobs.
 permissions:
@@ -30,9 +30,13 @@ jobs:
       - name: Install dependencies
         run: |
           conda env update --file conda/pp-fd-environment.yml --name base
-      - name: Update environment variables
-        run: export LD_LIBRARY_PATH=$CONDA/lib/:$LD_LIBRARY_PATH
-      - run: $CONDA/bin/pdoc -o docs/ basketballdetector
+      - name: Install package
+        run: $CONDA/bin/pip install -e .
+      - name: Build docs
+        run: |
+          export LD_LIBRARY_PATH=$CONDA/lib/:$LD_LIBRARY_PATH
+          export PDOC_ALLOW_EXEC=1
+          $CONDA/bin/pdoc -o docs/ basketballdetector
       - uses: actions/upload-pages-artifact@v2
         with:
           path: docs/
