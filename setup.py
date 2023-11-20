@@ -6,16 +6,8 @@ with open('README.md') as f:
 with open('LICENSE') as f:
     license = f.read()
 
-dependencies = [
-    'fastdeploy-gpu-python @ '
-    'https://bj.bcebos.com/fastdeploy/release/wheels/fastdeploy_gpu_python-1.0.7-cp39-cp39-manylinux1_x86_64.whl',
-    'numpy==1.25.*',
-    'opencv-python==4.8.*',
-    'vidgear==0.3.*',
-    'statistics==1.0.*',
-    'scikit-image==0.21.*',
-    'pdoc==14.1.*'
-]
+with open('requirements.txt') as f:
+    required_packages = f.read()
 
 setup(
     name='basketballdetector',
@@ -28,7 +20,7 @@ setup(
     license=license,
     packages=find_packages(exclude=('tests', 'docs', 'out', 'assets')),
     python_requires='>=3.8,<=3.11',
-    install_requires=dependencies,
+    install_requires=required_packages,
     entry_points={
         'console_scripts': [
             'save-predictions = basketballdetector.cli:save_predictions_command',

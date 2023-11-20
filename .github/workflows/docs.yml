@@ -3,7 +3,7 @@ name: build and deploy docs
 # build the documentation whenever there are new commits on main
 on:
   workflow_run:
-    workflows: ["build and test"]
+    workflows: ["build and test GPU"]
     branches:
       - master
     types:

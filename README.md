@@ -17,14 +17,14 @@ The complete video is available [here](https://youtu.be/jhQOChtrPWg)
 1. [Description](#description)
 2. [Project requirements](#project-requirements)
 3. [Project setup](#project-setup)
-   1. [Special requirements](#special-requirements) 
-4. [Credits](#credits)
+   1. [Installing the dependencies](#installing-the-dependencies)
+5. [Credits](#credits)
 
 ## Description
 
 This project uses the [BasketballTrainer package](https://github.com/peiva-git/basketball_trainer)
 to train a **BasketballDetector** model.
-This repository provides all the necessary code to perform inference using the 
+This repository provides all the necessary tools to perform inference on the trained model using the 
 [FastDeploy](https://github.com/PaddlePaddle/FastDeploy) API.
 In the following sections, you will find detailed instructions on how to set up
 a working environment and how to use one a trained model to predict the ball location.
@@ -40,43 +40,23 @@ you might need different drivers: check out Nvidia's
 
 ## Project setup
 
-### Installing the dependencies yourself
+### Installing the dependencies
+
+**The recommended approach** is to use one of the two provided
+[conda](https://docs.conda.io/projects/conda/en/latest/index.html) environments made available [here](conda),
+one CPU based and the second GPU based.
+By default, the GPU based environment uses the `cudatoolkit=11.2` and `cudnn=8.0` conda packages.
+**If you want to use a different CUDA version**,
+refer to the [official documentation](https://github.com/PaddlePaddle/FastDeploy/tree/develop).
 
 All the requirements are listed in the 
-[`requirements.txt`](requirements.txt) and [`setup.py`](setup.py) files.
-To install all the required dependencies,
-you can run one of the following commands from the repository's root directory:
+[`requirements.txt`](requirements.txt) file.
+To create a new conda environment meeting all the required dependencies, run the following command:
 ```shell
-python -m pip install -r requirements.txt
-```
-Or: 
-```shell
-python -m pip install .
+conda create --name myenv-fd --file fd-gpu.yml
 ```
 
-If you want to install the project in development mode, instead you can run:
-```shell
-python -m pip install -v -e .
-```
-More information about what development mode is can be found 
-[here](https://setuptools.pypa.io/en/latest/userguide/development_mode.html).
-
-### Importing the conda environment
-
-Alternatively, you can import the same [conda](https://docs.conda.io/projects/conda/en/latest/index.html) 
-environment that was used during development. **This is the recommended approach**.
-This environment has been tested under the following conditions:
-- Ubuntu 22.04 LTS
-- NVIDIA driver version 535.104.05 (installed from the
-[CUDA toolkit repository](https://developer.nvidia.com/cuda-12-0-1-download-archive?target_os=Linux&target_arch=x86_64&Distribution=Ubuntu&target_version=22.04&target_type=deb_network))
-- Driver API CUDA version 12.2 (installed automatically along with the driver)
-
-Using the provided [conda environment file](conda/pp-fd-environment.yml), run:
-```shell
-conda create --name myenv-fd --file pp-fd-environment.yml
-```
-
-Don't forget to set up the required environment variables as well:
+In case you're using the GPU version, don't forget to set up the required environment variables as well:
 ```shell
 export LD_LIBRARY_PATH=$CONDA_PREFIX/lib/:$LD_LIBRARY_PATH
 ```
@@ -89,14 +69,11 @@ mkdir -p $CONDA_PREFIX/etc/conda/activate.d
 echo 'export LD_LIBRARY_PATH=$CONDA_PREFIX/lib/:$LD_LIBRARY_PATH' >> $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
 ```
 
-### Special requirements
-
-Since currently only an outdated version of the `fastdeploy-gpu-python` package
-is available on [PyPi](https://pypi.org/project/fastdeploy-gpu-python/),
-[additional steps](https://github.com/PaddlePaddle/FastDeploy#-install-fastdeploy-sdk-with-both-cpu-and-gpu-support)
-need to be followed in order to install the latest version.
-This repository's requirements use the latest version made available [here](https://www.paddlepaddle.org.cn/whl/fastdeploy.html)
-by the FastDeploy authors.
+These environments have been tested under the following conditions:
+- Ubuntu 22.04 LTS
+- NVIDIA driver version 535.104.05 (installed from the
+[CUDA toolkit repository](https://developer.nvidia.com/cuda-12-0-1-download-archive?target_os=Linux&target_arch=x86_64&Distribution=Ubuntu&target_version=22.04&target_type=deb_network))
+- Driver API CUDA version 12.2 (installed automatically along with the driver)
 
 ## Making predictions
 
