@@ -104,9 +104,7 @@ class PredictionHandler:
             key = cv.waitKey(1) & 0xFF
             if key == ord('q'):
                 break
-
-        cv.destroyAllWindows()
-        self.__stream.stop()
+        self.cleanup()
 
     def write_image_sequence_prediction(self):
         """
@@ -127,9 +125,7 @@ class PredictionHandler:
             key = cv.waitKey(1) & 0xFF
             if key == ord('q'):
                 break
-
-        cv.destroyAllWindows()
-        self.__stream.stop()
+        self.cleanup()
 
     def write_predictions_video(self):
         """
@@ -150,9 +146,7 @@ class PredictionHandler:
             key = cv.waitKey(1) & 0xFF
             if key == ord('q'):
                 break
-        cv.destroyAllWindows()
-        self.__stream.stop()
-        writer.close()
+        self.cleanup(writer)
 
     def __obtain_prediction(self, frame):
         start = time.time()
@@ -165,3 +159,15 @@ class PredictionHandler:
             end='\r'
         )
         return segmented_image
+
+    def cleanup(self, writer: WriteGear = None):
+        """
+        This method performs the needed cleanup when the video processing is over.
+        :param writer: Optional parameter, used in case the video writing component needs to be closed as well.
+        :return: None
+        """
+        print()
+        cv.destroyAllWindows()
+        self.__stream.stop()
+        if writer is not None:
+            writer.close()
