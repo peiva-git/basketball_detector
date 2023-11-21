@@ -156,9 +156,8 @@ class PredictionHandler:
 
     def __obtain_prediction(self, frame):
         start = time.time()
-        frame_resized = cv.resize(frame, (2048, 1024))
-        result = self.__model.predict(frame_resized)
-        segmented_image = fd.vision.vis_segmentation(frame_resized, result, weight=0.5)
+        result = self.__model.predict(frame)
+        segmented_image = fd.vision.vis_segmentation(frame, result, weight=0.5)
         end = time.time()
         self.__frame_processing_times.append(end - start)
         print(
