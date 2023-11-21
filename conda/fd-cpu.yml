@@ -5,7 +5,8 @@ channels:
 dependencies:
   - python=3.9
   - pip:
-    - fastdeploy-python~=1.0.7 -f https://www.paddlepaddle.org.cn/whl/fastdeploy.html
+    - --find-links https://www.paddlepaddle.org.cn/whl/fastdeploy.html
+    - fastdeploy-python~=1.0.7
     - numpy~=1.26.2
     - opencv-python~=4.8.1
     - vidgear~=0.3.2
