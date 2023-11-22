@@ -4,6 +4,7 @@ channels:
   - defaults
 dependencies:
   - python=3.9
+  - pip
   - pip:
     - --find-links https://www.paddlepaddle.org.cn/whl/fastdeploy.html
     - fastdeploy-python~=1.0.7
