@@ -155,7 +155,8 @@ class PredictionHandler:
         end = time.time()
         self.__frame_processing_times.append(end - start)
         print(
-            f'Average processing speed: {mean(self.__frame_processing_times):.4f} seconds, {1 / (end - start):.4f} FPS',
+            f'Average processing speed: {mean(self.__frame_processing_times):.4f} seconds/frame,'
+            f'{1 / (end - start):.4f} FPS',
             end='\r'
         )
         return segmented_image
