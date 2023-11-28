@@ -10,6 +10,7 @@ from vidgear.gears import CamGear
 from vidgear.gears import WriteGear
 from statistics import mean
 
+import numpy as np
 import cv2 as cv
 import fastdeploy as fd
 
@@ -97,7 +98,7 @@ class PredictionHandler:
             frame = self.__stream.read()
             if frame is None:
                 break
-            output = self.__obtain_prediction(frame)
+            output, mask = self.__obtain_prediction(frame)
             cv.imshow('Output', output)
             self.__counter += 1
 
@@ -118,7 +119,7 @@ class PredictionHandler:
             frame = self.__stream.read()
             if frame is None:
                 break
-            output = self.__obtain_prediction(frame)
+            output, mask = self.__obtain_prediction(frame)
             cv.imwrite(str(self.__predictions_target_dir / f'frame{self.__counter}.png'), output)
             self.__counter += 1
 
@@ -140,7 +141,7 @@ class PredictionHandler:
             frame = self.__stream.read()
             if frame is None:
                 break
-            output = self.__obtain_prediction(frame)
+            output, mask = self.__obtain_prediction(frame)
             writer.write(output)
             self.__counter += 1
             key = cv.waitKey(1) & 0xFF
@@ -148,7 +149,7 @@ class PredictionHandler:
                 break
         self.cleanup(writer)
 
-    def __obtain_prediction(self, frame):
+    def __obtain_prediction(self, frame) -> (np.ndarray, np.ndarray):
         start = time.time()
         result = self.__model.predict(frame)
         segmented_image = fd.vision.vis_segmentation(frame, result, weight=0.5)
@@ -159,7 +160,7 @@ class PredictionHandler:
             f'{1 / (end - start):.4f} FPS',
             end='\r'
         )
-        return segmented_image
+        return segmented_image, np.reshape(np.array(result.label_map), result.shape)
 
     def cleanup(self, writer: WriteGear = None):
         """
