@@ -60,9 +60,7 @@ class PredictionHandler:
             option.use_trt_backend()
             option.set_trt_input_shape(
                 'x',
-                min_shape=[1, 3, 1024, 2048],
-                opt_shape=[4, 3, 1024, 2048],
-                max_shape=[8, 3, 1024, 2048]
+                min_shape=[1, 3, 1024, 2048]
             )
         model = fd.vision.segmentation.PaddleSegModel(
             str(self.__model_file), str(self.__params_file), str(self.__config_file), runtime_option=option
