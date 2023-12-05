@@ -103,7 +103,7 @@ class PredictionHandler:
             key = cv.waitKey(1) & 0xFF
             if key == ord('q'):
                 break
-        self.cleanup()
+        self.__cleanup()
 
     def write_image_sequence_prediction(self):
         """
@@ -124,7 +124,7 @@ class PredictionHandler:
             key = cv.waitKey(1) & 0xFF
             if key == ord('q'):
                 break
-        self.cleanup()
+        self.__cleanup()
 
     def write_predictions_video(self):
         """
@@ -145,7 +145,7 @@ class PredictionHandler:
             key = cv.waitKey(1) & 0xFF
             if key == ord('q'):
                 break
-        self.cleanup(writer)
+        self.__cleanup(writer)
 
     def __obtain_prediction(self, frame) -> (np.ndarray, np.ndarray):
         start = time.time()
@@ -160,7 +160,7 @@ class PredictionHandler:
         )
         return segmented_image, np.reshape(np.array(result.label_map), result.shape)
 
-    def cleanup(self, writer: WriteGear = None):
+    def __cleanup(self, writer: WriteGear = None):
         """
         This method performs the needed cleanup when the video processing is over.
         :param writer: Optional parameter, used in case the video writing component needs to be closed as well.
