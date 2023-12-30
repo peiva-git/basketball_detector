@@ -1,12 +1,13 @@
 name: fd-gpu
 channels:
+  - nvidia
   - conda-forge
   - defaults
 dependencies:
   - python=3.9
   - pip
-  - cudnn=8.2
-  - cudatoolkit=11.2
+  - cuda
+  - cudnn
   - pip:
     - --find-links https://www.paddlepaddle.org.cn/whl/fastdeploy.html
     - fastdeploy-gpu-python~=1.0.7
