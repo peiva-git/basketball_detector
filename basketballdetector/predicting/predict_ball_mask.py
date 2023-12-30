@@ -57,7 +57,7 @@ class PredictionHandler:
         option = fd.RuntimeOption()
         option.use_gpu()
         if self.__use_trt:
-            option.use_paddle_infer_backend()
+            option.use_trt_backend()
             option.paddle_infer_option.enable_trt = True
             option.trt_option.set_shape(
                 'x',
