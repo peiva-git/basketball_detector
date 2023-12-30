@@ -152,12 +152,12 @@ class PredictionHandler:
     def __obtain_prediction(self, frame) -> (np.ndarray, np.ndarray):
         start = time.time()
         result = self.__model.predict(frame)
-        segmented_image = fd.vision.vis_segmentation(frame, result, weight=0.5)
         end = time.time()
+        segmented_image = fd.vision.vis_segmentation(frame, result, weight=0.5)
         self.__frame_processing_times.append(end - start)
         print(
-            f'Average processing speed: {mean(self.__frame_processing_times):.4f} seconds/frame,'
-            f'{1 / (end - start):.4f} FPS',
+            f'Average processing speed: {mean(self.__frame_processing_times):2.4f} seconds/frame, '
+            f'{1 / (end - start):2.4f} FPS',
             end='\r'
         )
         return segmented_image, np.reshape(np.array(result.label_map), result.shape)
