@@ -11,7 +11,7 @@ Currently, the project is still under development.
 
 <img src="https://media.giphy.com/media/DurYHJy6bj38Hydi7J/giphy.gif" alt="Detections video example" width="100%" height="400px"/>
 
-The complete video is available [here](https://youtu.be/jhQOChtrPWg)
+The complete video is available [here](https://youtu.be/jhQOChtrPWg).
 
 ## Table of contents
 
@@ -50,7 +50,7 @@ That is, you need to run the following command to install the package in develop
 pip install -f https://www.paddlepaddle.org.cn/whl/fastdeploy.html -e .
 ```
 
-By default, the GPU based environment uses the `cudatoolkit=11.2` and `cudnn=8.0` conda packages.
+By default, the GPU based environment uses the  latest available `cuda` and `cudnn` conda packages.
 **If you want to use a different CUDA version**,
 refer to the [official documentation](https://github.com/PaddlePaddle/FastDeploy/tree/develop).
 
@@ -58,7 +58,7 @@ All the requirements are listed in the
 [`requirements.txt`](requirements.txt) file.
 To create a new conda environment meeting all the required dependencies, run the following command:
 ```shell
-conda create --name myenv-fd --file fd-gpu.yml
+conda create --name myenv-fd --file fd-[gpu|cpu].yml
 ```
 
 In case you're using the GPU version, don't forget to set up the required environment variables as well:
@@ -82,12 +82,9 @@ These environments have been tested under the following conditions:
 
 ## Making predictions
 
-For information on how to use package to make predictions with the model, refer to the
+For information on how to use the package to make predictions with the model, refer to the
 [official documentation](https://peiva-git.github.io/basketball_detector/).
 
 ## Credits
 
-The model's pre- and post-processing steps are based on the paper
-[Real-time CNN-based Segmentation Architecture for Ball Detection in a Single View Setup](https://arxiv.org/abs/2007.11876).
-All credits go to its authors.
 This project uses [pdoc](https://pdoc.dev/) to generate its documentation. All credits go to its authors.
