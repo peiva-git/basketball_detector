@@ -50,9 +50,9 @@ That is, you need to run the following command to install the package in develop
 pip install -f https://www.paddlepaddle.org.cn/whl/fastdeploy.html -e .
 ```
 
-By default, the GPU based environment uses the  latest available `cuda` and `cudnn` conda packages.
+By default, the GPU based environment uses the `cudatoolkit=11.2` and `cudnn=8.2` conda-forge packages.
 **If you want to use a different CUDA version**,
-refer to the [official documentation](https://github.com/PaddlePaddle/FastDeploy/tree/develop).
+refer to the [official documentation](https://github.com/PaddlePaddle/FastDeploy).
 
 All the requirements are listed in the 
 [`requirements.txt`](requirements.txt) file.
