@@ -56,7 +56,6 @@ def display_predictions_command():
     The accepted command line arguments are `--model_file`, `--params_file`, `--config_file`, `--input_video` and
     `--use_trt`.
     :return: None
-    :return:
     """
     parser = argparse.ArgumentParser()
     __add_common_args(parser)
@@ -69,20 +68,8 @@ def display_predictions_command():
 
 def __add_common_args(parser):
     parser.add_argument(
-        '--model_file',
-        help='model.pdmodel model definition file path',
-        type=str,
-        required=True
-    )
-    parser.add_argument(
-        '--params_file',
-        help='model.pdiparams model parameters file path',
-        type=str,
-        required=True
-    )
-    parser.add_argument(
-        '--config_file',
-        help='deploy.yaml inference configuration file path',
+        '--model_dir',
+        help='Directory containing the model.pdmodel, model.pdiparams and config.yaml files',
         type=str,
         required=True
     )
@@ -103,10 +90,13 @@ def __add_common_args(parser):
 
 
 def __init_common_predictor(args):
+    model_file = pathlib.Path(args.model_dir) / 'model.pdmodel'
+    params_file = pathlib.Path(args.model_dir) / 'model.pdiparams'
+    config_file = pathlib.Path(args.model_dir) / 'deploy.yaml'
     predictor = PredictionHandler(
-        args.model_file,
-        args.params_file,
-        args.config_file,
+        str(model_file),
+        str(params_file),
+        str(config_file),
         args.input_video,
         args.use_trt
     )
