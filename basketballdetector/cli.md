@@ -13,12 +13,12 @@ The `save-predictions` and `show-predictions` commands have similar arguments:
 | --target_dir     | Prediction data target directory                                                                | No          | ./output | save-predictions |
 | --save_mode      | Choose how to save predictions, video or img-seq                                                | No          | video    | save-predictions |
 
+The `test-speed` command has the same arguments as the `show-predictions` command.
+It is used exclusively for testing, since it does nothing with the produced output.
+
 An example:
 ```shell
 show-predictions \
 --model_dir inference_model/ \
 --input_video https://youtu.be/yrFjc0Yhos4?si=xadlwEt68Vg2yVec
 ```
-
-The `test-speed` command has the same arguments as the `show-predictions` command.
-It is used exclusively for testing, since it does nothing with the produced output.
