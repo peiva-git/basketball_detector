@@ -149,6 +149,22 @@ class PredictionHandler:
                 break
         self.__cleanup(writer)
 
+    def test_prediction_speed(self):
+        """
+        This method is used to test the prediction speed.
+        It does nothing with the obtained output and mask
+        :return: None
+        """
+        while True:
+            frame = self.__stream.read()
+            if frame is None:
+                break
+            _, _ = self.__obtain_prediction(frame)
+            key = cv.waitKey(1) & 0xFF
+            if key == ord('q'):
+                break
+        self.__cleanup()
+
     def __obtain_prediction(self, frame) -> (np.ndarray, np.ndarray):
         start = time.time()
         result = self.__model.predict(frame)

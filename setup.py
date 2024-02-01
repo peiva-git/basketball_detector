@@ -24,7 +24,8 @@ setup(
     entry_points={
         'console_scripts': [
             'save-predictions = basketballdetector.cli:save_predictions_command',
-            'show-predictions = basketballdetector.cli:display_predictions_command'
+            'show-predictions = basketballdetector.cli:display_predictions_command',
+            'test-speed = basketballdetector.cli:test_prediction_speed_command'
         ]
     },
 )

@@ -15,9 +15,9 @@ from basketballdetector import PredictionHandler
 
 def save_predictions_command():
     """
-    This function is used as an entry point for the train command used by the `basketballdetector` package.
+    This function is used as an entry point for the `save-predictions` command used by the `basketballdetector` package.
     For a usage example, take a look at the `basketballdetector` package page.
-    The accepted command line arguments are `--model_file`, `--params_file`, `--config_file`, `--input_video`,
+    The accepted command line arguments are `--model_dir`, `--input_video`,
     `--use_trt`, `--target_dir` and `--save_mode`.
     :return: None
     """
@@ -51,9 +51,9 @@ def save_predictions_command():
 
 def display_predictions_command():
     """
-    This function is used as an entry point for the train command used by the `basketballdetector` package.
+    This function is used as an entry point for the `show-predictions` command used by the `basketballdetector` package.
     For a usage example, take a look at the `basketballdetector` package page.
-    The accepted command line arguments are `--model_file`, `--params_file`, `--config_file`, `--input_video` and
+    The accepted command line arguments are `--model_dir`, `--input_video` and
     `--use_trt`.
     :return: None
     """
@@ -64,6 +64,21 @@ def display_predictions_command():
     predictor = __init_common_predictor(args)
 
     predictor.show_prediction_frames()
+
+
+def test_prediction_speed_command():
+    """
+    This function is used as an entry point for the `test-speed` command used by the `basketballdetector` package.
+    For a usage example, take a look at the `basketballdetector` package page.
+    The accepted command line arguments are `--model_dir`, `--input_video` and `--use-trt`.
+    :return: None
+    """
+    parser = argparse.ArgumentParser()
+    __add_common_args(parser)
+
+    args = parser.parse_args()
+    predictor = __init_common_predictor(args)
+    predictor.test_prediction_speed()
 
 
 def __add_common_args(parser):

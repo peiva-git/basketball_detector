@@ -1,8 +1,9 @@
-Two commands are made available after the package is installed via `pip install basketballdetector`:
+Three commands are made available after the package is installed via `pip install basketballdetector`:
 1. save-predictions
 2. show-predictions
+3. test-speed
 
-Both these commands have similar arguments:
+The `save-predictions` and `show-predictions` commands have similar arguments:
 
 | Parameter        | Description                                                                                     | Is Required | Default  | Available for    |
 |------------------|-------------------------------------------------------------------------------------------------|-------------|----------|------------------|
@@ -18,3 +19,6 @@ show-predictions \
 --model_dir inference_model/ \
 --input_video https://youtu.be/yrFjc0Yhos4?si=xadlwEt68Vg2yVec
 ```
+
+The `test-speed` command has the same arguments as the `show-predictions` command.
+It is used exclusively for testing, since it does nothing with the produced output.
