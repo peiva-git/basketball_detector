@@ -9,7 +9,6 @@ import re
 from vidgear.gears import CamGear
 from vidgear.gears import WriteGear
 from statistics import mean
-from skimage.color import label2rgb
 
 import numpy as np
 import cv2 as cv
@@ -87,7 +86,7 @@ class PredictionHandler:
         """
         self.__predictions_target_dir = predictions_target_dir
 
-    def show_prediction_frames(self, ball_mask_color: str = 'green'):
+    def show_prediction_frames(self):
         """
         This method starts the video processing loop.
         After EOF is encountered or if an error occurs,
@@ -99,7 +98,7 @@ class PredictionHandler:
             frame = self.__stream.read()
             if frame is None:
                 break
-            output, _ = self.__obtain_prediction(frame, ball_mask_color)
+            output, mask = self.__obtain_prediction(frame)
             cv.imshow('Output', output)
             self.__counter += 1
 
@@ -108,7 +107,7 @@ class PredictionHandler:
                 break
         self.__cleanup()
 
-    def write_image_sequence_prediction(self, ball_mask_color: str = 'green'):
+    def write_image_sequence_prediction(self):
         """
         This method starts the video processing loop.
         After EOF is encountered or if an error occurs,
@@ -120,7 +119,7 @@ class PredictionHandler:
             frame = self.__stream.read()
             if frame is None:
                 break
-            output, _ = self.__obtain_prediction(frame, ball_mask_color)
+            output, mask = self.__obtain_prediction(frame)
             cv.imwrite(str(self.__predictions_target_dir / f'frame{self.__counter}.png'), output)
             self.__counter += 1
 
@@ -129,7 +128,7 @@ class PredictionHandler:
                 break
         self.__cleanup()
 
-    def write_predictions_video(self, ball_mask_color: str = 'green'):
+    def write_predictions_video(self):
         """
         This method starts the video processing loop.
         After EOF is encountered or if an error occurs,
@@ -142,7 +141,7 @@ class PredictionHandler:
             frame = self.__stream.read()
             if frame is None:
                 break
-            output, _ = self.__obtain_prediction(frame, ball_mask_color)
+            output, mask = self.__obtain_prediction(frame)
             writer.write(output)
             self.__counter += 1
             key = cv.waitKey(1) & 0xFF
@@ -160,35 +159,24 @@ class PredictionHandler:
             frame = self.__stream.read()
             if frame is None:
                 break
-            _, _ = self.__obtain_prediction(frame, 'green')
+            _, _ = self.__obtain_prediction(frame)
             key = cv.waitKey(1) & 0xFF
             if key == ord('q'):
                 break
         self.__cleanup()
 
-    def __obtain_prediction(self, frame, ball_mask_color: str) -> (np.ndarray, np.ndarray):
+    def __obtain_prediction(self, frame) -> (np.ndarray, np.ndarray):
         start = time.time()
         result = self.__model.predict(frame)
         end = time.time()
-        mask = np.reshape(np.array(result.label_map), result.shape)
-        segmented_image = label2rgb(
-            mask,
-            frame,
-            colors=[ball_mask_color],
-            alpha=0.5,
-            bg_label=0,
-            bg_color=None,
-            kind='overlay',
-            saturation=1,
-            channel_axis=2
-        )
+        segmented_image = fd.vision.vis_segmentation(frame, result, weight=0.5)
         self.__frame_processing_times.append(end - start)
         print(
             f'Average processing speed: {mean(self.__frame_processing_times):2.4f} seconds/frame, '
             f'{1 / (end - start):2.4f} FPS',
             end='\r'
         )
-        return (segmented_image * 255).astype(np.uint8), mask
+        return segmented_image, np.reshape(np.array(result.label_map), result.shape)
 
     def __cleanup(self, writer: WriteGear = None):
         """
