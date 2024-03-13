@@ -9,7 +9,6 @@ import re
 from vidgear.gears import CamGear
 from vidgear.gears import WriteGear
 from statistics import mean
-from basketballdetector.postprocessing import remove_connected_areas
 
 import numpy as np
 import cv2 as cv
@@ -20,11 +19,10 @@ class PredictionHandler:
     """
     This class is used to perform predictions starting with an input video and a given model.
     """
-    __predictions_target_dir: pathlib.Path = pathlib.Path.cwd() / 'output'
-    __frame_processing_times: list = []
-    __counter: int = 1
+    __predictions_target_dir = pathlib.Path.cwd() / 'output'
+    __frame_processing_times = []
+    __counter = 1
     __YT_URL_REGEX = re.compile(r'https://youtu\.be/.{1,100}')
-    __is_postprocessing_active: bool = False
 
     def __init__(self,
                  model_file_path: str,
@@ -88,15 +86,7 @@ class PredictionHandler:
         """
         self.__predictions_target_dir = predictions_target_dir
 
-    @property
-    def is_postprocessing_active(self):
-        return self.__is_postprocessing_active
-
-    @is_postprocessing_active.setter
-    def is_postprocessing_active(self, postprocess: bool):
-        self.__is_postprocessing_active = postprocess
-
-    def show_prediction_frames(self, min_size: int = None, max_size: int = None):
+    def show_prediction_frames(self):
         """
         This method starts the video processing loop.
         After EOF is encountered or if an error occurs,
@@ -108,7 +98,7 @@ class PredictionHandler:
             frame = self.__stream.read()
             if frame is None:
                 break
-            output, mask = self.__obtain_prediction(frame, min_size=min_size, max_size=max_size)
+            output, mask = self.__obtain_prediction(frame)
             cv.imshow('Output', output)
             self.__counter += 1
 
@@ -117,7 +107,7 @@ class PredictionHandler:
                 break
         self.__cleanup()
 
-    def write_image_sequence_prediction(self, min_size: int = None, max_size: int = None):
+    def write_image_sequence_prediction(self):
         """
         This method starts the video processing loop.
         After EOF is encountered or if an error occurs,
@@ -129,7 +119,7 @@ class PredictionHandler:
             frame = self.__stream.read()
             if frame is None:
                 break
-            output, mask = self.__obtain_prediction(frame, min_size=min_size, max_size=max_size)
+            output, mask = self.__obtain_prediction(frame)
             cv.imwrite(str(self.__predictions_target_dir / f'frame{self.__counter}.png'), output)
             self.__counter += 1
 
@@ -138,7 +128,7 @@ class PredictionHandler:
                 break
         self.__cleanup()
 
-    def write_predictions_video(self, min_size: int = None, max_size: int = None):
+    def write_predictions_video(self):
         """
         This method starts the video processing loop.
         After EOF is encountered or if an error occurs,
@@ -151,7 +141,7 @@ class PredictionHandler:
             frame = self.__stream.read()
             if frame is None:
                 break
-            output, mask = self.__obtain_prediction(frame, min_size=min_size, max_size=max_size)
+            output, mask = self.__obtain_prediction(frame)
             writer.write(output)
             self.__counter += 1
             key = cv.waitKey(1) & 0xFF
@@ -169,19 +159,16 @@ class PredictionHandler:
             frame = self.__stream.read()
             if frame is None:
                 break
-            _, _ = self.__obtain_prediction(frame, None, None)
+            _, _ = self.__obtain_prediction(frame)
             key = cv.waitKey(1) & 0xFF
             if key == ord('q'):
                 break
         self.__cleanup()
 
-    def __obtain_prediction(self, frame, min_size, max_size) -> (np.ndarray, np.ndarray):
+    def __obtain_prediction(self, frame) -> (np.ndarray, np.ndarray):
         start = time.time()
         result = self.__model.predict(frame)
         end = time.time()
-        mask = np.reshape(np.array(result.label_map), result.shape)
-        if min_size is not None and max_size is not None:
-            mask = remove_connected_areas(mask, min_size=min_size, max_size=max_size)
         segmented_image = fd.vision.vis_segmentation(frame, result, weight=0.5)
         self.__frame_processing_times.append(end - start)
         print(
