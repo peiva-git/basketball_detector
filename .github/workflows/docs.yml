@@ -18,7 +18,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
@@ -38,7 +38,7 @@ jobs:
           export LD_LIBRARY_PATH=$CONDA/lib/:$LD_LIBRARY_PATH
           export PDOC_ALLOW_EXEC=1
           $CONDA/bin/pdoc -o docs/ basketballdetector
-      - uses: actions/upload-pages-artifact@v2
+      - uses: actions/upload-pages-artifact@v3
         with:
           path: docs/
 
