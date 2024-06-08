@@ -7,7 +7,6 @@
 
 :basketball: **BasketballDetector** is a deep-learning based tool that enables automatic
 ball detection in basketball broadcasting videos.
-Currently, the project is still under development.
 
 <img src="https://media.giphy.com/media/DurYHJy6bj38Hydi7J/giphy.gif" alt="Detections video example" width="100%" height="400px"/>
 
