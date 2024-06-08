@@ -29,6 +29,7 @@ jobs:
           echo $CONDA/bin >> $GITHUB_PATH
       - name: Install dependencies
         run: |
+          conda install -y python=3.9
           conda env update --file conda/fd-gpu.yml --name base
       - name: Install package
         run: $CONDA/bin/pip install -f https://www.paddlepaddle.org.cn/whl/fastdeploy.html -e .
