@@ -4,4 +4,4 @@ opencv-python~=4.8.1
 vidgear~=0.3.2
 statistics~=1.0.3
 scikit-image~=0.21.0
-pdoc~=14.1.0
+pdoc~=14.5

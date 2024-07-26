@@ -13,5 +13,5 @@ dependencies:
     - vidgear~=0.3.2
     - statistics~=1.0.3
     - scikit-image~=0.21.0
-    - pdoc~=14.1.0
+    - pdoc~=14.5
 prefix: /home/peiva/anaconda3/envs/fd-cpu
